@@ -1,0 +1,35 @@
+{
+  "topic_id": "dbms_normalization",
+  "rules": [
+    {
+      "id": "closure_iteration_drill",
+      "concept_id": "attribute_closure",
+      "misconception_id": "closure_step_miss",
+      "strategy": "Closure iteration drill",
+      "activities": [
+        "Compute closure step by step and mark which dependency fired at each stage.",
+        "Repeat the closure process on a similar FD set with one extra dependency."
+      ],
+      "expected_signals": [
+        "fewer missed dependency applications",
+        "more complete closure results"
+      ],
+      "priority": 1
+    },
+    {
+      "id": "normal_form_comparison",
+      "concept_id": "normal_forms",
+      "misconception_id": "wrong_normal_form_classification",
+      "strategy": "Normal form comparison drill",
+      "activities": [
+        "Compare two schemas and justify which normal form each one satisfies.",
+        "Explain why the violating dependency blocks a higher normal form."
+      ],
+      "expected_signals": [
+        "better normal form classification",
+        "clearer dependency-based explanations"
+      ],
+      "priority": 1
+    }
+  ]
+}

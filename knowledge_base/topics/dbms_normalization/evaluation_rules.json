@@ -1,0 +1,32 @@
+{
+  "topic_id": "dbms_normalization",
+  "rules": [
+    {
+      "concept_id": "attribute_closure",
+      "success_signals": [
+        "more complete closure computation",
+        "fewer missed dependency applications",
+        "lower retry count on similar closure tasks"
+      ],
+      "partial_success_conditions": [
+        "correct final closure with weak step justification"
+      ],
+      "replan_trigger": [
+        "closure_step_miss continues across later attempts"
+      ]
+    },
+    {
+      "concept_id": "normal_forms",
+      "success_signals": [
+        "better normal form classification",
+        "clearer explanation of violating dependencies"
+      ],
+      "partial_success_conditions": [
+        "correct normal form label with incomplete reasoning"
+      ],
+      "replan_trigger": [
+        "wrong_nf_classification repeats in later problems"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "topic_id": "dbms_normalization",
+  "title": "DBMS Normalization and Functional Dependencies",
+  "version": "0.1.0",
+  "difficulty": "intermediate",
+  "target_users": ["engineering_students"],
+  "description": "Topic pack covering closures, candidate keys, normalization steps, and decomposition checks."
+}

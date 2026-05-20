@@ -1,0 +1,35 @@
+{
+  "topic_id": "os_synchronization",
+  "rules": [
+    {
+      "id": "primitive_selection_drill",
+      "concept_id": "semaphores",
+      "misconception_id": "mutex_vs_semaphore_confusion",
+      "strategy": "Primitive comparison drill",
+      "activities": [
+        "Compare mutex and semaphore on three short scenarios.",
+        "Explain which primitive fits each case and why."
+      ],
+      "expected_signals": [
+        "better primitive selection",
+        "clearer explanation of ownership and signaling"
+      ],
+      "priority": 1
+    },
+    {
+      "id": "deadlock_condition_trace",
+      "concept_id": "deadlock",
+      "misconception_id": "deadlock_condition_miss",
+      "strategy": "Deadlock condition trace",
+      "activities": [
+        "Map each Coffman condition to a given process-resource scenario.",
+        "Identify the exact condition that can be broken to avoid deadlock."
+      ],
+      "expected_signals": [
+        "better classification of deadlock scenarios",
+        "fewer missed conditions"
+      ],
+      "priority": 1
+    }
+  ]
+}

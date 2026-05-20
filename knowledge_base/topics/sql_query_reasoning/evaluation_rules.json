@@ -1,0 +1,36 @@
+{
+  "topic_id": "sql_query_reasoning",
+  "rules": [
+    {
+      "concept_id": "joins",
+      "success_signals": [
+        "higher correctness on similar join problems",
+        "fewer repeated join-key mistakes",
+        "lower hint usage",
+        "better output prediction accuracy"
+      ],
+      "partial_success_conditions": [
+        "correct final query but repeated retries",
+        "correct output with low confidence"
+      ],
+      "replan_trigger": [
+        "same error tag appears in two later attempts",
+        "student still cannot explain why the query works"
+      ]
+    },
+    {
+      "concept_id": "group_by",
+      "success_signals": [
+        "correct use of HAVING on grouped queries",
+        "fewer grouping-related mistakes",
+        "lower retry count on aggregation tasks"
+      ],
+      "partial_success_conditions": [
+        "correct answer after heavy hint usage"
+      ],
+      "replan_trigger": [
+        "filter-after-aggregation errors continue across later attempts"
+      ]
+    }
+  ]
+}

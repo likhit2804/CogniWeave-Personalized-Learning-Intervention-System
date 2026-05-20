@@ -1,0 +1,19 @@
+{
+  "topic_id": "sql_query_reasoning",
+  "concepts": [
+    {
+      "id": "joins",
+      "label": "Joins",
+      "description": "Combining rows from multiple tables using matching keys.",
+      "prerequisites": ["table_structure", "foreign_keys"],
+      "related_concepts": ["left_join_behavior", "duplicate_rows"]
+    },
+    {
+      "id": "group_by",
+      "label": "GROUP BY",
+      "description": "Grouping rows before aggregate computation.",
+      "prerequisites": ["basic_select", "aggregate_functions"],
+      "related_concepts": ["having", "duplicate_counting"]
+    }
+  ]
+}

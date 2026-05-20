@@ -1,0 +1,36 @@
+{
+  "topic_id": "sql_query_reasoning",
+  "rules": [
+    {
+      "id": "fix_join_reasoning",
+      "concept_id": "joins",
+      "misconception_id": "join_wrong_key",
+      "strategy": "Join debugging drill",
+      "activities": [
+        "Compare two join conditions and predict the row count before execution.",
+        "Run a small join example and explain why duplicates appear."
+      ],
+      "expected_signals": [
+        "fewer join-key mistakes",
+        "better output prediction",
+        "lower retry count"
+      ],
+      "priority": 1
+    },
+    {
+      "id": "fix_group_filter_reasoning",
+      "concept_id": "group_by",
+      "misconception_id": "where_vs_having_confusion",
+      "strategy": "Aggregation filter comparison",
+      "activities": [
+        "Rewrite the same query once with WHERE and once with HAVING, then compare the result.",
+        "Identify which conditions apply before grouping and which apply after grouping."
+      ],
+      "expected_signals": [
+        "fewer aggregation filter errors",
+        "clearer reasoning about query order"
+      ],
+      "priority": 1
+    }
+  ]
+}

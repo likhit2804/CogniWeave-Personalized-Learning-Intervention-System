@@ -1,0 +1,23 @@
+{
+  "topic_id": "dbms_normalization",
+  "items": [
+    {
+      "id": "db_001",
+      "title": "Find the closure of AB",
+      "concept_ids": ["attribute_closure"],
+      "difficulty": "easy",
+      "problem_type": "closure",
+      "skills_tested": ["dependency_application"],
+      "expected_error_tags": ["closure_step_miss"]
+    },
+    {
+      "id": "db_002",
+      "title": "Classify the schema into the highest normal form",
+      "concept_ids": ["normal_forms"],
+      "difficulty": "medium",
+      "problem_type": "classification",
+      "skills_tested": ["normal_form_reasoning"],
+      "expected_error_tags": ["wrong_nf_classification"]
+    }
+  ]
+}

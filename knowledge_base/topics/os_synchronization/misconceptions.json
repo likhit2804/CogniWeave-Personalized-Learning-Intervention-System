@@ -1,0 +1,27 @@
+{
+  "topic_id": "os_synchronization",
+  "items": [
+    {
+      "id": "mutex_vs_semaphore_confusion",
+      "concept_id": "semaphores",
+      "label": "Mutex and semaphore confusion",
+      "error_tags": ["wrong_primitive_choice", "semaphore_role_confusion"],
+      "symptoms": [
+        "uses semaphore where mutex is enough",
+        "cannot explain ownership rules"
+      ],
+      "notes": "Common when the student memorizes definitions without understanding usage."
+    },
+    {
+      "id": "deadlock_condition_miss",
+      "concept_id": "deadlock",
+      "label": "Deadlock condition not identified",
+      "error_tags": ["deadlock_condition_miss"],
+      "symptoms": [
+        "misses circular wait",
+        "cannot classify a deadlock scenario"
+      ],
+      "notes": "Often shows up in scenario-based questions."
+    }
+  ]
+}

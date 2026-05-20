@@ -1,0 +1,27 @@
+{
+  "topic_id": "dbms_normalization",
+  "items": [
+    {
+      "id": "closure_step_miss",
+      "concept_id": "attribute_closure",
+      "label": "Closure step missed",
+      "error_tags": ["closure_step_miss", "missed_dependency_application"],
+      "symptoms": [
+        "stops closure too early",
+        "forgets a dependency that should fire"
+      ],
+      "notes": "Often happens when the closure process is treated as memorization instead of iteration."
+    },
+    {
+      "id": "wrong_normal_form_classification",
+      "concept_id": "normal_forms",
+      "label": "Wrong normal form classification",
+      "error_tags": ["wrong_nf_classification"],
+      "symptoms": [
+        "mislabels 3NF as BCNF",
+        "ignores candidate key role in dependency analysis"
+      ],
+      "notes": "Usually linked to weak key reasoning."
+    }
+  ]
+}

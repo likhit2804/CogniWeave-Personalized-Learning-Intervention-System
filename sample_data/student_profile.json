@@ -1,0 +1,19 @@
+{
+  "student_id": "stu_001",
+  "subject": "sql_query_reasoning",
+  "goals": [
+    "Write SQL queries with fewer debugging attempts",
+    "Get comfortable with joins and aggregation"
+  ],
+  "available_hours_per_week": 6,
+  "confidence_by_concept": {
+    "joins": 0.4,
+    "group_by": 0.5
+  },
+  "upcoming_deadlines": [
+    {
+      "label": "DBMS lab practice set",
+      "days_left": 4
+    }
+  ]
+}

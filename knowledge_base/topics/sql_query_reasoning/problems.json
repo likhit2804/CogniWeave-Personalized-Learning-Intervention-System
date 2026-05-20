@@ -1,0 +1,23 @@
+{
+  "topic_id": "sql_query_reasoning",
+  "items": [
+    {
+      "id": "sql_001",
+      "title": "Count students per department",
+      "concept_ids": ["group_by"],
+      "difficulty": "easy",
+      "problem_type": "aggregation",
+      "skills_tested": ["grouping", "count_usage"],
+      "expected_error_tags": ["filter_after_aggregation_error"]
+    },
+    {
+      "id": "sql_002",
+      "title": "List students with advisor names",
+      "concept_ids": ["joins"],
+      "difficulty": "medium",
+      "problem_type": "join",
+      "skills_tested": ["join_key_selection"],
+      "expected_error_tags": ["wrong_join_key", "cartesian_like_output"]
+    }
+  ]
+}

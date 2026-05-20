@@ -1,0 +1,23 @@
+{
+  "topic_id": "os_synchronization",
+  "items": [
+    {
+      "id": "os_001",
+      "title": "Choose the right primitive for shared counter access",
+      "concept_ids": ["semaphores"],
+      "difficulty": "easy",
+      "problem_type": "classification",
+      "skills_tested": ["primitive_selection"],
+      "expected_error_tags": ["wrong_primitive_choice"]
+    },
+    {
+      "id": "os_002",
+      "title": "Identify deadlock conditions in a resource allocation scenario",
+      "concept_ids": ["deadlock"],
+      "difficulty": "medium",
+      "problem_type": "state_reasoning",
+      "skills_tested": ["condition_identification"],
+      "expected_error_tags": ["deadlock_condition_miss"]
+    }
+  ]
+}

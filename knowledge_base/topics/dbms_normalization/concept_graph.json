@@ -1,0 +1,19 @@
+{
+  "topic_id": "dbms_normalization",
+  "concepts": [
+    {
+      "id": "attribute_closure",
+      "label": "Attribute Closure",
+      "description": "Finding all attributes implied by a set of attributes under given functional dependencies.",
+      "prerequisites": ["functional_dependencies"],
+      "related_concepts": ["candidate_keys", "normal_forms"]
+    },
+    {
+      "id": "normal_forms",
+      "label": "Normal Forms",
+      "description": "Reasoning about 2NF, 3NF, and BCNF using dependency structure.",
+      "prerequisites": ["attribute_closure", "candidate_keys"],
+      "related_concepts": ["decomposition", "dependency_preservation"]
+    }
+  ]
+}

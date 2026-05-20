@@ -1,0 +1,8 @@
+{
+  "topic_id": "sql_query_reasoning",
+  "title": "SQL Query Reasoning",
+  "version": "0.1.0",
+  "difficulty": "intermediate",
+  "target_users": ["engineering_students"],
+  "description": "Structured SQL reasoning pack covering joins, aggregation, filtering, and output prediction."
+}

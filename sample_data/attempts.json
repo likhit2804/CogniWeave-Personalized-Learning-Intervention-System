@@ -1,0 +1,29 @@
+[
+  {
+    "problem_id": "sql_002",
+    "concept": "joins",
+    "correct": false,
+    "error_tags": ["wrong_join_key"],
+    "time_seconds": 720,
+    "hints_used": 2,
+    "retries": 3
+  },
+  {
+    "problem_id": "sql_003",
+    "concept": "joins",
+    "correct": false,
+    "error_tags": ["wrong_join_key", "cartesian_like_output"],
+    "time_seconds": 840,
+    "hints_used": 1,
+    "retries": 2
+  },
+  {
+    "problem_id": "sql_001",
+    "concept": "group_by",
+    "correct": true,
+    "error_tags": [],
+    "time_seconds": 300,
+    "hints_used": 0,
+    "retries": 0
+  }
+]

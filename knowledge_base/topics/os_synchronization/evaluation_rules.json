@@ -1,0 +1,32 @@
+{
+  "topic_id": "os_synchronization",
+  "rules": [
+    {
+      "concept_id": "semaphores",
+      "success_signals": [
+        "correct primitive selection",
+        "clearer explanation of synchronization behavior",
+        "fewer repeated confusion tags"
+      ],
+      "partial_success_conditions": [
+        "correct answer with incomplete explanation"
+      ],
+      "replan_trigger": [
+        "wrong_primitive_choice appears in later attempts"
+      ]
+    },
+    {
+      "concept_id": "deadlock",
+      "success_signals": [
+        "better classification of deadlock scenarios",
+        "more accurate identification of Coffman conditions"
+      ],
+      "partial_success_conditions": [
+        "student identifies the deadlock but not the condition causing it"
+      ],
+      "replan_trigger": [
+        "deadlock_condition_miss appears in multiple later attempts"
+      ]
+    }
+  ]
+}

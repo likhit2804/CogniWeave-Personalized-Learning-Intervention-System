@@ -1,0 +1,19 @@
+{
+  "topic_id": "os_synchronization",
+  "concepts": [
+    {
+      "id": "semaphores",
+      "label": "Semaphores",
+      "description": "Synchronization primitives used to control access to shared resources.",
+      "prerequisites": ["processes", "critical_section"],
+      "related_concepts": ["mutex", "producer_consumer"]
+    },
+    {
+      "id": "deadlock",
+      "label": "Deadlock",
+      "description": "A state in which processes wait indefinitely for each other.",
+      "prerequisites": ["resource_allocation", "critical_section"],
+      "related_concepts": ["starvation", "hold_and_wait"]
+    }
+  ]
+}

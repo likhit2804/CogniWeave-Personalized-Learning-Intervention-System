@@ -1,0 +1,28 @@
+{
+  "topic_id": "sql_query_reasoning",
+  "items": [
+    {
+      "id": "join_wrong_key",
+      "concept_id": "joins",
+      "label": "Wrong join condition",
+      "error_tags": ["wrong_join_key", "cartesian_like_output"],
+      "symptoms": [
+        "unexpected duplicate rows",
+        "incorrect record count",
+        "irrelevant row combinations"
+      ],
+      "notes": "Often happens when similar-looking columns are joined without checking the actual relationship."
+    },
+    {
+      "id": "where_vs_having_confusion",
+      "concept_id": "group_by",
+      "label": "WHERE vs HAVING confusion",
+      "error_tags": ["filter_after_aggregation_error"],
+      "symptoms": [
+        "aggregate filter written in WHERE",
+        "query returns logically wrong rows"
+      ],
+      "notes": "Usually appears when the student understands aggregation but not query order."
+    }
+  ]
+}
