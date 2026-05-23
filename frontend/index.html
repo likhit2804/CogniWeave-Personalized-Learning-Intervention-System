@@ -181,6 +181,16 @@
                     </div>
                 </div>
             </div>
+            <div class="card" id="checkpointCard" style="display: none; border-color: var(--accent-color);">
+                <h2>📝 Knowledge Checkpoint</h2>
+                <div class="data-label">Test your understanding to demonstrate mastery.</div>
+                <div id="mcqContainer" style="margin-top: 15px;">
+                    <div id="mcqQuestion" style="font-size: 16px; margin-bottom: 15px; font-weight: 500;"></div>
+                    <div id="mcqOptions"></div>
+                    <button id="submitMcqBtn" class="btn" style="margin-top: 20px;">Submit Answer</button>
+                    <div id="mcqFeedback" style="margin-top: 15px; font-weight: bold; display: none;"></div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -278,12 +288,107 @@
                 document.getElementById('evalReplan').textContent = data.evaluation_plan.replan_trigger;
 
                 results.style.display = 'block';
+
+                // Fetch Checkpoint MCQ
+                fetchCheckpointProblem(MOCK_PAYLOAD.profile.subject, data.diagnosis.weakest_concept);
+
             } catch (err) {
                 errorMsg.textContent = 'Failed to generate plan: ' + err.message;
                 errorMsg.style.display = 'block';
             } finally {
                 btn.disabled = false;
                 loader.style.display = 'none';
+            }
+        });
+
+        let currentProblemId = null;
+
+        async function fetchCheckpointProblem(topicId, conceptId) {
+            try {
+                const response = await fetch(`http://localhost:8000/evaluation/problems/${topicId}/${conceptId}`);
+                if (!response.ok) return; // Silent fail if no problem exists
+                
+                const problem = await response.json();
+                currentProblemId = problem.id;
+                
+                document.getElementById('checkpointCard').style.display = 'block';
+                document.getElementById('mcqQuestion').textContent = problem.question_text;
+                document.getElementById('mcqFeedback').style.display = 'none';
+                
+                const optionsDiv = document.getElementById('mcqOptions');
+                optionsDiv.innerHTML = '';
+                
+                for (const [key, val] of Object.entries(problem.options)) {
+                    const label = document.createElement('label');
+                    label.style.display = 'block';
+                    label.style.marginBottom = '10px';
+                    label.style.cursor = 'pointer';
+                    
+                    const radio = document.createElement('input');
+                    radio.type = 'radio';
+                    radio.name = 'mcqOption';
+                    radio.value = key;
+                    radio.style.marginRight = '10px';
+                    
+                    label.appendChild(radio);
+                    label.appendChild(document.createTextNode(`${key}: ${val}`));
+                    optionsDiv.appendChild(label);
+                }
+            } catch (err) {
+                console.error("Failed to fetch checkpoint problem", err);
+            }
+        }
+
+        document.getElementById('submitMcqBtn').addEventListener('click', async () => {
+            const selected = document.querySelector('input[name="mcqOption"]:checked');
+            const feedbackDiv = document.getElementById('mcqFeedback');
+            
+            if (!selected) {
+                feedbackDiv.textContent = "Please select an answer first.";
+                feedbackDiv.style.color = "var(--error-color)";
+                feedbackDiv.style.display = 'block';
+                return;
+            }
+
+            try {
+                const submission = {
+                    student_id: MOCK_PAYLOAD.profile.student_id,
+                    problem_id: currentProblemId,
+                    selected_option: selected.value
+                };
+
+                const response = await fetch(`http://localhost:8000/evaluation/evaluate?topic_id=${MOCK_PAYLOAD.profile.subject}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(submission)
+                });
+
+                const result = await response.json();
+                
+                feedbackDiv.style.display = 'block';
+                feedbackDiv.textContent = result.feedback;
+                
+                if (result.mastery_achieved) {
+                    feedbackDiv.style.color = "var(--accent-color)";
+                    feedbackDiv.textContent += " 🎉";
+                } else {
+                    feedbackDiv.style.color = "var(--error-color)";
+                    feedbackDiv.textContent += " REPLAN TRIGGERED! Re-generating plan...";
+                    
+                    // Add the failure to our mock payload and replan
+                    MOCK_PAYLOAD.attempts.push({
+                        problem_id: currentProblemId,
+                        concept: MOCK_PAYLOAD.attempts[0].concept,
+                        correct: false,
+                        error_tags: ["checkpoint_failure"]
+                    });
+                    
+                    setTimeout(() => {
+                        document.getElementById('generateBtn').click();
+                    }, 2000);
+                }
+            } catch (err) {
+                console.error("Failed to submit evaluation", err);
             }
         });
     </script>
