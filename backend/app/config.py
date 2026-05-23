@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     # LLM Settings
     openai_api_key: str | None = os.getenv("OPENAI_API_KEY")
 
-    model_config = {"env_file": ".env"}
+    model_config = {"env_file": ".env", "extra": "ignore"}
 
 
 settings = Settings()
