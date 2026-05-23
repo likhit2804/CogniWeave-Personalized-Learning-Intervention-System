@@ -1,0 +1,13 @@
+{
+  "topic_id": "biology_cell_biology",
+  "items": [
+    {
+      "id": "powerhouse_only",
+      "concept_id": "mitochondria",
+      "label": "Thinking mitochondria only make energy and have no other function",
+      "error_tags": [
+        "oversimplification"
+      ]
+    }
+  ]
+}

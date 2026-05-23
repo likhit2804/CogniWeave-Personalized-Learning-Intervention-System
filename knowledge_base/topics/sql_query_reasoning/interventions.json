@@ -31,6 +31,15 @@
         "clearer reasoning about query order"
       ],
       "priority": 1
+    },
+    {
+      "id": "refactor_subquery_to_join",
+      "concept_id": "subqueries",
+      "misconception_id": "subquery_vs_join",
+      "strategy": "Query Rewriting",
+      "activities": [
+        "Rewrite the failing subquery as a JOIN and compare execution plans."
+      ]
     }
   ]
 }

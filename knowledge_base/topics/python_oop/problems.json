@@ -1,0 +1,11 @@
+{
+  "topic_id": "python_oop",
+  "items": [
+    {
+      "id": "oop_001",
+      "concept_id": "classes",
+      "text": "Define a class with an instance variable.",
+      "difficulty": 1
+    }
+  ]
+}

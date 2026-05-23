@@ -1,0 +1,14 @@
+{
+  "topic_id": "biology_cell_biology",
+  "rules": [
+    {
+      "id": "broaden_mito_function",
+      "concept_id": "mitochondria",
+      "misconception_id": "powerhouse_only",
+      "strategy": "Case study analysis",
+      "activities": [
+        "Analyze a metabolic disease involving mitochondria"
+      ]
+    }
+  ]
+}
