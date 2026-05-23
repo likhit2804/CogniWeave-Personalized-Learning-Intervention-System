@@ -14,7 +14,7 @@ def get_problem_for_concept(topic_id: str, concept_id: str):
         raise HTTPException(status_code=404, detail="Topic not found")
 
     # Find all problems that test this concept
-    matching_problems = [p for p in kb.problems if concept_id in p.get("concept_ids", [])]
+    matching_problems = [p for p in kb.problems.get("items", []) if concept_id in p.get("concept_ids", [])]
     
     if not matching_problems:
         raise HTTPException(status_code=404, detail=f"No problems found for concept {concept_id}")
@@ -32,7 +32,7 @@ def evaluate_submission(submission: MCQSubmission, topic_id: str):
     except FileNotFoundError:
         raise HTTPException(status_code=404, detail="Topic not found")
 
-    problem = next((p for p in kb.problems if p["id"] == submission.problem_id), None)
+    problem = next((p for p in kb.problems.get("items", []) if p["id"] == submission.problem_id), None)
     if not problem:
         raise HTTPException(status_code=404, detail="Problem not found")
 
