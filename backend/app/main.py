@@ -2,6 +2,7 @@ from fastapi import FastAPI
 
 from backend.app.api.routes.health import router as health_router
 from backend.app.api.routes.orchestrator import router as orchestrator_router
+from backend.app.api.routes.evaluation import router as evaluation_router
 from backend.app.config import settings
 
 
@@ -18,3 +19,4 @@ app.add_middleware(
 )
 app.include_router(health_router)
 app.include_router(orchestrator_router)
+app.include_router(evaluation_router)
