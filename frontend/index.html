@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CogniWeave Dashboard</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --surface-color: #1e1e1e;
+            --border-color: #333333;
+            --text-primary: #e0e0e0;
+            --text-secondary: #aaaaaa;
+            --accent-color: #4CAF50;
+            --accent-hover: #45a049;
+            --error-color: #cf6679;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1, h2, h3 {
+            font-weight: 600;
+            margin-top: 0;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+        }
+
+        .card {
+            background-color: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        .btn {
+            background-color: var(--accent-color);
+            color: #ffffff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            font-weight: 500;
+        }
+
+        .btn:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .btn:disabled {
+            background-color: var(--border-color);
+            color: var(--text-secondary);
+            cursor: not-allowed;
+        }
+
+        .loader {
+            display: none;
+            margin-top: 10px;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .plan-item {
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+
+        .tag {
+            display: inline-block;
+            background-color: var(--border-color);
+            color: var(--text-primary);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .data-label {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .data-value {
+            margin-bottom: 16px;
+        }
+
+        #results {
+            display: none;
+        }
+        
+        .error {
+            color: var(--error-color);
+            margin-top: 10px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="card">
+            <h1>CogniWeave Intervention System</h1>
+            <p style="color: var(--text-secondary);">Generate a personalized learning plan for a student based on recent failures.</p>
+            
+            <button id="generateBtn" class="btn">Generate Intervention Plan</button>
+            <div id="loader" class="loader">Processing data and reasoning... Please wait...</div>
+            <div id="errorMsg" class="error"></div>
+        </div>
+
+        <div id="results">
+            <div class="grid">
+                <div class="card">
+                    <h2>Diagnosis</h2>
+                    <div class="data-label">Weakest Concept</div>
+                    <div class="data-value" id="diagConcept"></div>
+
+                    <div class="data-label">Identified Misconception</div>
+                    <div class="data-value" id="diagMisconception"></div>
+                    
+                    <div class="data-label">Evidence</div>
+                    <div class="data-value" id="diagEvidence"></div>
+                </div>
+
+                <div class="card">
+                    <h2>Selected Intervention</h2>
+                    <div class="data-label">Strategy</div>
+                    <div class="data-value" id="intStrategy"></div>
+
+                    <div class="data-label">Rationale</div>
+                    <div class="data-value" id="intWhy"></div>
+                    
+                    <div class="data-label">Suggested Activities</div>
+                    <ul id="intActivities" style="margin-top: 0; padding-left: 20px;"></ul>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Weekly Schedule</h2>
+                <div id="weeklyPlanContainer"></div>
+            </div>
+
+            <div class="card">
+                <h2>Evaluation Plan</h2>
+                <div class="grid">
+                    <div>
+                        <div class="data-label">Success Signals</div>
+                        <ul id="evalSignals" style="margin-top: 0; padding-left: 20px;"></ul>
+                    </div>
+                    <div>
+                        <div class="data-label">Recheck After</div>
+                        <div class="data-value" id="evalRecheck"></div>
+                        <div class="data-label">Replan Trigger</div>
+                        <div class="data-value" id="evalReplan"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const MOCK_PAYLOAD = {
+            "profile": {
+                "student_id": "stu_001",
+                "subject": "sql_query_reasoning",
+                "goals": ["Improve Joins"],
+                "available_hours_per_week": 6,
+                "confidence_by_concept": {},
+                "upcoming_deadlines": []
+            },
+            "attempts": [
+                {
+                    "problem_id": "sql_002",
+                    "concept": "joins",
+                    "correct": false,
+                    "error_tags": ["wrong_join_key"],
+                    "hints_used": 0,
+                    "retries": 0
+                }
+            ],
+            "prior_interventions": []
+        };
+
+        document.getElementById('generateBtn').addEventListener('click', async () => {
+            const btn = document.getElementById('generateBtn');
+            const loader = document.getElementById('loader');
+            const results = document.getElementById('results');
+            const errorMsg = document.getElementById('errorMsg');
+
+            btn.disabled = true;
+            loader.style.display = 'block';
+            results.style.display = 'none';
+            errorMsg.style.display = 'none';
+
+            try {
+                const response = await fetch('http://localhost:8000/orchestrate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(MOCK_PAYLOAD)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                // Populate Diagnosis
+                document.getElementById('diagConcept').textContent = data.diagnosis.weakest_concept;
+                document.getElementById('diagMisconception').textContent = data.diagnosis.misconception?.description || 'None';
+                document.getElementById('diagEvidence').textContent = data.diagnosis.evidence?.summary || 'N/A';
+
+                // Populate Intervention
+                document.getElementById('intStrategy').textContent = data.selected_intervention.strategy;
+                document.getElementById('intWhy').textContent = data.selected_intervention.why;
+                
+                const ulActivities = document.getElementById('intActivities');
+                ulActivities.innerHTML = '';
+                data.selected_intervention.activities.forEach(act => {
+                    const li = document.createElement('li');
+                    li.textContent = act;
+                    ulActivities.appendChild(li);
+                });
+
+                // Populate Weekly Plan
+                const planContainer = document.getElementById('weeklyPlanContainer');
+                planContainer.innerHTML = '';
+                data.weekly_plan.forEach(block => {
+                    const div = document.createElement('div');
+                    div.className = 'plan-item';
+                    div.innerHTML = `
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <strong>${block.day} - ${block.focus}</strong>
+                            <span class="tag">${block.activity_type}</span>
+                        </div>
+                        <div style="color: var(--text-secondary); font-size: 14px;">Duration: ${block.minutes} minutes</div>
+                    `;
+                    planContainer.appendChild(div);
+                });
+
+                // Populate Evaluation
+                const ulSignals = document.getElementById('evalSignals');
+                ulSignals.innerHTML = '';
+                data.evaluation_plan.success_signals.forEach(sig => {
+                    const li = document.createElement('li');
+                    li.textContent = sig;
+                    ulSignals.appendChild(li);
+                });
+                document.getElementById('evalRecheck').textContent = data.evaluation_plan.recheck_after;
+                document.getElementById('evalReplan').textContent = data.evaluation_plan.replan_trigger;
+
+                results.style.display = 'block';
+            } catch (err) {
+                errorMsg.textContent = 'Failed to generate plan: ' + err.message;
+                errorMsg.style.display = 'block';
+            } finally {
+                btn.disabled = false;
+                loader.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

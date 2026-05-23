@@ -35,29 +35,31 @@ class StudentSnapshot(BaseModel):
 class DiagnosisResult(BaseModel):
     weakest_concept: str
     top_error_tag: str | None = None
-    misconception: dict[str, Any] | None = None
-    evidence: dict[str, Any]
+    confidence: float = 1.0
+    reasoning: str = ""
+    misconception_label: str | None = None
+    evidence_summary: str = ""
 
 
 class InterventionResult(BaseModel):
-    concept: str
-    error_tag: str | None = None
     strategy: str
     activities: list[str] = Field(default_factory=list)
     why: str
+    estimated_sessions: int = 2
 
 
 class WeeklyScheduleItem(BaseModel):
     day: str
     focus: str
     minutes: int
+    activity_type: str = "review"
 
 
 class EvaluationPlan(BaseModel):
-    concept: str
     success_signals: list[str]
     recheck_after: str
     replan_trigger: str
+    mastery_threshold: str = ""
 
 
 class TraceLogItem(BaseModel):
