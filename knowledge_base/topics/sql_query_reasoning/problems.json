@@ -6,17 +6,29 @@
       "title": "Count students per department",
       "concept_ids": ["group_by"],
       "difficulty": "easy",
-      "problem_type": "aggregation",
-      "skills_tested": ["grouping", "count_usage"],
-      "expected_error_tags": ["filter_after_aggregation_error"]
+      "question_text": "Which SQL query correctly counts the number of students in each department?",
+      "options": {
+        "A": "SELECT department, COUNT(*) FROM students GROUP BY department",
+        "B": "SELECT department, COUNT(*) FROM students",
+        "C": "SELECT department FROM students GROUP BY count(*)",
+        "D": "SELECT count(*) FROM students GROUP BY name"
+      },
+      "correct_option": "A",
+      "expected_error_tags": ["filter_after_aggregation_error", "missing_group_by"]
     },
     {
       "id": "sql_002",
       "title": "List students with advisor names",
       "concept_ids": ["joins"],
       "difficulty": "medium",
-      "problem_type": "join",
-      "skills_tested": ["join_key_selection"],
+      "question_text": "How do you correctly join the 'students' table with the 'advisors' table to list student names alongside their advisor names?",
+      "options": {
+        "A": "SELECT s.name, a.name FROM students s JOIN advisors a ON s.id = a.id",
+        "B": "SELECT s.name, a.name FROM students s JOIN advisors a ON s.advisor_id = a.id",
+        "C": "SELECT s.name, a.name FROM students s, advisors a",
+        "D": "SELECT name FROM students JOIN advisors"
+      },
+      "correct_option": "B",
       "expected_error_tags": ["wrong_join_key", "cartesian_like_output"]
     }
   ]

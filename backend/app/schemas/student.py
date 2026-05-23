@@ -17,6 +17,23 @@ class QuestionAttempt(BaseModel):
     retries: int = 0
 
 
+class MCQProblem(BaseModel):
+    id: str
+    title: str
+    concept_ids: list[str] = Field(default_factory=list)
+    difficulty: str
+    question_text: str
+    options: dict[str, str]
+    correct_option: str
+    expected_error_tags: list[str] = Field(default_factory=list)
+
+
+class MCQSubmission(BaseModel):
+    student_id: str
+    problem_id: str
+    selected_option: str
+
+
 class StudentProfile(BaseModel):
     student_id: str
     subject: str

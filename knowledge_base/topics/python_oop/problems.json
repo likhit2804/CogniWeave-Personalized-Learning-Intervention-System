@@ -3,9 +3,18 @@
   "items": [
     {
       "id": "oop_001",
-      "concept_id": "classes",
-      "text": "Define a class with an instance variable.",
-      "difficulty": 1
+      "concept_ids": ["classes"],
+      "title": "Define a class with an instance variable",
+      "difficulty": "easy",
+      "question_text": "Which of the following correctly defines a Python class with an instance variable 'name'?",
+      "options": {
+        "A": "class Student: name = 'John'",
+        "B": "class Student: def __init__(self): self.name = 'John'",
+        "C": "class Student: def init(self): name = 'John'",
+        "D": "def Student(): self.name = 'John'"
+      },
+      "correct_option": "B",
+      "expected_error_tags": ["class_variable_confusion", "missing_init"]
     }
   ]
 }

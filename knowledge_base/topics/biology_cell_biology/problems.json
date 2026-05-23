@@ -3,9 +3,18 @@
   "items": [
     {
       "id": "bio_001",
-      "concept_id": "mitochondria",
-      "text": "Name 3 functions of the mitochondria.",
-      "difficulty": 1
+      "concept_ids": ["mitochondria"],
+      "title": "Functions of the mitochondria",
+      "difficulty": "easy",
+      "question_text": "What is the primary function of the mitochondria in a eukaryotic cell?",
+      "options": {
+        "A": "Synthesizing proteins from amino acids",
+        "B": "Storing the cell's genetic information",
+        "C": "Generating ATP through cellular respiration",
+        "D": "Breaking down cellular waste"
+      },
+      "correct_option": "C",
+      "expected_error_tags": ["organelle_confusion"]
     }
   ]
 }
