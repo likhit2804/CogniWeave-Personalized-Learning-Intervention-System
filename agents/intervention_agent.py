@@ -1,49 +1,56 @@
+import json
+from langchain_core.messages import SystemMessage, HumanMessage
+
 from agents.state import GraphState
+from agents.llm import llm
+from agents.schemas import InterventionOutput
+from agents.prompts import INTERVENTION_PROMPT
 
 
 class InterventionAgentNode:
-    """LangGraph node that selects the best intervention strategy."""
+    """LangGraph node that selects the best intervention strategy using an LLM."""
 
     def __call__(self, state: GraphState) -> dict:
         # 1. Retrieve data from State
         diagnosis = state["diagnosis"]
         kb = state["knowledge_base"]
+        prior_interventions = state.get("prior_interventions", [])
 
         concept = diagnosis.get("weakest_concept")
         error_tag = diagnosis.get("top_error_tag")
         misconception = diagnosis.get("misconception")
 
-        # 2. Find matching interventions from knowledge base
-        matches = []
-        for item in kb.get("interventions", {}).get("rules", []):
-            if item["concept_id"] != concept:
-                continue
-            if misconception and item["misconception_id"] == misconception["id"]:
-                matches.append(item)
+        # 2. Prompt the LLM
+        structured_llm = llm.with_structured_output(InterventionOutput)
+        
+        system_msg = SystemMessage(content=INTERVENTION_PROMPT)
+        
+        # filter rules by concept so we don't blow up the context window
+        available_rules = [r for r in kb.get("interventions", {}).get("rules", []) if r.get("concept_id") == concept]
+        
+        context = {
+            "diagnosed_concept": concept,
+            "top_error_tag": error_tag,
+            "misconception": misconception,
+            "available_rules": available_rules,
+            "prior_interventions": prior_interventions
+        }
+        human_msg = HumanMessage(content=f"Context:\n{json.dumps(context, indent=2)}")
+        
+        result = structured_llm.invoke([system_msg, human_msg])
 
-        if matches:
-            raw = matches[0]
-            # the KB rule uses concept_id but the response schema expects concept
-            # also no why field in the KB so we build one from the rule id
-            selected = {
-                "concept": raw["concept_id"],
-                "error_tag": error_tag,
-                "strategy": raw["strategy"],
-                "activities": raw.get("activities", []),
-                "why": f"matched intervention rule '{raw['id']}' for the identified misconception",
-            }
-        else:
-            # no matching rule found, fall back to a generic review strategy
-            selected = {
-                "concept": concept,
-                "error_tag": error_tag,
-                "strategy": "Targeted review",
-                "activities": ["Review the concept with one worked example and one independent problem."],
-                "why": "no exact rule matched in the knowledge base for this concept and error tag",
-            }
+        # 3. Format the result for the state
+        selected = {
+            "concept": concept,
+            "error_tag": error_tag,
+            "strategy": result.strategy,
+            "activities": result.activities,
+            "why": result.why,
+            "estimated_sessions": result.estimated_sessions,
+        }
 
-        # 3. Return the key updates to the GraphState
+        # 4. Return the key updates to the GraphState
         return {
             "selected_intervention": selected,
-            "trace": state["trace"] + [{"agent": "intervention-agent", "message": f"Selected intervention strategy '{selected.get('strategy', 'N/A')}'."}],
+            "trace": state["trace"] + [{"agent": "intervention-agent", "message": f"Selected intervention strategy '{result.strategy}'."}],
         }
