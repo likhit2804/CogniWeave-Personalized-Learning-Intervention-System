@@ -9,7 +9,7 @@ class Settings(BaseSettings):
     knowledge_base_dir: Path = base_dir / "knowledge_base"
 
     # LLM Settings
-    openai_api_key: str | None = os.getenv("OPENAI_API_KEY")
+    gemini_api_key: str | None = os.getenv("GEMINI_API_KEY")
 
     model_config = {"env_file": ".env", "extra": "ignore"}
 
