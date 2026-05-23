@@ -96,4 +96,9 @@ class OrchestratorService:
 
         # 2. Run LangGraph Engine
         final_state = app_graph.invoke(initial_state)
+
+        # pull iteration_count out of internal state and expose it under the name
+        # the response schema expects - critic_iterations
+        final_state["critic_iterations"] = final_state.get("iteration_count", 0)
+
         return final_state

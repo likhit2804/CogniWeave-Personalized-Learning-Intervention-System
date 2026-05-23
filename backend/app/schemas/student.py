@@ -72,3 +72,6 @@ class OrchestrationResponse(BaseModel):
     weekly_plan: list[WeeklyScheduleItem]
     evaluation_plan: EvaluationPlan
     trace: list[TraceLogItem]
+    # tells the client how many times the planner-critic loop ran
+    # 0 means the first plan was accepted straight away
+    critic_iterations: int = 0

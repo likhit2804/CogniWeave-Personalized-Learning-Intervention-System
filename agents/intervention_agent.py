@@ -21,13 +21,26 @@ class InterventionAgentNode:
             if misconception and item["misconception_id"] == misconception["id"]:
                 matches.append(item)
 
-        selected = matches[0] if matches else {
-            "concept": concept,
-            "error_tag": error_tag,
-            "strategy": "Targeted review",
-            "activities": ["Review the concept with one worked example and one independent problem."],
-            "why": "Fallback strategy when no exact intervention rule exists.",
-        }
+        if matches:
+            raw = matches[0]
+            # the KB rule uses concept_id but the response schema expects concept
+            # also no why field in the KB so we build one from the rule id
+            selected = {
+                "concept": raw["concept_id"],
+                "error_tag": error_tag,
+                "strategy": raw["strategy"],
+                "activities": raw.get("activities", []),
+                "why": f"matched intervention rule '{raw['id']}' for the identified misconception",
+            }
+        else:
+            # no matching rule found, fall back to a generic review strategy
+            selected = {
+                "concept": concept,
+                "error_tag": error_tag,
+                "strategy": "Targeted review",
+                "activities": ["Review the concept with one worked example and one independent problem."],
+                "why": "no exact rule matched in the knowledge base for this concept and error tag",
+            }
 
         # 3. Return the key updates to the GraphState
         return {
