@@ -1,14 +1,16 @@
-from agents.base_agent import BaseAgent
-from agents.shared_memory import SharedMemory
+from agents.state import GraphState
 
 
-class EvaluationAgent(BaseAgent):
-    name = "evaluation-agent"
+class EvaluationAgentNode:
+    """LangGraph node that defines evaluation criteria."""
 
-    def run(self, memory: SharedMemory, knowledge_base) -> None:
-        concept = memory.diagnosis.get("weakest_concept")
+    def __call__(self, state: GraphState) -> dict:
+        # 1. Retrieve data from State
+        diagnosis = state["diagnosis"]
+        concept = diagnosis.get("weakest_concept")
 
-        memory.evaluation_plan = {
+        # 2. Build evaluation plan
+        evaluation_plan = {
             "concept": concept,
             "success_signals": [
                 "fewer repeated mistakes on similar problems",
@@ -19,7 +21,9 @@ class EvaluationAgent(BaseAgent):
             "recheck_after": "next focused practice block or mini-checkpoint",
             "replan_trigger": "if the same error pattern appears again after the intervention",
         }
-        memory.add_trace(
-            self.name,
-            "Defined multi-signal evaluation criteria and replanning trigger.",
-        )
+
+        # 3. Return the key updates to the GraphState
+        return {
+            "evaluation_plan": evaluation_plan,
+            "trace": state["trace"] + [{"agent": "evaluation-agent", "message": "Defined multi-signal evaluation criteria and replanning trigger."}],
+        }

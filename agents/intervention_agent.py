@@ -1,14 +1,25 @@
-from agents.base_agent import BaseAgent
-from agents.shared_memory import SharedMemory
+from agents.state import GraphState
 
 
-class InterventionAgent(BaseAgent):
-    name = "intervention-agent"
+class InterventionAgentNode:
+    """LangGraph node that selects the best intervention strategy."""
 
-    def run(self, memory: SharedMemory, knowledge_base) -> None:
-        concept = memory.diagnosis.get("weakest_concept")
-        error_tag = memory.diagnosis.get("top_error_tag")
-        matches = knowledge_base.find_interventions(concept, error_tag)
+    def __call__(self, state: GraphState) -> dict:
+        # 1. Retrieve data from State
+        diagnosis = state["diagnosis"]
+        kb = state["knowledge_base"]
+
+        concept = diagnosis.get("weakest_concept")
+        error_tag = diagnosis.get("top_error_tag")
+        misconception = diagnosis.get("misconception")
+
+        # 2. Find matching interventions from knowledge base
+        matches = []
+        for item in kb.get("interventions", {}).get("rules", []):
+            if item["concept_id"] != concept:
+                continue
+            if misconception and item["misconception_id"] == misconception["id"]:
+                matches.append(item)
 
         selected = matches[0] if matches else {
             "concept": concept,
@@ -18,8 +29,8 @@ class InterventionAgent(BaseAgent):
             "why": "Fallback strategy when no exact intervention rule exists.",
         }
 
-        memory.selected_intervention = selected
-        memory.add_trace(
-            self.name,
-            f"Selected intervention strategy '{selected['strategy']}'.",
-        )
+        # 3. Return the key updates to the GraphState
+        return {
+            "selected_intervention": selected,
+            "trace": state["trace"] + [{"agent": "intervention-agent", "message": f"Selected intervention strategy '{selected.get('strategy', 'N/A')}'."}],
+        }
