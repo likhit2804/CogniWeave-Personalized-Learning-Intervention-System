@@ -1,0 +1,13 @@
+{
+  "topic_id": "python_oop",
+  "items": [
+    {
+      "id": "instance_vs_class_var",
+      "concept_id": "classes",
+      "label": "Confusing instance variables with class variables",
+      "error_tags": [
+        "variable_scope_error"
+      ]
+    }
+  ]
+}

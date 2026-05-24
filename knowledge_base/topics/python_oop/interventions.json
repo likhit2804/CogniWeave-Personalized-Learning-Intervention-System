@@ -1,0 +1,14 @@
+{
+  "topic_id": "python_oop",
+  "rules": [
+    {
+      "id": "fix_var_scope",
+      "concept_id": "classes",
+      "misconception_id": "instance_vs_class_var",
+      "strategy": "Visualizing memory models",
+      "activities": [
+        "Draw the class namespace vs instance namespace"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "topic_id": "python_oop",
+  "concepts": [
+    {
+      "id": "classes",
+      "label": "Classes and Objects",
+      "description": "Defining custom data types with state and behavior."
+    },
+    {
+      "id": "inheritance",
+      "label": "Inheritance",
+      "description": "Deriving new classes from existing ones."
+    },
+    {
+      "id": "polymorphism",
+      "label": "Polymorphism",
+      "description": "Treating different types uniformly."
+    }
+  ]
+}

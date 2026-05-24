@@ -1,0 +1,15 @@
+{
+  "topic_id": "biology_cell_biology",
+  "concepts": [
+    {
+      "id": "mitochondria",
+      "label": "Mitochondria",
+      "description": "Organelles that generate ATP."
+    },
+    {
+      "id": "nucleus",
+      "label": "Nucleus",
+      "description": "Organelle that contains genetic material."
+    }
+  ]
+}

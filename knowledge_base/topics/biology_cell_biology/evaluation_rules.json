@@ -1,0 +1,8 @@
+{
+  "mitochondria": [
+    {
+      "rule": "Identify at least two distinct functions of mitochondria",
+      "threshold": 0.8
+    }
+  ]
+}

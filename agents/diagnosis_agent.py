@@ -1,46 +1,56 @@
-from collections import Counter
+import json
+from langchain_core.messages import SystemMessage, HumanMessage
 
 from agents.state import GraphState
+from agents.llm import llm
+from agents.schemas import DiagnosisOutput
+from agents.prompts import DIAGNOSER_PROMPT
 
 
 class DiagnosisAgentNode:
-    """LangGraph node that diagnoses the student's weakest concept."""
+    """LangGraph node that diagnoses the student's weakest concept using an LLM."""
 
     def __call__(self, state: GraphState) -> dict:
         # 1. Retrieve data from State
         attempts = state["attempts"]
         kb = state["knowledge_base"]
+        profile = state["profile"]
 
-        # 2. Deterministic diagnosis logic (can be replaced with LLM call later)
-        incorrect_attempts = [a for a in attempts if not a["correct"]]
-        concept_counts = Counter(a["concept"] for a in incorrect_attempts)
-        error_counts = Counter(
-            error_tag
-            for a in incorrect_attempts
-            for error_tag in a.get("error_tags", [])
-        )
+        # 2. Prompt the LLM
+        structured_llm = llm.with_structured_output(DiagnosisOutput)
+        
+        system_msg = SystemMessage(content=DIAGNOSER_PROMPT)
+        
+        context = {
+            "profile": profile,
+            "attempts": attempts,
+            "misconceptions_catalogue": kb.get("misconceptions", {}).get("items", [])
+        }
+        human_msg = HumanMessage(content=f"Context:\n{json.dumps(context, indent=2)}")
+        
+        # not totally sure this is the right way to build the context string
+        # but it works for now
+        result = structured_llm.invoke([system_msg, human_msg])
 
-        top_concept = concept_counts.most_common(1)[0][0] if concept_counts else "unknown"
-        top_error = error_counts.most_common(1)[0][0] if error_counts else None
-
-        # Find misconception from knowledge base
+        # 3. Find misconception from knowledge base based on the LLM label
         misconception = None
-        for item in kb.get("misconceptions", {}).get("items", []):
-            if item["concept_id"] == top_concept and top_error in item.get("error_tags", []):
-                misconception = item
-                break
+        if result.misconception_label:
+            for item in kb.get("misconceptions", {}).get("items", []):
+                if item.get("id") == result.misconception_label or item.get("label") == result.misconception_label:
+                    misconception = item
+                    break
 
-        # 3. Return the key updates to the GraphState
+        # 4. Return the key updates to the GraphState
         return {
             "diagnosis": {
-                "weakest_concept": top_concept,
-                "top_error_tag": top_error,
+                "weakest_concept": result.weakest_concept,
+                "top_error_tag": result.top_error_tag,
                 "misconception": misconception,
                 "evidence": {
-                    "incorrect_attempts": len(incorrect_attempts),
-                    "concept_frequency": dict(concept_counts),
-                    "error_frequency": dict(error_counts),
+                    "confidence": result.confidence,
+                    "reasoning": result.reasoning,
+                    "evidence_summary": result.evidence_summary,
                 },
             },
-            "trace": state["trace"] + [{"agent": "diagnosis-agent", "message": f"Detected weakest concept '{top_concept}' with top error '{top_error}'."}],
+            "trace": state["trace"] + [{"agent": "diagnosis-agent", "message": f"Detected weakest concept '{result.weakest_concept}' (confidence: {result.confidence})."}],
         }

@@ -1,8 +1,14 @@
+import json
+from langchain_core.messages import SystemMessage, HumanMessage
+
 from agents.state import GraphState
+from agents.llm import llm
+from agents.schemas import PlannerOutput
+from agents.prompts import PLANNER_PROMPT
 
 
 class PlanningAgentNode:
-    """LangGraph node that builds a weekly study plan."""
+    """LangGraph node that builds a weekly study plan using an LLM."""
 
     def __call__(self, state: GraphState) -> dict:
         # 1. Retrieve data from State
@@ -10,24 +16,27 @@ class PlanningAgentNode:
         intervention = state["selected_intervention"]
         critic_feedback = state.get("critic_feedback")
 
-        hours = max(profile.get("available_hours_per_week", 6), 3)
-        activities = intervention.get("activities", [])
+        # 2. Prompt the LLM
+        structured_llm = llm.with_structured_output(PlannerOutput)
+        
+        system_msg = SystemMessage(content=PLANNER_PROMPT)
+        
+        context = {
+            "available_hours_per_week": profile.get("available_hours_per_week", 6),
+            "upcoming_deadlines": profile.get("upcoming_deadlines", []),
+            "selected_intervention": intervention,
+            "critic_feedback": critic_feedback
+        }
+        human_msg = HumanMessage(content=f"Context:\n{json.dumps(context, indent=2)}")
+        
+        result = structured_llm.invoke([system_msg, human_msg])
 
-        # 2. Build weekly plan (expand if critic asked for more)
-        plan = [
-            {"day": "Day 1", "focus": activities[0] if activities else "Concept review", "minutes": 45},
-            {"day": "Day 2", "focus": activities[1] if len(activities) > 1 else "Guided practice", "minutes": 45},
-            {"day": "Day 4", "focus": "Independent problem solving", "minutes": 60},
-            {"day": "Day 6", "focus": "Checkpoint attempt and reflection", "minutes": min(hours * 10, 60)},
-        ]
+        # 3. Format the result for the state
+        # the schema uses TutoringBlock, but our app state uses dicts
+        plan = [block.model_dump() for block in result.weekly_plan]
 
-        # If critic asked for more focus blocks, add extra days
-        if critic_feedback:
-            plan.append({"day": "Day 3", "focus": "Spaced review of weak areas", "minutes": 30})
-            plan.append({"day": "Day 5", "focus": "Mixed practice with related concepts", "minutes": 40})
-
-        # 3. Return the key updates to the GraphState
+        # 4. Return the key updates to the GraphState
         return {
             "weekly_plan": plan,
-            "trace": state["trace"] + [{"agent": "planning-agent", "message": "Built a weekly plan around the selected intervention."}],
+            "trace": state["trace"] + [{"agent": "planning-agent", "message": f"Built a {len(plan)}-session weekly plan."}],
         }

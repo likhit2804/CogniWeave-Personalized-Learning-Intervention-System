@@ -22,19 +22,47 @@ planning_node = PlanningAgentNode()
 evaluation_node = EvaluationAgentNode()
 
 
+import json
+from langchain_core.messages import SystemMessage, HumanMessage
+from agents.llm import llm
+from agents.schemas import CriticOutput
+from agents.prompts import CRITIC_PROMPT
+
 def critic_node(state: GraphState) -> dict:
-    """A custom critic node to review the planning node outputs before completing."""
+    """A custom critic node to review the planning node outputs using an LLM."""
     plan = state["weekly_plan"]
+    intervention = state["selected_intervention"]
+    profile = state["profile"]
     iterations = state.get("iteration_count", 0)
 
-    if len(plan) < 3 and iterations < 2:
-        return {
-            "critic_feedback": "Plan is too sparse. Add more focus blocks.",
-            "iteration_count": iterations + 1,
-        }
-    return {
-        "critic_feedback": None,
+    # Don't loop forever - force approve if we hit 2 replans
+    if iterations >= 2:
+        return {"critic_feedback": None}
+
+    structured_llm = llm.with_structured_output(CriticOutput)
+    system_msg = SystemMessage(content=CRITIC_PROMPT)
+    
+    context = {
+        "weekly_plan": plan,
+        "intervention_strategy": intervention,
+        "available_hours_per_week": profile.get("available_hours_per_week", 6)
     }
+    human_msg = HumanMessage(content=f"Context:\n{json.dumps(context, indent=2)}")
+    
+    result = structured_llm.invoke([system_msg, human_msg])
+
+    if result.approved:
+        return {
+            "critic_feedback": None,
+            "trace": state["trace"] + [{"agent": "critic-agent", "message": "Plan approved."}],
+        }
+    else:
+        feedback = f"{result.feedback} Suggestions: {', '.join(result.suggestions)}"
+        return {
+            "critic_feedback": feedback,
+            "iteration_count": iterations + 1,
+            "trace": state["trace"] + [{"agent": "critic-agent", "message": f"Plan rejected: {result.feedback}"}],
+        }
 
 
 def route_triage(state: GraphState) -> str:
@@ -105,6 +133,7 @@ def _map_to_response(final_state: dict) -> OrchestrationResponse:
         weekly_plan=weekly_plan,
         evaluation_plan=evaluation_plan,
         trace=trace,
+        critic_iterations=final_state.get("critic_iterations", 0),
     )
 
 
@@ -140,6 +169,7 @@ class OrchestratorService:
         final_state = app_graph.invoke(initial_state)
 
         # 3. Map to validated response model
+        final_state["critic_iterations"] = final_state.get("iteration_count", 0)
         response = _map_to_response(final_state)
 
         # 4. Persist to database (best-effort, don't break the pipeline)
@@ -189,4 +219,3 @@ class OrchestratorService:
             logging.getLogger(__name__).warning(
                 "Failed to persist orchestration results to database.", exc_info=True,
             )
-

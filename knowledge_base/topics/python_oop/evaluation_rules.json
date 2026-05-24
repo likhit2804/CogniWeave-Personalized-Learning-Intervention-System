@@ -1,0 +1,8 @@
+{
+  "classes": [
+    {
+      "rule": "Must correctly assign to self.var in __init__",
+      "threshold": 0.8
+    }
+  ]
+}
