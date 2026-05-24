@@ -22,7 +22,7 @@ The repository currently includes:
 - `agents/`: specialist agents and shared memory
 - `backend/`: API routes, schemas, and orchestration
 - `knowledge_base/topics/`: topic-specific grounded data
-- `docs/`: architecture notes, topic selection, and storage format
+- `docs/`: architecture notes, topic selection, storage format, and the step guide to building new knowledge bases
 - `sample_data/`: example student input for local testing
 
 ## Quick Start

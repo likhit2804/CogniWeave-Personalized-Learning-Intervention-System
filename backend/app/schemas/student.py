@@ -32,11 +32,13 @@ class StudentSnapshot(BaseModel):
     prior_interventions: list[str] = Field(default_factory=list)
 
 
+# --------------- Response Models ---------------
+
 class DiagnosisResult(BaseModel):
     weakest_concept: str
     top_error_tag: str | None = None
     misconception: dict[str, Any] | None = None
-    evidence: dict[str, Any]
+    evidence: dict[str, Any] = Field(default_factory=dict)
 
 
 class InterventionResult(BaseModel):
@@ -44,7 +46,9 @@ class InterventionResult(BaseModel):
     error_tag: str | None = None
     strategy: str
     activities: list[str] = Field(default_factory=list)
-    why: str
+    why: str = ""
+
+    model_config = {"extra": "ignore"}
 
 
 class WeeklyScheduleItem(BaseModel):
@@ -55,9 +59,9 @@ class WeeklyScheduleItem(BaseModel):
 
 class EvaluationPlan(BaseModel):
     concept: str
-    success_signals: list[str]
-    recheck_after: str
-    replan_trigger: str
+    success_signals: list[str] = Field(default_factory=list)
+    recheck_after: str = ""
+    replan_trigger: str = ""
 
 
 class TraceLogItem(BaseModel):

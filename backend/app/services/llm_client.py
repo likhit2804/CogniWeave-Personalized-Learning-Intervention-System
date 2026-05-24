@@ -1,12 +1,12 @@
-from langchain_openai import ChatOpenAI
+from langchain_google_genai import ChatGoogleGenerativeAI
 from backend.app.config import settings
 
 
-def get_llm():
-    """Returns a ChatOpenAI client with automated retry policies."""
-    return ChatOpenAI(
-        model="gpt-4o-mini",
-        temperature=0.2,
-        openai_api_key=settings.openai_api_key,
-        max_retries=3
+def get_llm(temperature: float = 0.2):
+    """Returns a Gemini chat model via LangChain with retry policies."""
+    return ChatGoogleGenerativeAI(
+        model=settings.llm_model,
+        temperature=temperature,
+        google_api_key=settings.gemini_api_key,
+        max_retries=3,
     )

@@ -4,7 +4,15 @@ from agents.diagnosis_agent import DiagnosisAgentNode
 from agents.intervention_agent import InterventionAgentNode
 from agents.planning_agent import PlanningAgentNode
 from agents.evaluation_agent import EvaluationAgentNode
-from backend.app.schemas.student import StudentSnapshot
+from backend.app.schemas.student import (
+    StudentSnapshot,
+    OrchestrationResponse,
+    DiagnosisResult,
+    InterventionResult,
+    WeeklyScheduleItem,
+    EvaluationPlan,
+    TraceLogItem,
+)
 from backend.app.services.knowledge_base import KnowledgeBase
 
 # 1. Instantiate Graph nodes
@@ -66,10 +74,44 @@ workflow.add_conditional_edges(
 app_graph = workflow.compile()
 
 
+def _map_to_response(final_state: dict) -> OrchestrationResponse:
+    """Map raw GraphState dict to the validated OrchestrationResponse."""
+    # Diagnosis maps cleanly
+    diagnosis = DiagnosisResult(**final_state["diagnosis"])
+
+    # Intervention needs key remapping: KB uses concept_id, schema uses concept
+    raw_intervention = final_state["selected_intervention"]
+    intervention = InterventionResult(
+        concept=raw_intervention.get("concept") or raw_intervention.get("concept_id", "unknown"),
+        error_tag=raw_intervention.get("error_tag") or raw_intervention.get("misconception_id"),
+        strategy=raw_intervention.get("strategy", "Targeted review"),
+        activities=raw_intervention.get("activities", []),
+        why=raw_intervention.get("why", f"Matched misconception '{raw_intervention.get('misconception_id', 'N/A')}'"),
+    )
+
+    # Weekly plan
+    weekly_plan = [WeeklyScheduleItem(**item) for item in final_state["weekly_plan"]]
+
+    # Evaluation plan
+    evaluation_plan = EvaluationPlan(**final_state["evaluation_plan"])
+
+    # Trace
+    trace = [TraceLogItem(**item) for item in final_state["trace"]]
+
+    return OrchestrationResponse(
+        profile=final_state["profile"],
+        diagnosis=diagnosis,
+        selected_intervention=intervention,
+        weekly_plan=weekly_plan,
+        evaluation_plan=evaluation_plan,
+        trace=trace,
+    )
+
+
 class OrchestratorService:
     """Coordinates the LangGraph agent pipeline for a single student snapshot."""
 
-    def run(self, snapshot: StudentSnapshot) -> dict:
+    def run(self, snapshot: StudentSnapshot) -> OrchestrationResponse:
         knowledge_base = KnowledgeBase(topic_id=snapshot.profile.subject)
 
         # 1. Create Initial State
@@ -96,4 +138,55 @@ class OrchestratorService:
 
         # 2. Run LangGraph Engine
         final_state = app_graph.invoke(initial_state)
-        return final_state
+
+        # 3. Map to validated response model
+        response = _map_to_response(final_state)
+
+        # 4. Persist to database (best-effort, don't break the pipeline)
+        self._persist(snapshot, response)
+
+        return response
+
+    @staticmethod
+    def _persist(snapshot: StudentSnapshot, response: OrchestrationResponse) -> None:
+        """Best-effort persistence of orchestration results to SQLite."""
+        try:
+            from backend.app.services.database import (
+                upsert_student,
+                record_attempt,
+                record_intervention,
+            )
+
+            # Save student profile
+            upsert_student(
+                student_id=snapshot.profile.student_id,
+                subject=snapshot.profile.subject,
+                available_hours=snapshot.profile.available_hours_per_week,
+            )
+
+            # Save each attempt
+            for attempt in snapshot.attempts:
+                record_attempt(
+                    student_id=snapshot.profile.student_id,
+                    problem_id=attempt.problem_id,
+                    concept=attempt.concept,
+                    correct=attempt.correct,
+                    error_tags=attempt.error_tags,
+                    time_seconds=attempt.time_seconds,
+                    hints_used=attempt.hints_used,
+                    retries=attempt.retries,
+                )
+
+            # Save the intervention
+            record_intervention(
+                student_id=snapshot.profile.student_id,
+                concept=response.selected_intervention.concept,
+                strategy=response.selected_intervention.strategy,
+            )
+
+        except Exception:
+            import logging
+            logging.getLogger(__name__).warning(
+                "Failed to persist orchestration results to database.", exc_info=True,
+            )
+

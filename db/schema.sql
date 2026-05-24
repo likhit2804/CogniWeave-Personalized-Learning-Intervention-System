@@ -1,10 +1,10 @@
-CREATE TABLE student_profile (
+CREATE TABLE IF NOT EXISTS student_profile (
   student_id TEXT PRIMARY KEY,
   subject TEXT NOT NULL,
   available_hours_per_week INTEGER NOT NULL
 );
 
-CREATE TABLE concept_mastery (
+CREATE TABLE IF NOT EXISTS concept_mastery (
   student_id TEXT NOT NULL,
   concept TEXT NOT NULL,
   confidence_score REAL NOT NULL,
@@ -12,7 +12,7 @@ CREATE TABLE concept_mastery (
   PRIMARY KEY (student_id, concept)
 );
 
-CREATE TABLE attempts (
+CREATE TABLE IF NOT EXISTS attempts (
   attempt_id INTEGER PRIMARY KEY AUTOINCREMENT,
   student_id TEXT NOT NULL,
   problem_id TEXT NOT NULL,
@@ -24,7 +24,7 @@ CREATE TABLE attempts (
   retries INTEGER
 );
 
-CREATE TABLE intervention_history (
+CREATE TABLE IF NOT EXISTS intervention_history (
   intervention_id INTEGER PRIMARY KEY AUTOINCREMENT,
   student_id TEXT NOT NULL,
   concept TEXT NOT NULL,
