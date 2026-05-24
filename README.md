@@ -12,15 +12,15 @@ The backend pipeline stays generic, while topic-specific knowledge is stored in 
 
 The repository currently includes:
 
-- a small FastAPI backend
-- a shared-memory agent pipeline
+- a Node.js/Express backend
+- a plain-JS async loop agent pipeline
 - starter documentation for topic-pack design
 - a working sample flow using `sql_query_reasoning`
 
 ## Repository Highlights
 
-- `agents/`: specialist agents and shared memory
-- `backend/`: API routes, schemas, and orchestration
+- `backend-node/src/agents/`: specialist agents and shared memory state
+- `backend-node/src/`: API routes, schemas, and orchestration
 - `knowledge_base/topics/`: topic-specific grounded data
 - `docs/`: architecture notes, topic selection, storage format, and the step guide to building new knowledge bases
 - `sample_data/`: example student input for local testing
@@ -28,10 +28,9 @@ The repository currently includes:
 ## Quick Start
 
 ```bash
-python -m venv venv
-venv\Scripts\activate
-pip install -r requirements.txt
-uvicorn backend.app.main:app --reload
+cd backend-node
+npm install
+npm run dev
 ```
 
 After the server starts, the health route is available at `http://localhost:8000/health`.

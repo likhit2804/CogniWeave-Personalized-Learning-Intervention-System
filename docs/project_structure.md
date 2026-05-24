@@ -9,32 +9,37 @@ CogniWeave is structured around a simple flow:
 ```text
 CogniWeave-Personalized-Learning-Intervention-System/
   .env.example
-  requirements.txt
   docs/
     project_structure.md
     architecture.md
     agent_flow.md
-  backend/
-    app/
-      main.py
-      config.py
-      api/
-        routes/
-          health.py
-          orchestrator.py
+  backend-node/
+    package.json
+    src/
+      server.js
+      config.js
+      routes/
+        health.js
+        orchestrator.js
+        ingest.js
       schemas/
-        student.py
+        student.js
       services/
-        knowledge_base.py
-        orchestrator_service.py
-  agents/
-    __init__.py
-    base_agent.py
-    shared_memory.py
-    diagnosis_agent.py
-    intervention_agent.py
-    planning_agent.py
-    evaluation_agent.py
+        knowledgeBase.js
+        orchestratorService.js
+        llmClient.js
+      agents/
+        prompts.js
+        agentSchemas.js
+        diagnosisAgent.js
+        interventionAgent.js
+        planningAgent.js
+        evaluationAgent.js
+        criticAgent.js
+      ingestion/
+        textbookParser.js
+        topicExtractor.js
+        packBuilder.js
   knowledge_base/
     topics/
       sql_query_reasoning/
@@ -49,17 +54,8 @@ CogniWeave-Personalized-Learning-Intervention-System/
   sample_data/
     student_profile.json
     attempts.json
-  evaluation/
-    signals.py
-    metrics.py
   db/
     schema.sql
-  tasks/
-    README.md
-  frontend/
-    README.md
-  tests/
-    test_orchestrator_flow.py
 ```
 
 ## Suggested Reading Order
@@ -68,13 +64,13 @@ For someone new to the project, this order gives the clearest picture of how the
 
 1. `sample_data/`
 2. `knowledge_base/`
-3. `agents/shared_memory.py`
-4. `agents/diagnosis_agent.py`
-5. `agents/intervention_agent.py`
-6. `agents/planning_agent.py`
-7. `agents/evaluation_agent.py`
-8. `backend/app/services/orchestrator_service.py`
-9. `backend/app/api/routes/orchestrator.py`
+3. `backend-node/src/schemas/student.js`
+4. `backend-node/src/agents/diagnosisAgent.js`
+5. `backend-node/src/agents/interventionAgent.js`
+6. `backend-node/src/agents/planningAgent.js`
+7. `backend-node/src/agents/evaluationAgent.js`
+8. `backend-node/src/services/orchestratorService.js`
+9. `backend-node/src/routes/orchestrator.js`
 
 That sequence covers the full request flow from input data to final recommendation.
 
@@ -94,34 +90,27 @@ Holds the grounded topic packs:
 
 Each pack carries its own concept graph, misconception library, intervention rules, problem metadata, and evaluation rules.
 
-### `agents/`
+### `backend-node/src/agents/`
 
 Contains the specialist agents. Each one handles a single stage in the pipeline:
 
-- `diagnosis_agent.py`: find the learning bottleneck
-- `intervention_agent.py`: choose the next best intervention
-- `planning_agent.py`: fit that intervention into a real schedule
-- `evaluation_agent.py`: define how success will be measured and when to replan
+- `diagnosisAgent.js`: find the learning bottleneck
+- `interventionAgent.js`: choose the next best intervention
+- `planningAgent.js`: fit that intervention into a real schedule
+- `evaluationAgent.js`: define how success will be measured and when to replan
+- `criticAgent.js`: review the generated plan
 
-### `agents/shared_memory.py`
-
-Defines the shared state passed through the agent pipeline. Each agent reads from it, updates it, and leaves a trace entry behind.
-
-### `backend/app/services/orchestrator_service.py`
+### `backend-node/src/services/orchestratorService.js`
 
 Coordinates the agent sequence for a single request:
 
-1. build shared memory
-2. run the agents in order
+1. build the state object
+2. run the agents in an async loop
 3. return the final result
 
-### `backend/app/api/routes/orchestrator.py`
+### `backend-node/src/routes/orchestrator.js`
 
 API entry point for the orchestration flow. The frontend or a local test script sends student data here.
-
-### `evaluation/`
-
-Keeps evaluation logic separate from diagnosis and planning so it can be extended without changing the whole pipeline.
 
 ### `db/schema.sql`
 
@@ -131,15 +120,3 @@ Starter schema for the main persistent entities:
 - concept mastery
 - attempts
 - intervention history
-
-### `tasks/`
-
-Reserved for background jobs later on. Likely candidates:
-
-- recompute mastery every night
-- detect weak concepts after new attempts
-- trigger replanning after a bad assessment
-
-### `frontend/`
-
-Reserved for the demo client. The backend, knowledge base, and agent pipeline remain the main focus of the project.

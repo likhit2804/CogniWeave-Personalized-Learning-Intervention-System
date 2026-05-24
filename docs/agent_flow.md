@@ -10,9 +10,9 @@ The API receives:
 - attempt history
 - prior interventions
 
-### Step 2: Shared memory is created
+### Step 2: State object is created
 
-A `SharedMemory` instance is created for the request. It carries the current student state, the agent outputs, and the trace log.
+A `state` object is created for the request. It carries the current student state, the agent outputs, and the trace log through the pipeline.
 
 ### Step 3: Diagnosis Agent runs
 
@@ -36,6 +36,16 @@ It builds:
 
 - a short study schedule
 - a realistic set of actions
+
+### Step 5.5: Critic Agent runs (Loop)
+
+It reviews the plan and checks if:
+
+- there are enough sessions
+- the schedule is well distributed
+- the plan addresses the intervention
+
+If the plan fails the review, the flow loops back to the Planning Agent with feedback.
 
 ### Step 6: Evaluation Agent runs
 

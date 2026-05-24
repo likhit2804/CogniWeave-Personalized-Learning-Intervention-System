@@ -315,9 +315,9 @@ The backend should load one topic pack at a time based on `topic_id`.
 
 Example:
 
-```python
-topic_id = "sql_query_reasoning"
-base = Path("knowledge_base/topics") / topic_id
+```javascript
+const topicId = "sql_query_reasoning";
+const base = path.join("knowledge_base", "topics", topicId);
 ```
 
 Then load:

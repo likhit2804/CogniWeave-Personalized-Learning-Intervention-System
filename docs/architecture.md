@@ -9,8 +9,9 @@ CogniWeave is a grounded multi-agent learning support system. The pipeline is in
 3. create shared memory
 4. run specialist agents
 5. return a diagnosis, intervention plan, and evaluation plan
-
 The same pipeline is expected to work across different engineering topics. Only the topic pack should change.
+
+*Note: The core pipeline is implemented as a Node.js/Express backend using the `@google/generative-ai` SDK and an asynchronous JavaScript loop, allowing easy deployment and fast startup times.*
 
 ## The Four Agents
 

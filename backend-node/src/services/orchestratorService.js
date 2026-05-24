@@ -1,0 +1,123 @@
+import { KnowledgeBase } from "./knowledgeBase.js";
+import { diagnose } from "../agents/diagnosisAgent.js";
+import { intervene } from "../agents/interventionAgent.js";
+import { plan } from "../agents/planningAgent.js";
+import { evaluate } from "../agents/evaluationAgent.js";
+import { criticize } from "../agents/criticAgent.js";
+import { upsertStudent, recordAttempt, recordIntervention } from "./database.js";
+
+function _mapToResponse(finalState) {
+  const diagnosis = finalState.diagnosis;
+  const rawIntervention = finalState.selected_intervention;
+  
+  const intervention = {
+    concept: rawIntervention.concept || rawIntervention.concept_id || "unknown",
+    error_tag: rawIntervention.error_tag || rawIntervention.misconception_id || null,
+    strategy: rawIntervention.strategy || "Targeted review",
+    activities: rawIntervention.activities || [],
+    why: rawIntervention.why || `Matched misconception '${rawIntervention.misconception_id || "N/A"}'`,
+    estimated_sessions: rawIntervention.estimated_sessions || 2,
+  };
+
+  return {
+    profile: finalState.profile,
+    diagnosis,
+    selected_intervention: intervention,
+    weekly_plan: finalState.weekly_plan || [],
+    evaluation_plan: finalState.evaluation_plan || {},
+    trace: finalState.trace || [],
+    critic_iterations: finalState.iteration_count || 0,
+  };
+}
+
+export class OrchestratorService {
+  /**
+   * Coordinates the agent pipeline for a single student snapshot.
+   */
+  async run(snapshot) {
+    const kb = new KnowledgeBase(snapshot.profile.subject);
+
+    // 1. Create Initial State
+    let state = {
+      profile: snapshot.profile,
+      attempts: snapshot.attempts || [],
+      prior_interventions: snapshot.prior_interventions || [],
+      knowledge_base: {
+        manifest: kb.manifest,
+        concepts: kb.concepts,
+        misconceptions: kb.misconceptions,
+        interventions: kb.interventions,
+        problems: kb.problems,
+        evaluation_rules: kb.evaluationRules,
+      },
+      diagnosis: {},
+      selected_intervention: {},
+      weekly_plan: [],
+      evaluation_plan: {},
+      trace: [],
+      critic_feedback: null,
+      iteration_count: 0,
+    };
+
+    // 2. Run Engine (Replacing LangGraph with a standard loop)
+    state = await diagnose(state);
+    state = await intervene(state);
+
+    while (true) {
+      state = await plan(state);
+      state = await evaluate(state);
+      state = await criticize(state);
+      
+      if (state.critic_feedback === null) {
+        break; // Plan approved or iteration limit reached
+      }
+      // Replan branch: loops back to plan() since critic_feedback is set
+    }
+
+    // 3. Map to validated response model
+    const response = _mapToResponse(state);
+
+    // 4. Persist to database (best-effort)
+    this._persist(snapshot, response);
+
+    return response;
+  }
+
+  _persist(snapshot, response) {
+    try {
+      const { profile, attempts = [] } = snapshot;
+      
+      // Save student profile
+      upsertStudent(
+        profile.student_id,
+        profile.subject,
+        profile.available_hours_per_week || 6
+      );
+
+      // Save each attempt
+      for (const attempt of attempts) {
+        recordAttempt({
+          studentId: profile.student_id,
+          problemId: attempt.problem_id,
+          concept: attempt.concept,
+          correct: attempt.correct,
+          errorTags: attempt.error_tags,
+          timeSeconds: attempt.time_seconds,
+          hintsUsed: attempt.hints_used,
+          retries: attempt.retries,
+        });
+      }
+
+      // Save the intervention
+      if (response.selected_intervention) {
+        recordIntervention({
+          studentId: profile.student_id,
+          concept: response.selected_intervention.concept,
+          strategy: response.selected_intervention.strategy,
+        });
+      }
+    } catch (error) {
+      console.warn("Failed to persist orchestration results to database:", error);
+    }
+  }
+}
