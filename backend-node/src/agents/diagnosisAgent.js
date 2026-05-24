@@ -1,4 +1,4 @@
-import { agentLlm, invokeStructured } from "../services/llmClient.js";
+import { invokeAgentStructured } from "../services/llmClient.js";
 import { DIAGNOSER_PROMPT } from "./prompts.js";
 import { DiagnosisOutputSchema } from "./agentSchemas.js";
 
@@ -15,23 +15,13 @@ export async function diagnose(state) {
     misconceptions_catalogue: kb.misconceptions?.items || [],
   };
 
-  // Configure LLM to return data according to our schema
-  const model = agentLlm;
-  // Gemini SDK allows setting responseSchema on the generationConfig
-  // but for simplicity and safety across versions, we just ensure the prompt specifies JSON
-  // We'll update the config specifically for this call
-  const configuredModel = {
-    ...model,
-    generationConfig: {
-      ...model.generationConfig,
-      responseSchema: DiagnosisOutputSchema,
-    },
-    generateContent: model.generateContent.bind(model),
-  };
-
   const userContent = `Context:\n${JSON.stringify(context, null, 2)}`;
-  
-  const result = await invokeStructured(configuredModel, DIAGNOSER_PROMPT, userContent);
+
+  const result = await invokeAgentStructured({
+    systemPrompt: DIAGNOSER_PROMPT,
+    userContent,
+    responseSchema: DiagnosisOutputSchema,
+  });
 
   // Find misconception from KB based on LLM label
   let misconception = null;

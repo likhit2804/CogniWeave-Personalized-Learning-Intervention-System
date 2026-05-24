@@ -20,16 +20,54 @@ function uniqueModels(primaryModel, fallbackModels = settings.llmFallbackModels)
   );
 }
 
+function getErrorMessage(error) {
+  return String(error?.message || "").toLowerCase();
+}
+
+function isTransientGeminiError(error) {
+  const message = getErrorMessage(error);
+  return (
+    error?.status === 429 ||
+    error?.status === 503 ||
+    message.includes("fetch failed") ||
+    message.includes("service unavailable") ||
+    message.includes("temporarily unavailable")
+  );
+}
+
+function isUnsupportedModelError(error) {
+  const message = getErrorMessage(error);
+  return (
+    error?.status === 404 ||
+    message.includes("model not found") ||
+    message.includes("unsupported model") ||
+    (message.includes("models/") && message.includes("not found"))
+  );
+}
+
+function shouldTryFallbackModel(error) {
+  return isTransientGeminiError(error) || isUnsupportedModelError(error);
+}
+
 /**
  * Returns a GenerativeModel configured with the given temperature.
  */
-export function getLlm(temperature = 0.2, modelName = settings.llmModel) {
+export function getLlm(
+  temperature = 0.2,
+  modelName = settings.llmModel,
+  responseSchema = null
+) {
+  const generationConfig = {
+    temperature,
+    responseMimeType: "application/json",
+  };
+  if (responseSchema) {
+    generationConfig.responseSchema = responseSchema;
+  }
+
   return genAI.getGenerativeModel({
     model: modelName,
-    generationConfig: {
-      temperature,
-      responseMimeType: "application/json",
-    },
+    generationConfig,
   });
 }
 
@@ -52,6 +90,8 @@ export function normalizeLlmError(error, modelName = settings.llmModel) {
   const retrySeconds = retryDelay ? parseInt(retryDelay.replace(/s$/, ""), 10) : null;
   const isQuotaError = error?.status === 429;
   const isDemandSpike = error?.status === 503;
+  const isTransientFailure = isTransientGeminiError(error);
+  const isMissingModel = isUnsupportedModelError(error);
   const attemptedModels = Array.isArray(error?.attemptedModels) && error.attemptedModels.length
     ? error.attemptedModels
     : [error?.model || modelName].filter(Boolean);
@@ -79,6 +119,25 @@ export function normalizeLlmError(error, modelName = settings.llmModel) {
     };
   }
 
+  if (isMissingModel) {
+    return {
+      status: 503,
+      detail: `The configured Gemini model ${error?.model || modelName} is unavailable here. Try one of the fallback models instead.${attemptedSummary}`,
+      model: error?.model || modelName,
+      attempted_models: attemptedModels,
+    };
+  }
+
+  if (isTransientFailure) {
+    return {
+      status: 503,
+      detail: `Could not reach Gemini successfully for ${error?.model || modelName}. Please retry in a moment.${attemptedSummary}`,
+      model: error?.model || modelName,
+      attempted_models: attemptedModels,
+      retry_after_seconds: Number.isFinite(retrySeconds) ? retrySeconds : null,
+    };
+  }
+
   return {
     status: error?.status || 500,
     detail: error?.message || "LLM request failed.",
@@ -94,6 +153,7 @@ export async function invokeStructuredWithFallback({
   primaryModel = settings.llmModel,
   fallbackModels = settings.llmFallbackModels,
   max503Retries = settings.llm503Retries,
+  responseSchema = null,
 }) {
   const modelsToTry = uniqueModels(primaryModel, fallbackModels);
   const attemptedModels = [];
@@ -103,7 +163,7 @@ export async function invokeStructuredWithFallback({
     for (let attempt = 1; attempt <= max503Retries + 1; attempt += 1) {
       try {
         attemptedModels.push(modelName);
-        const model = getLlm(temperature, modelName);
+        const model = getLlm(temperature, modelName, responseSchema);
         return await invokeStructured(model, systemPrompt, userContent);
       } catch (error) {
         lastError = error;
@@ -113,25 +173,49 @@ export async function invokeStructuredWithFallback({
           continue;
         }
 
-        if (error?.status === 429 || error?.status === 503) {
+        if (shouldTryFallbackModel(error)) {
           break;
         }
 
-        throw {
-          ...error,
-          model: modelName,
-          attemptedModels: uniqueModels(modelName, attemptedModels),
-        };
+        throw normalizeLlmError(
+          {
+            ...error,
+            model: modelName,
+            attemptedModels: uniqueModels(primaryModel, attemptedModels),
+          },
+          modelName
+        );
       }
     }
   }
 
-  throw {
-    ...(lastError || new Error("LLM request failed.")),
-    status: lastError?.status || 503,
-    model: lastError?.model || modelsToTry[modelsToTry.length - 1] || primaryModel,
-    attemptedModels: uniqueModels(primaryModel, attemptedModels),
-  };
+  throw normalizeLlmError(
+    {
+      ...(lastError || new Error("LLM request failed.")),
+      status: lastError?.status || 503,
+      model: lastError?.model || modelsToTry[modelsToTry.length - 1] || primaryModel,
+      attemptedModels: uniqueModels(primaryModel, attemptedModels),
+    },
+    primaryModel
+  );
+}
+
+export async function invokeAgentStructured({
+  systemPrompt,
+  userContent,
+  responseSchema,
+  fallbackModels = settings.llmFallbackModels,
+  max503Retries = settings.llm503Retries,
+}) {
+  return invokeStructuredWithFallback({
+    systemPrompt,
+    userContent,
+    responseSchema,
+    temperature: 0,
+    primaryModel: settings.agentModel,
+    fallbackModels,
+    max503Retries,
+  });
 }
 
 /**

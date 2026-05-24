@@ -26,7 +26,7 @@ const settings = {
   // while Gemini 2.5 Flash Lite still has available request capacity.
   llmModel: process.env.LLM_MODEL || "gemini-2.5-flash-lite",
   agentModel: process.env.AGENT_MODEL || process.env.LLM_MODEL || "gemini-2.5-flash-lite",
-  llmFallbackModels: (process.env.LLM_FALLBACK_MODELS || "gemini-2.5-flash,gemini-2.5-flash-lite")
+  llmFallbackModels: (process.env.LLM_FALLBACK_MODELS || "gemini-2.5-flash-lite,gemini-2.5-flash")
     .split(",")
     .map((item) => item.trim())
     .filter(Boolean),

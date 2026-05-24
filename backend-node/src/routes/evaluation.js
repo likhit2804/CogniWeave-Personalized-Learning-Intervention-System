@@ -3,6 +3,18 @@ import { KnowledgeBase } from "../services/knowledgeBase.js";
 
 const router = Router();
 
+function publicProblem(problem) {
+  return {
+    id: problem.id,
+    title: problem.title,
+    concept_ids: problem.concept_ids || [],
+    difficulty: problem.difficulty,
+    question_text: problem.question_text,
+    options: problem.options || {},
+    expected_error_tags: problem.expected_error_tags || [],
+  };
+}
+
 router.get("/evaluation/problems/:topicId/:conceptId", (req, res, next) => {
   try {
     const { topicId, conceptId } = req.params;
@@ -23,7 +35,7 @@ router.get("/evaluation/problems/:topicId/:conceptId", (req, res, next) => {
     }
 
     const selectedProblem = matchingProblems[Math.floor(Math.random() * matchingProblems.length)];
-    res.json(selectedProblem);
+    res.json(publicProblem(selectedProblem));
   } catch (err) {
     next(err);
   }
@@ -55,13 +67,13 @@ router.post("/evaluation/evaluate", (req, res, next) => {
       res.json({
         mastery_achieved: true,
         replan_required: false,
-        feedback: "Correct! You have mastered this concept.",
+        feedback: "Correct. This checkpoint suggests the learner is moving in the right direction.",
       });
     } else {
       res.json({
         mastery_achieved: false,
         replan_required: true,
-        feedback: `Incorrect. The correct answer was ${problem.correct_option}.`,
+        feedback: "Not quite. This miss will be used to adjust the next plan rather than relying on manual form input.",
       });
     }
   } catch (err) {

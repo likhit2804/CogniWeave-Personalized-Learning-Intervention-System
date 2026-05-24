@@ -794,7 +794,7 @@
                 <div class="section-head">
                     <div>
                         <h2>Student Journey</h2>
-                        <p>A guided flow for intervention planning. Set up the learner, log attempts, generate a plan, and only then reveal checkpoint tools.</p>
+                        <p>A learner-first flow: pick a topic, answer a short baseline check, then build a plan from real evidence instead of filling attempts by hand.</p>
                     </div>
                 </div>
 
@@ -806,21 +806,21 @@
                                 <div class="step-index">1</div>
                                 <div class="step-copy">
                                     <strong>Setup learner</strong>
-                                    <p>Choose topic, goals, and workload.</p>
+                                    <p>Choose topic, goals, and weekly load.</p>
                                 </div>
                             </div>
-                            <div class="step-item pending" data-step="attempts" data-target="studentAttemptsSection">
+                            <div class="step-item pending" data-step="assessment" data-target="studentAssessmentSection">
                                 <div class="step-index">2</div>
                                 <div class="step-copy">
-                                    <strong>Add attempts</strong>
-                                    <p>Capture recent failures or successes.</p>
+                                    <strong>Take quick check</strong>
+                                    <p>Answer a few baseline questions first.</p>
                                 </div>
                             </div>
                             <div class="step-item pending" data-step="generate" data-target="studentGenerateSection">
                                 <div class="step-index">3</div>
                                 <div class="step-copy">
                                     <strong>Generate plan</strong>
-                                    <p>Send a valid student snapshot.</p>
+                                    <p>Build the intervention from assessment evidence.</p>
                                 </div>
                             </div>
                             <div class="step-item pending" data-step="review" data-target="studentResultsSection">
@@ -833,8 +833,8 @@
                             <div class="step-item pending" data-step="checkpoint" data-target="studentCheckpointSection">
                                 <div class="step-index">5</div>
                                 <div class="step-copy">
-                                    <strong>Run checkpoint</strong>
-                                    <p>Fetch an MCQ and decide whether to replan.</p>
+                                    <strong>Follow-up checkpoint</strong>
+                                    <p>Use a later question to confirm or replan.</p>
                                 </div>
                             </div>
                         </div>
@@ -846,14 +846,14 @@
                                 <div>
                                     <div class="step-kicker">Step 1</div>
                                     <h3>Setup Learner</h3>
-                                    <p>Start with the basic learner context. Advanced optional fields stay tucked away until they are actually needed.</p>
+                                    <p>Start with lightweight context only. The system should learn from questions next, not from a manually filled attempt sheet.</p>
                                 </div>
-                                <div class="pill">Student path</div>
+                                <div class="pill">Learner path</div>
                             </div>
 
                             <div class="grid two">
                                 <div class="field">
-                                    <label for="studentId">Student ID</label>
+                                    <label for="studentId">Learner Name / ID</label>
                                     <input id="studentId" type="text" value="stu_001">
                                 </div>
                                 <div class="field">
@@ -892,25 +892,80 @@
                             </details>
 
                             <div class="btn-row" style="margin-top: 18px;">
-                                <button class="primary" id="toAttemptsBtn" type="button">Continue To Attempts</button>
+                                <button class="primary" id="toAssessmentBtn" type="button">Continue To Quick Check</button>
                             </div>
                         </section>
 
-                        <section class="stage-card" id="studentAttemptsSection">
+                        <section class="stage-card" id="studentAssessmentSection">
                             <div class="stage-head">
                                 <div>
                                     <div class="step-kicker">Step 2</div>
-                                    <h3>Log Recent Attempts</h3>
-                                    <p>These attempts become the live <span class="mono">attempts[]</span> payload sent to the orchestration route.</p>
+                                    <h3>Take A Quick Baseline Check</h3>
+                                    <p>For fresh learners, this replaces manual attempt entry. The backend asks a few topic questions first and keeps the assessment session on the server.</p>
                                 </div>
-                                <button class="ghost" id="addAttemptBtn" type="button">Add Attempt</button>
                             </div>
 
-                            <div id="attemptList" class="attempt-list"></div>
+                            <div id="assessmentMessage" class="message-box">Start the baseline check to let the system estimate the learner’s current understanding before planning.</div>
 
-                            <div class="btn-row" style="margin-top: 18px;">
-                                <button class="primary" id="toGenerateBtn" type="button">Continue To Plan</button>
+                            <div class="btn-row" style="margin-top: 16px;">
+                                <button class="primary" id="startAssessmentBtn" type="button">Start Quick Check</button>
+                                <button class="secondary" id="restartAssessmentBtn" type="button">Restart Assessment</button>
                             </div>
+
+                            <div id="assessmentPanel" class="hidden" style="margin-top: 16px;">
+                                <div class="note-box">
+                                    <div class="mini-label">Progress</div>
+                                    <div id="assessmentProgress" class="mono">0 / 0 answered</div>
+                                </div>
+
+                                <div class="result-card" style="margin-top: 16px;">
+                                    <div class="mini-label">Current Question</div>
+                                    <div class="mono" id="assessmentQuestionId"></div>
+                                    <h3 style="margin-top: 10px;" id="assessmentQuestionTitle"></h3>
+                                    <p class="muted" id="assessmentQuestionText"></p>
+
+                                    <div id="assessmentOptions" class="option-list"></div>
+
+                                    <div class="btn-row" style="margin-top: 18px;">
+                                        <button class="accent" id="submitAssessmentBtn" type="button" disabled>Submit Answer</button>
+                                    </div>
+
+                                    <div id="assessmentFeedback" class="message-box" style="margin-top: 16px;">Answer feedback will appear here.</div>
+                                </div>
+                            </div>
+
+                            <div id="assessmentSummary" class="hidden" style="margin-top: 16px;">
+                                <div class="result-card">
+                                    <h3>Baseline Summary</h3>
+                                    <div class="bullets" id="assessmentSummaryCard" style="margin-top: 12px;"></div>
+                                    <div class="btn-row" style="margin-top: 18px;">
+                                        <button class="primary" id="toGenerateBtn" type="button">Continue To Plan</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <details style="margin-top: 20px;">
+                                <summary>Advanced: use existing attempts instead</summary>
+                                <div class="note-box" style="margin-top: 14px;">
+                                    <div class="mini-label">Imported history / teacher mode</div>
+                                    <p>Use this only when you already have recent attempt history from somewhere else and want to skip the learner baseline questions.</p>
+                                </div>
+
+                                <div class="stage-head" style="margin-top: 16px;">
+                                    <div>
+                                        <h3>Manual Attempt History</h3>
+                                        <p>These attempts become the live <span class="mono">attempts[]</span> payload sent to the orchestration route.</p>
+                                    </div>
+                                    <button class="ghost" id="addAttemptBtn" type="button">Add Attempt</button>
+                                </div>
+
+                                <div id="attemptList" class="attempt-list"></div>
+
+                                <details style="margin-top: 18px;">
+                                    <summary>Manual request JSON preview</summary>
+                                    <pre class="json-box" id="snapshotPreview">{}</pre>
+                                </details>
+                            </details>
                         </section>
 
                         <section class="stage-card" id="studentGenerateSection">
@@ -918,19 +973,16 @@
                                 <div>
                                     <div class="step-kicker">Step 3</div>
                                     <h3>Generate Intervention Plan</h3>
-                                    <p>Preview the request, then submit it to <span class="mono">POST /orchestrate</span>. The result panel only appears after a successful run.</p>
+                                    <p>The default path builds the plan from the baseline assessment session. Advanced users can still generate from imported attempt history.</p>
                                 </div>
                             </div>
 
-                            <div class="btn-row">
-                                <button class="primary" id="runPlanBtn" type="button">Run Intervention Plan</button>
+                            <div id="planningReadyMessage" class="message-box">Complete the quick baseline check first, or open the advanced section if you want to plan from imported attempt history.</div>
+
+                            <div class="btn-row" style="margin-top: 16px;">
+                                <button class="primary" id="runPlanBtn" type="button">Generate My Plan</button>
                                 <button class="secondary" id="clearResultsBtn" type="button">Clear Plan Output</button>
                             </div>
-
-                            <details style="margin-top: 18px;">
-                                <summary>Request JSON Preview</summary>
-                                <pre class="json-box" id="snapshotPreview">{}</pre>
-                            </details>
                         </section>
 
                         <section class="stage-card hidden" id="studentResultsSection">
@@ -1195,20 +1247,10 @@
                 subject: "sql_query_reasoning",
                 goals: ["Improve joins", "Reduce repeat mistakes"],
                 available_hours_per_week: 6,
-                confidence_by_concept: { joins: 0.2, group_by: 0.6 },
+                confidence_by_concept: {},
                 upcoming_deadlines: [{ label: "quiz_2", days_left: 5 }]
             },
-            attempts: [
-                {
-                    problem_id: "sql_002",
-                    concept: "joins",
-                    correct: false,
-                    error_tags: ["wrong_join_key"],
-                    time_seconds: 420,
-                    hints_used: 1,
-                    retries: 1
-                }
-            ],
+            attempts: [],
             prior_interventions: []
         };
 
@@ -1228,6 +1270,15 @@
             backendOnline: false,
             activeFlow: "student",
             ingestMode: "text",
+            planMode: "assessment",
+            assessment: {
+                sessionId: null,
+                started: false,
+                completed: false,
+                question: null,
+                progress: null,
+                summary: null
+            },
             result: null,
             checkpointProblem: null,
             lastEvaluation: null,
@@ -1257,8 +1308,22 @@
             priorInterventionsInput: document.getElementById("priorInterventionsInput"),
             confidenceInput: document.getElementById("confidenceInput"),
             deadlinesInput: document.getElementById("deadlinesInput"),
+            assessmentMessage: document.getElementById("assessmentMessage"),
+            assessmentPanel: document.getElementById("assessmentPanel"),
+            assessmentProgress: document.getElementById("assessmentProgress"),
+            assessmentQuestionId: document.getElementById("assessmentQuestionId"),
+            assessmentQuestionTitle: document.getElementById("assessmentQuestionTitle"),
+            assessmentQuestionText: document.getElementById("assessmentQuestionText"),
+            assessmentOptions: document.getElementById("assessmentOptions"),
+            assessmentFeedback: document.getElementById("assessmentFeedback"),
+            assessmentSummary: document.getElementById("assessmentSummary"),
+            assessmentSummaryCard: document.getElementById("assessmentSummaryCard"),
+            startAssessmentBtn: document.getElementById("startAssessmentBtn"),
+            restartAssessmentBtn: document.getElementById("restartAssessmentBtn"),
+            submitAssessmentBtn: document.getElementById("submitAssessmentBtn"),
             attemptList: document.getElementById("attemptList"),
             snapshotPreview: document.getElementById("snapshotPreview"),
+            planningReadyMessage: document.getElementById("planningReadyMessage"),
             resultMessage: document.getElementById("resultMessage"),
             resultArea: document.getElementById("resultArea"),
             diagnosisCard: document.getElementById("diagnosisCard"),
@@ -1300,6 +1365,241 @@
             studentSteps: document.getElementById("studentSteps"),
             builderSteps: document.getElementById("builderSteps")
         };
+        const STORAGE_KEY = "cogniweave_frontend_state_v2";
+        const DEBUG_LOG_KEY = "cogniweave_frontend_debug_log";
+        const TAB_ID_KEY = "cogniweave_frontend_tab_id";
+        const BOOT_COUNT_KEY = "cogniweave_frontend_boot_count";
+        const storage = window.localStorage;
+
+        function debugLog(event, payload = null) {
+            const stamp = new Date().toISOString();
+            const line = `[${stamp}] ${event}${payload ? ` | ${JSON.stringify(payload)}` : ""}`;
+            console.log(line);
+            try {
+                const existing = JSON.parse(storage.getItem(DEBUG_LOG_KEY) || "[]");
+                const next = [...existing, line].slice(-100);
+                storage.setItem(DEBUG_LOG_KEY, JSON.stringify(next));
+            } catch (_error) {
+                // ignore storage/debug failures
+            }
+        }
+
+        function initTabIdentity() {
+            let tabId = storage.getItem(TAB_ID_KEY);
+            if (!tabId) {
+                tabId = `tab_${Math.random().toString(36).slice(2, 10)}`;
+                storage.setItem(TAB_ID_KEY, tabId);
+            }
+            const bootCount = Number(storage.getItem(BOOT_COUNT_KEY) || "0") + 1;
+            storage.setItem(BOOT_COUNT_KEY, String(bootCount));
+            return { tabId, bootCount };
+        }
+
+        function detectLiveReloadArtifacts() {
+            const scripts = Array.from(document.scripts || []).map((script) => script.src || "");
+            const hints = scripts.filter((src) =>
+                /livereload|browser-sync|sockjs|hot-update|webpack-dev-server|vite|hmr/i.test(src)
+            );
+            const hasLiveReloadGlobal = Boolean(
+                window.LiveReload ||
+                window.__VUE_HMR_RUNTIME__ ||
+                window.__webpack_require__ ||
+                window.__vite_plugin_react_preamble_installed__
+            );
+            return { hints, hasLiveReloadGlobal };
+        }
+
+        function installWebSocketTrace() {
+            if (!("WebSocket" in window)) return;
+            if (window.__cwWsTraceInstalled) return;
+            window.__cwWsTraceInstalled = true;
+
+            const NativeWebSocket = window.WebSocket;
+            window.WebSocket = function tracedWebSocket(url, protocols) {
+                debugLog("ws:open", { url: String(url) });
+                const ws = protocols ? new NativeWebSocket(url, protocols) : new NativeWebSocket(url);
+                ws.addEventListener("message", (event) => {
+                    const text = typeof event.data === "string" ? event.data : "";
+                    if (/reload|refresh|hot|hmr/i.test(text)) {
+                        debugLog("ws:message:reload-hint", {
+                            url: String(url),
+                            sample: text.slice(0, 180)
+                        });
+                    }
+                });
+                ws.addEventListener("close", (event) => {
+                    debugLog("ws:close", {
+                        url: String(url),
+                        code: event.code,
+                        reason: event.reason
+                    });
+                });
+                ws.addEventListener("error", () => {
+                    debugLog("ws:error", { url: String(url) });
+                });
+                return ws;
+            };
+            window.WebSocket.prototype = NativeWebSocket.prototype;
+        }
+
+        function messageVariant(node) {
+            if (!node || !node.classList) return "";
+            if (node.classList.contains("error-state")) return "error";
+            if (node.classList.contains("success-state")) return "success";
+            return "";
+        }
+
+        function readMessageState(node) {
+            return {
+                text: node?.textContent || "",
+                variant: messageVariant(node)
+            };
+        }
+
+        function applyStoredMessage(node, payload) {
+            if (!node || !payload || typeof payload.text !== "string") return;
+            setMessage(node, payload.text, payload.variant || "");
+        }
+
+        function capturePersistedUiState() {
+            return {
+                saved_at: new Date().toISOString(),
+                controls: {
+                    backend_base_url: el.backendBaseUrl.value,
+                    active_flow: state.activeFlow,
+                    ingest_mode: state.ingestMode,
+                    plan_mode: state.planMode
+                },
+                learner: {
+                    student_id: el.studentId.value,
+                    subject: el.subjectSelect.value,
+                    goals: el.goalsInput.value,
+                    hours: el.hoursInput.value,
+                    prior_interventions: el.priorInterventionsInput.value,
+                    confidence: el.confidenceInput.value,
+                    deadlines: el.deadlinesInput.value,
+                    attempts: collectAttempts(),
+                    assessment: state.assessment
+                },
+                runtime: {
+                    result: state.result,
+                    checkpoint_problem: state.checkpointProblem,
+                    last_evaluation: state.lastEvaluation,
+                    ingest_result: state.ingestResult
+                },
+                messages: {
+                    assessment: readMessageState(el.assessmentMessage),
+                    planning: readMessageState(el.planningReadyMessage),
+                    result: readMessageState(el.resultMessage),
+                    checkpoint: readMessageState(el.checkpointMessage),
+                    checkpoint_feedback: readMessageState(el.checkpointFeedback),
+                    ingest: readMessageState(el.ingestMessage)
+                }
+            };
+        }
+
+        function persistUiState() {
+            try {
+                storage.setItem(STORAGE_KEY, JSON.stringify(capturePersistedUiState()));
+            } catch (_error) {
+                // ignore storage errors (private mode or quota limits)
+            }
+        }
+
+        function restorePersistedUiState() {
+            let parsed = null;
+            try {
+                const raw = storage.getItem(STORAGE_KEY);
+                if (!raw) return false;
+                parsed = JSON.parse(raw);
+            } catch (_error) {
+                return false;
+            }
+
+            if (!parsed || typeof parsed !== "object") return false;
+
+            const controls = parsed.controls || {};
+            const learner = parsed.learner || {};
+            const runtime = parsed.runtime || {};
+
+            if (typeof controls.backend_base_url === "string" && controls.backend_base_url.trim()) {
+                el.backendBaseUrl.value = controls.backend_base_url;
+            }
+
+            if (typeof learner.student_id === "string") el.studentId.value = learner.student_id;
+            if (typeof learner.goals === "string") el.goalsInput.value = learner.goals;
+            if (typeof learner.hours === "string") el.hoursInput.value = learner.hours;
+            if (typeof learner.prior_interventions === "string") el.priorInterventionsInput.value = learner.prior_interventions;
+            if (typeof learner.confidence === "string") el.confidenceInput.value = learner.confidence;
+            if (typeof learner.deadlines === "string") el.deadlinesInput.value = learner.deadlines;
+            if (typeof learner.subject === "string" && learner.subject) el.subjectSelect.value = learner.subject;
+
+            if (Array.isArray(learner.attempts)) {
+                el.attemptList.innerHTML = "";
+                learner.attempts.forEach((attempt) => addAttempt(attempt));
+            }
+
+            if (controls.plan_mode === "manual" || controls.plan_mode === "assessment") {
+                state.planMode = controls.plan_mode;
+            }
+            if (controls.ingest_mode === "pdf" || controls.ingest_mode === "text") {
+                setIngestMode(controls.ingest_mode);
+            }
+            if (controls.active_flow === "builder" || controls.active_flow === "student") {
+                setFlow(controls.active_flow);
+            }
+
+            if (learner.assessment && typeof learner.assessment === "object") {
+                state.assessment = {
+                    sessionId: learner.assessment.sessionId || null,
+                    started: Boolean(learner.assessment.started),
+                    completed: Boolean(learner.assessment.completed),
+                    question: learner.assessment.question || null,
+                    progress: learner.assessment.progress || null,
+                    summary: learner.assessment.summary || null
+                };
+                if (state.assessment.progress) {
+                    renderAssessmentProgress(state.assessment.progress);
+                }
+                if (state.assessment.question) {
+                    renderAssessmentQuestion(state.assessment.question);
+                }
+                if (state.assessment.summary) {
+                    renderAssessmentSummary(state.assessment.summary);
+                }
+            }
+
+            state.result = runtime.result || null;
+            state.checkpointProblem = runtime.checkpoint_problem || null;
+            state.lastEvaluation = runtime.last_evaluation || null;
+            state.ingestResult = runtime.ingest_result || null;
+
+            if (state.result) {
+                try {
+                    renderResult(state.result);
+                } catch (_error) {
+                    // If schema changed between reloads, keep app usable.
+                    state.result = null;
+                }
+            }
+
+            if (state.ingestResult) {
+                el.ingestPreview.textContent = formatJson(state.ingestResult);
+            }
+
+            const messages = parsed.messages || {};
+            applyStoredMessage(el.assessmentMessage, messages.assessment);
+            applyStoredMessage(el.planningReadyMessage, messages.planning);
+            applyStoredMessage(el.resultMessage, messages.result);
+            applyStoredMessage(el.checkpointMessage, messages.checkpoint);
+            applyStoredMessage(el.checkpointFeedback, messages.checkpoint_feedback);
+            applyStoredMessage(el.ingestMessage, messages.ingest);
+
+            updateSnapshotPreview();
+            renderStudentSteps();
+            renderBuilderSteps();
+            return true;
+        }
 
         function escapeHtml(value) {
             return String(value ?? "")
@@ -1329,6 +1629,21 @@
                 node.classList.add("error-state");
             } else if (variant === "success") {
                 node.classList.add("success-state");
+            }
+        }
+
+        function ensureHostWarning() {
+            if (window.location.port !== "5500") {
+                return;
+            }
+            const warning = document.createElement("div");
+            warning.className = "message-box error-state";
+            warning.style.marginBottom = "14px";
+            warning.textContent =
+                "You are running from :5500 (live host). This host can auto-reload and clear the visible flow. Use http://localhost:8000/ for stable behavior.";
+            const anchor = document.querySelector(".hero-card");
+            if (anchor && anchor.parentNode) {
+                anchor.parentNode.insertBefore(warning, anchor.nextSibling);
             }
         }
 
@@ -1416,6 +1731,86 @@
                 .filter(Boolean);
         }
 
+        function resetAssessmentState(options = {}) {
+            const { preserveMessage = false } = options;
+            state.assessment = {
+                sessionId: null,
+                started: false,
+                completed: false,
+                question: null,
+                progress: null,
+                summary: null
+            };
+
+            el.assessmentPanel.classList.add("hidden");
+            el.assessmentSummary.classList.add("hidden");
+            el.assessmentOptions.innerHTML = "";
+            el.assessmentQuestionId.textContent = "";
+            el.assessmentQuestionTitle.textContent = "";
+            el.assessmentQuestionText.textContent = "";
+            el.assessmentProgress.textContent = "0 / 0 answered";
+            el.submitAssessmentBtn.disabled = true;
+            setMessage(el.assessmentFeedback, "Answer feedback will appear here.");
+
+            if (!preserveMessage) {
+                setMessage(el.assessmentMessage, "Start the baseline check to let the system estimate the learner’s current understanding before planning.");
+            }
+
+            if (!state.result) {
+                setMessage(el.planningReadyMessage, "Complete the quick baseline check first, or open the advanced section if you want to plan from imported attempt history.");
+            }
+        }
+
+        function renderAssessmentQuestion(question) {
+            state.assessment.question = question;
+            el.assessmentPanel.classList.remove("hidden");
+            el.assessmentQuestionId.textContent = question.id || "";
+            el.assessmentQuestionTitle.textContent = question.title || "Baseline Question";
+            el.assessmentQuestionText.textContent = question.question_text || "";
+            el.submitAssessmentBtn.disabled = true;
+            setMessage(el.assessmentFeedback, "Choose the best answer, then submit it.");
+
+            el.assessmentOptions.innerHTML = "";
+            Object.entries(question.options || {}).forEach(([key, value]) => {
+                const label = document.createElement("label");
+                label.className = "option-card";
+                label.innerHTML = `
+                    <input type="radio" name="assessmentOption" value="${escapeHtml(key)}">
+                    <div>
+                        <strong>${escapeHtml(key)}</strong>
+                        <div>${escapeHtml(value)}</div>
+                    </div>
+                `;
+                const input = label.querySelector("input");
+                input.addEventListener("change", () => {
+                    document.querySelectorAll("#assessmentOptions .option-card").forEach((node) => node.classList.remove("selected"));
+                    label.classList.add("selected");
+                    el.submitAssessmentBtn.disabled = false;
+                });
+                el.assessmentOptions.appendChild(label);
+            });
+        }
+
+        function renderAssessmentProgress(progress) {
+            state.assessment.progress = progress;
+            if (!progress) {
+                el.assessmentProgress.textContent = "0 / 0 answered";
+                return;
+            }
+            el.assessmentProgress.textContent = `${progress.answered} / ${progress.total} answered`;
+        }
+
+        function renderAssessmentSummary(summary) {
+            state.assessment.summary = summary;
+            el.assessmentSummary.classList.remove("hidden");
+            renderBullets(el.assessmentSummaryCard, [
+                `Questions answered: ${summary.attempted_questions}`,
+                `Weakest concept right now: ${summary.weakest_concept_label || summary.weakest_concept}`,
+                `Confidence snapshot: ${Object.entries(summary.confidence_by_concept || {}).map(([key, value]) => `${key} ${value}`).join(", ") || "n/a"}`
+            ]);
+            setMessage(el.planningReadyMessage, "Assessment complete. You can generate a personalized plan now.", "success");
+        }
+
         function scrollToSection(id) {
             const node = document.getElementById(id);
             if (node) {
@@ -1441,6 +1836,7 @@
             el.builderFlow.classList.toggle("hidden", flow !== "builder");
             el.studentFlowBtn.classList.toggle("active", flow === "student");
             el.builderFlowBtn.classList.toggle("active", flow === "builder");
+            persistUiState();
         }
 
         function setIngestMode(mode) {
@@ -1450,6 +1846,7 @@
             el.textSourcePanel.classList.toggle("hidden", mode !== "text");
             el.pdfSourcePanel.classList.toggle("hidden", mode !== "pdf");
             renderBuilderSteps();
+            persistUiState();
         }
 
         function populateTopicSelect(topics) {
@@ -1497,6 +1894,7 @@
         }
 
         async function refreshConnectionAndTopics() {
+            debugLog("refreshConnectionAndTopics:start", { baseUrl: getBaseUrl() });
             el.healthEndpoint.textContent = endpoint("/health");
             try {
                 const [healthRes, topicsRes] = await Promise.all([
@@ -1519,6 +1917,10 @@
                 el.statusText.textContent = "Backend reachable";
                 el.heroBackendState.textContent = "Online";
                 renderTopics(Array.isArray(topics) ? topics : []);
+                debugLog("refreshConnectionAndTopics:ok", {
+                    healthStatus: health.status,
+                    topics: Array.isArray(topics) ? topics.length : 0
+                });
             } catch (error) {
                 state.backendOnline = false;
                 el.statusDot.className = "status-dot error";
@@ -1528,6 +1930,7 @@
                 el.heroTopicCount.textContent = "0";
                 setMessage(el.topicsMessage, `Could not reach backend: ${error.message}`, "error");
                 populateTopicSelect(DEFAULT_TOPICS);
+                debugLog("refreshConnectionAndTopics:error", { message: error.message });
             }
 
             renderStudentSteps();
@@ -1608,8 +2011,10 @@
         }
 
         function addAttempt(data = {}) {
+            state.planMode = "manual";
             el.attemptList.appendChild(createAttemptCard(data));
             updateSnapshotPreview();
+            setMessage(el.planningReadyMessage, "Imported attempt history is ready. You can generate a plan from this instead of taking the quick check.", "success");
             renderStudentSteps();
         }
 
@@ -1720,19 +2125,215 @@
             scrollToSection("studentResultsSection");
         }
 
-        async function runOrchestration() {
+        async function startAssessment() {
             const snapshot = buildSnapshot();
+            debugLog("assessment:start:clicked", {
+                subject: snapshot.profile.subject,
+                student: snapshot.profile.student_id
+            });
+            clearResults();
+            setMessage(el.assessmentMessage, "Starting a quick baseline check...");
+            setButtonBusy(el.startAssessmentBtn, true, "Starting...");
+            setButtonBusy(el.restartAssessmentBtn, true, "Starting...");
 
-            if (!snapshot.attempts.length) {
-                el.studentResultsSection.classList.remove("hidden");
-                setMessage(el.resultMessage, "Add at least one valid attempt before running the plan.", "error");
+            try {
+                const response = await fetch(endpoint("/assessment/start"), {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        topic_id: snapshot.profile.subject,
+                        student_id: snapshot.profile.student_id,
+                        goals: snapshot.profile.goals,
+                        available_hours_per_week: snapshot.profile.available_hours_per_week,
+                    }),
+                });
+                const data = await readResponsePayload(response);
+                if (!response.ok) {
+                    throw new Error(
+                        formatApiError(data, `Assessment start failed with ${response.status}`)
+                    );
+                }
+
+                state.assessment = {
+                    sessionId: data.session_id,
+                    started: true,
+                    completed: false,
+                    question: data.question,
+                    progress: data.progress,
+                    summary: null,
+                };
+                state.planMode = "assessment";
+                debugLog("assessment:start:ok", {
+                    sessionId: data.session_id,
+                    totalQuestions: data.progress?.total
+                });
+
+                renderAssessmentProgress(data.progress);
+                renderAssessmentQuestion(data.question);
+                el.assessmentSummary.classList.add("hidden");
+                setMessage(el.assessmentMessage, "Baseline check started. Answer the question below to let the system estimate current understanding.", "success");
+                setMessage(el.planningReadyMessage, "Finish the quick baseline check to unlock planning.");
                 renderStudentSteps();
-                scrollToSection("studentGenerateSection");
+                scrollToSection("studentAssessmentSection");
+            } catch (error) {
+                resetAssessmentState({ preserveMessage: true });
+                setMessage(el.assessmentMessage, `Could not start the baseline check: ${error.message}`, "error");
+                renderStudentSteps();
+                debugLog("assessment:start:error", { message: error.message });
+            } finally {
+                setButtonBusy(el.startAssessmentBtn, false, "Starting...");
+                setButtonBusy(el.restartAssessmentBtn, false, "Starting...");
+            }
+        }
+
+        async function submitAssessmentAnswer() {
+            const selected = document.querySelector('input[name="assessmentOption"]:checked');
+            if (!state.assessment.sessionId || !state.assessment.question || !selected) {
+                setMessage(el.assessmentFeedback, "Choose one answer before submitting.", "error");
+                debugLog("assessment:submit:blocked", {
+                    hasSession: Boolean(state.assessment.sessionId),
+                    hasQuestion: Boolean(state.assessment.question),
+                    hasSelected: Boolean(selected)
+                });
+                return;
+            }
+            debugLog("assessment:submit:clicked", {
+                sessionId: state.assessment.sessionId,
+                questionId: state.assessment.question.id,
+                selected: selected.value
+            });
+
+            setButtonBusy(el.submitAssessmentBtn, true, "Submitting...");
+            try {
+                const response = await fetch(endpoint("/assessment/answer"), {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        session_id: state.assessment.sessionId,
+                        problem_id: state.assessment.question.id,
+                        selected_option: selected.value,
+                    }),
+                });
+                const data = await readResponsePayload(response);
+                if (!response.ok) {
+                    throw new Error(
+                        formatApiError(data, `Assessment answer failed with ${response.status}`)
+                    );
+                }
+
+                setMessage(el.assessmentFeedback, data.explanation || "Answer recorded.", data.correct ? "success" : "");
+                renderAssessmentProgress(data.progress);
+
+                if (data.assessment_complete) {
+                    state.assessment.completed = true;
+                    state.assessment.question = null;
+                    state.planMode = "assessment";
+                    renderAssessmentSummary(data.assessment_summary || {
+                        attempted_questions: data.progress?.answered || 0,
+                        weakest_concept: "n/a",
+                        weakest_concept_label: "n/a",
+                        confidence_by_concept: {},
+                    });
+                    setMessage(el.assessmentMessage, "Baseline check complete. The planner can now use real learner evidence.", "success");
+                    debugLog("assessment:submit:complete", {
+                        sessionId: state.assessment.sessionId,
+                        answered: data.progress?.answered
+                    });
+                    renderStudentSteps();
+                    scrollToSection("studentGenerateSection");
+                } else {
+                    renderAssessmentQuestion(data.next_question);
+                    renderStudentSteps();
+                    debugLog("assessment:submit:next", {
+                        nextQuestionId: data.next_question?.id,
+                        answered: data.progress?.answered
+                    });
+                }
+            } catch (error) {
+                setMessage(el.assessmentFeedback, `Assessment submit failed: ${error.message}`, "error");
+                debugLog("assessment:submit:error", { message: error.message });
+            } finally {
+                setButtonBusy(el.submitAssessmentBtn, false, "Submitting...");
+            }
+        }
+
+        async function generatePlanFromAssessment() {
+            if (!state.assessment.sessionId || !state.assessment.completed) {
+                setMessage(el.planningReadyMessage, "Finish the baseline check first, then generate the plan.", "error");
+                renderStudentSteps();
+                scrollToSection("studentAssessmentSection");
+                debugLog("plan:assessment:blocked", {
+                    hasSession: Boolean(state.assessment.sessionId),
+                    completed: Boolean(state.assessment.completed)
+                });
                 return;
             }
 
             el.studentResultsSection.classList.remove("hidden");
-            setMessage(el.resultMessage, "Sending orchestration request...");
+            setMessage(el.resultMessage, "Building a plan from the completed baseline check...");
+            setButtonBusy(el.runPlanBtn, true, "Building...");
+            debugLog("plan:assessment:start", {
+                sessionId: state.assessment.sessionId
+            });
+
+            try {
+                const response = await fetch(endpoint("/assessment/plan"), {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        session_id: state.assessment.sessionId,
+                        student_id: el.studentId.value.trim() || "stu_001",
+                        goals: parseCsvList(el.goalsInput.value),
+                        available_hours_per_week: Number(el.hoursInput.value) || 6,
+                    }),
+                });
+                const data = await readResponsePayload(response);
+                if (!response.ok) {
+                    throw new Error(
+                        formatApiError(data, `Plan generation failed with ${response.status}`)
+                    );
+                }
+
+                renderResult(data);
+                debugLog("plan:assessment:ok", {
+                    weakestConcept: data?.diagnosis?.weakest_concept || null
+                });
+            } catch (error) {
+                el.resultArea.classList.add("hidden");
+                setMessage(el.resultMessage, `Plan generation failed: ${error.message}`, "error");
+                renderStudentSteps();
+                debugLog("plan:assessment:error", { message: error.message });
+            } finally {
+                setButtonBusy(el.runPlanBtn, false, "Building...");
+            }
+        }
+
+        async function runOrchestration() {
+            const snapshot = buildSnapshot();
+            debugLog("plan:run:clicked", {
+                mode: state.planMode,
+                attempts: snapshot.attempts.length,
+                assessmentCompleted: state.assessment.completed
+            });
+
+            if (state.planMode === "assessment" && state.assessment.completed) {
+                await generatePlanFromAssessment();
+                return;
+            }
+
+            if (!snapshot.attempts.length) {
+                el.studentResultsSection.classList.remove("hidden");
+                setMessage(el.resultMessage, "Complete the quick baseline check first, or open the advanced section and add imported attempts.", "error");
+                setMessage(el.planningReadyMessage, "No learner evidence is available yet. Start the baseline questions or use imported attempt history.", "error");
+                renderStudentSteps();
+                scrollToSection("studentAssessmentSection");
+                debugLog("plan:run:blocked:no-evidence");
+                return;
+            }
+
+            el.studentResultsSection.classList.remove("hidden");
+            setMessage(el.resultMessage, "Sending imported attempt history to the planner...");
+            setButtonBusy(el.runPlanBtn, true, "Building...");
 
             try {
                 const response = await fetch(endpoint("/orchestrate"), {
@@ -1740,16 +2341,24 @@
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(snapshot)
                 });
-                const data = await response.json();
+                const data = await readResponsePayload(response);
                 if (!response.ok) {
-                    throw new Error(data.detail ? JSON.stringify(data.detail) : `Request failed with ${response.status}`);
+                    throw new Error(
+                        formatApiError(data, `Request failed with ${response.status}`)
+                    );
                 }
 
                 renderResult(data);
+                debugLog("plan:run:ok", {
+                    weakestConcept: data?.diagnosis?.weakest_concept || null
+                });
             } catch (error) {
                 el.resultArea.classList.add("hidden");
                 setMessage(el.resultMessage, `Orchestration failed: ${error.message}`, "error");
                 renderStudentSteps();
+                debugLog("plan:run:error", { message: error.message });
+            } finally {
+                setButtonBusy(el.runPlanBtn, false, "Building...");
             }
         }
 
@@ -1818,7 +2427,7 @@
                     `;
                     const input = label.querySelector("input");
                     input.addEventListener("change", () => {
-                        document.querySelectorAll(".option-card").forEach((node) => node.classList.remove("selected"));
+                        document.querySelectorAll("#mcqOptions .option-card").forEach((node) => node.classList.remove("selected"));
                         label.classList.add("selected");
                         el.submitCheckpointBtn.disabled = false;
                     });
@@ -2019,11 +2628,20 @@
             setMessage(el.checkpointFeedback, "Answer feedback will appear here.");
             el.checkpointPanel.classList.add("hidden");
             setCheckpointStatus("No problem loaded");
+            const manualAttempts = buildSnapshot().attempts.length > 0;
+            if (state.planMode === "manual" && manualAttempts) {
+                setMessage(el.planningReadyMessage, "Imported attempt history is ready. Generate a plan whenever you want.", "success");
+            } else if (state.assessment.completed) {
+                setMessage(el.planningReadyMessage, "Assessment complete. You can generate a personalized plan now.", "success");
+            } else {
+                setMessage(el.planningReadyMessage, "Complete the quick baseline check first, or open the advanced section if you want to plan from imported attempt history.");
+            }
             renderStudentSteps();
         }
 
         function loadDemoSnapshot() {
             const { profile, attempts, prior_interventions } = DEMO_SNAPSHOT;
+            state.planMode = "assessment";
             el.studentId.value = profile.student_id;
             el.goalsInput.value = profile.goals.join(", ");
             el.hoursInput.value = profile.available_hours_per_week;
@@ -2041,6 +2659,7 @@
             syncSharedBuilderFields();
             updateSnapshotPreview();
             clearResults();
+            resetAssessmentState();
             state.ingestResult = null;
             el.ingestPreview.textContent = "{}";
             setMessage(el.ingestMessage, "Ingestion results will appear here after you generate a pack.");
@@ -2049,10 +2668,11 @@
 
         function renderStudentSteps() {
             const snapshot = buildSnapshot();
+            const manualAttempts = snapshot.attempts.length > 0;
             const statuses = {
                 setup: Boolean(snapshot.profile.student_id && snapshot.profile.subject),
-                attempts: snapshot.attempts.length > 0,
-                generate: snapshot.attempts.length > 0,
+                assessment: Boolean(state.assessment.started || state.assessment.completed),
+                generate: Boolean(state.assessment.completed || manualAttempts),
                 review: Boolean(state.result),
                 checkpoint: Boolean(state.checkpointProblem || state.lastEvaluation)
             };
@@ -2061,10 +2681,12 @@
                 ? "checkpoint"
                 : state.result
                     ? "review"
-                    : snapshot.attempts.length > 0
+                    : state.assessment.completed || manualAttempts
                         ? "generate"
-                        : snapshot.profile.student_id && snapshot.profile.subject
-                            ? "attempts"
+                        : state.assessment.started
+                            ? "assessment"
+                            : snapshot.profile.student_id && snapshot.profile.subject
+                                ? "assessment"
                             : "setup";
 
             el.studentSteps.querySelectorAll(".step-item").forEach((item) => {
@@ -2072,6 +2694,7 @@
                 item.classList.remove("active", "done", "pending");
                 item.classList.add(step === active ? "active" : statuses[step] ? "done" : "pending");
             });
+            persistUiState();
         }
 
         function renderBuilderSteps() {
@@ -2099,6 +2722,7 @@
                 item.classList.remove("active", "done", "pending");
                 item.classList.add(step === active ? "active" : statuses[step] ? "done" : "pending");
             });
+            persistUiState();
         }
 
         function bindStepNavigation(container) {
@@ -2116,6 +2740,13 @@
             correct: false,
             error_tags: []
         }));
+        document.getElementById("startAssessmentBtn").addEventListener("click", startAssessment);
+        document.getElementById("restartAssessmentBtn").addEventListener("click", () => {
+            resetAssessmentState();
+            clearResults();
+            startAssessment();
+        });
+        document.getElementById("submitAssessmentBtn").addEventListener("click", submitAssessmentAnswer);
         document.getElementById("runPlanBtn").addEventListener("click", runOrchestration);
         document.getElementById("loadCheckpointBtn").addEventListener("click", loadCheckpointProblem);
         document.getElementById("submitCheckpointBtn").addEventListener("click", submitCheckpoint);
@@ -2123,13 +2754,21 @@
         document.getElementById("clearResultsBtn").addEventListener("click", clearResults);
         document.getElementById("submitTextIngestBtn").addEventListener("click", submitTextIngestion);
         document.getElementById("submitPdfIngestBtn").addEventListener("click", submitPdfIngestion);
-        document.getElementById("toAttemptsBtn").addEventListener("click", () => scrollToSection("studentAttemptsSection"));
+        document.getElementById("toAssessmentBtn").addEventListener("click", () => scrollToSection("studentAssessmentSection"));
         document.getElementById("toGenerateBtn").addEventListener("click", () => scrollToSection("studentGenerateSection"));
         document.getElementById("toBuilderSourceBtn").addEventListener("click", () => scrollToSection("builderSourceSection"));
         el.studentFlowBtn.addEventListener("click", () => setFlow("student"));
         el.builderFlowBtn.addEventListener("click", () => setFlow("builder"));
         el.textModeBtn.addEventListener("click", () => setIngestMode("text"));
         el.pdfModeBtn.addEventListener("click", () => setIngestMode("pdf"));
+
+        el.subjectSelect.addEventListener("change", () => {
+            state.planMode = "assessment";
+            el.attemptList.innerHTML = "";
+            updateSnapshotPreview();
+            resetAssessmentState();
+            clearResults();
+        });
 
         [
             el.backendBaseUrl,
@@ -2139,7 +2778,6 @@
             el.priorInterventionsInput,
             el.confidenceInput,
             el.deadlinesInput,
-            el.subjectSelect,
             el.sharedTopicId,
             el.sharedTopicTitle,
             el.ingestContent,
@@ -2171,7 +2809,78 @@
         setIngestMode("text");
         populateTopicSelect(DEFAULT_TOPICS);
         loadDemoSnapshot();
+        restorePersistedUiState();
         refreshConnectionAndTopics();
+        installWebSocketTrace();
+        const tabMeta = initTabIdentity();
+        const liveReload = detectLiveReloadArtifacts();
+        const navEntry = performance.getEntriesByType("navigation")[0];
+        debugLog("app:boot", {
+            tabId: tabMeta.tabId,
+            bootCount: tabMeta.bootCount,
+            url: window.location.href,
+            navType: navEntry?.type || "unknown",
+            referrer: document.referrer || "",
+            historyLength: window.history.length,
+            liveReloadHints: liveReload.hints,
+            hasLiveReloadGlobal: liveReload.hasLiveReloadGlobal
+        });
+
+        window.__cwDumpLogs = () => {
+            try {
+                const logs = JSON.parse(storage.getItem(DEBUG_LOG_KEY) || "[]");
+                console.log("=== CogniWeave Debug Log Dump ===");
+                logs.forEach((line) => console.log(line));
+                return logs;
+            } catch (_error) {
+                return [];
+            }
+        };
+        ensureHostWarning();
+
+        window.addEventListener("beforeunload", () => {
+            persistUiState();
+            debugLog("browser:beforeunload", {
+                href: window.location.href,
+                activeElement: document.activeElement?.id || document.activeElement?.tagName || "unknown"
+            });
+        });
+        window.addEventListener("pagehide", (event) => {
+            persistUiState();
+            debugLog("browser:pagehide", {
+                persisted: Boolean(event.persisted),
+                visibility: document.visibilityState
+            });
+        });
+        window.addEventListener("pageshow", (event) => {
+            debugLog("browser:pageshow", {
+                persisted: Boolean(event.persisted),
+                visibility: document.visibilityState
+            });
+        });
+        window.addEventListener("visibilitychange", () => {
+            debugLog("browser:visibilitychange", { state: document.visibilityState });
+        });
+        window.addEventListener("error", (event) => {
+            debugLog("browser:error", {
+                message: event.message,
+                source: event.filename,
+                line: event.lineno
+            });
+        });
+        window.addEventListener("unhandledrejection", (event) => {
+            debugLog("browser:unhandledrejection", {
+                reason: String(event.reason?.message || event.reason || "unknown")
+            });
+        });
+        setInterval(() => {
+            const navNow = performance.getEntriesByType("navigation")[0];
+            debugLog("heartbeat", {
+                navType: navNow?.type || "unknown",
+                readyState: document.readyState,
+                visibility: document.visibilityState
+            });
+        }, 15000);
     </script>
 </body>
 </html>

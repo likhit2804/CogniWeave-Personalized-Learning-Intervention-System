@@ -1,0 +1,15 @@
+{
+  "watch": [
+    "src"
+  ],
+  "ext": "js,json",
+  "ignore": [
+    "../db/*.db",
+    "../db/*.db-*",
+    "../db/*.sqlite*",
+    "../knowledge_base/topics/**",
+    "uploads/**",
+    "../frontend/**"
+  ],
+  "delay": "300"
+}

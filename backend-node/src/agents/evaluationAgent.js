@@ -1,4 +1,4 @@
-import { agentLlm, invokeStructured } from "../services/llmClient.js";
+import { invokeAgentStructured } from "../services/llmClient.js";
 import { EVALUATOR_PROMPT } from "./prompts.js";
 import { EvaluationOutputSchema } from "./agentSchemas.js";
 
@@ -17,18 +17,13 @@ export async function evaluate(state) {
     evaluation_rules: (kb.evaluation_rules?.rules || []).filter((r) => r.concept_id === concept),
   };
 
-  const configuredModel = {
-    ...agentLlm,
-    generationConfig: {
-      ...agentLlm.generationConfig,
-      responseSchema: EvaluationOutputSchema,
-    },
-    generateContent: agentLlm.generateContent.bind(agentLlm),
-  };
-
   const userContent = `Context:\n${JSON.stringify(context, null, 2)}`;
-  
-  const result = await invokeStructured(configuredModel, EVALUATOR_PROMPT, userContent);
+
+  const result = await invokeAgentStructured({
+    systemPrompt: EVALUATOR_PROMPT,
+    userContent,
+    responseSchema: EvaluationOutputSchema,
+  });
 
   state.evaluation_plan = {
     concept,

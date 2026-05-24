@@ -4,7 +4,12 @@ import { intervene } from "../agents/interventionAgent.js";
 import { plan } from "../agents/planningAgent.js";
 import { evaluate } from "../agents/evaluationAgent.js";
 import { criticize } from "../agents/criticAgent.js";
-import { upsertStudent, recordAttempt, recordIntervention } from "./database.js";
+import {
+  upsertStudent,
+  recordAttempt,
+  recordIntervention,
+  updateMastery,
+} from "./database.js";
 
 function _mapToResponse(finalState) {
   const diagnosis = finalState.diagnosis;
@@ -35,6 +40,14 @@ export class OrchestratorService {
    * Coordinates the agent pipeline for a single student snapshot.
    */
   async run(snapshot) {
+    if (!snapshot.attempts || snapshot.attempts.length === 0) {
+      throw {
+        status: 409,
+        detail: "A fresh learner needs an initial assessment before the planner can diagnose anything.",
+        requires_initial_assessment: true,
+      };
+    }
+
     const kb = new KnowledgeBase(snapshot.profile.subject);
 
     // 1. Create Initial State
@@ -106,6 +119,11 @@ export class OrchestratorService {
           hintsUsed: attempt.hints_used,
           retries: attempt.retries,
         });
+      }
+
+      const mastery = profile.confidence_by_concept || {};
+      for (const [concept, confidence] of Object.entries(mastery)) {
+        updateMastery(profile.student_id, concept, confidence);
       }
 
       // Save the intervention

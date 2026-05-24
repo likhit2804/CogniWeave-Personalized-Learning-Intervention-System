@@ -13,8 +13,11 @@ router.post("/orchestrate", async (req, res, next) => {
   } catch (error) {
     if (error.name === "ZodError") {
       res.status(422).json({ detail: error.errors });
-    } else if (error.status === 404) {
-      res.status(404).json({ detail: error.message });
+    } else if (error.status) {
+      res.status(error.status).json({
+        detail: error.detail || error.message,
+        ...(error.requires_initial_assessment ? { requires_initial_assessment: true } : {}),
+      });
     } else {
       next(error);
     }

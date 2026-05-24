@@ -1,4 +1,4 @@
-import { agentLlm, invokeStructured } from "../services/llmClient.js";
+import { invokeAgentStructured } from "../services/llmClient.js";
 import { INTERVENTION_PROMPT } from "./prompts.js";
 import { InterventionOutputSchema } from "./agentSchemas.js";
 
@@ -25,18 +25,13 @@ export async function intervene(state) {
     prior_interventions,
   };
 
-  const configuredModel = {
-    ...agentLlm,
-    generationConfig: {
-      ...agentLlm.generationConfig,
-      responseSchema: InterventionOutputSchema,
-    },
-    generateContent: agentLlm.generateContent.bind(agentLlm),
-  };
-
   const userContent = `Context:\n${JSON.stringify(context, null, 2)}`;
-  
-  const result = await invokeStructured(configuredModel, INTERVENTION_PROMPT, userContent);
+
+  const result = await invokeAgentStructured({
+    systemPrompt: INTERVENTION_PROMPT,
+    userContent,
+    responseSchema: InterventionOutputSchema,
+  });
 
   state.selected_intervention = {
     concept,

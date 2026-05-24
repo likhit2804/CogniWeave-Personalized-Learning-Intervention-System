@@ -32,6 +32,27 @@ export const MCQSubmissionSchema = z.object({
   selected_option: z.string(),
 });
 
+export const AssessmentStartRequestSchema = z.object({
+  topic_id: z.string(),
+  student_id: z.string().trim().optional(),
+  goals: z.array(z.string()).default([]),
+  available_hours_per_week: z.number().int().default(6),
+});
+
+export const AssessmentAnswerRequestSchema = z.object({
+  session_id: z.string(),
+  problem_id: z.string(),
+  selected_option: z.string(),
+  time_seconds: z.number().int().nullable().optional(),
+});
+
+export const AssessmentPlanRequestSchema = z.object({
+  session_id: z.string(),
+  student_id: z.string().trim().optional(),
+  goals: z.array(z.string()).optional(),
+  available_hours_per_week: z.number().int().optional(),
+});
+
 export const StudentProfileSchema = z.object({
   student_id: z.string(),
   subject: z.string(),

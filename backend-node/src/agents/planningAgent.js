@@ -1,4 +1,4 @@
-import { agentLlm, invokeStructured } from "../services/llmClient.js";
+import { invokeAgentStructured } from "../services/llmClient.js";
 import { PLANNER_PROMPT } from "./prompts.js";
 import { PlannerOutputSchema } from "./agentSchemas.js";
 
@@ -15,18 +15,13 @@ export async function plan(state) {
     critic_feedback,
   };
 
-  const configuredModel = {
-    ...agentLlm,
-    generationConfig: {
-      ...agentLlm.generationConfig,
-      responseSchema: PlannerOutputSchema,
-    },
-    generateContent: agentLlm.generateContent.bind(agentLlm),
-  };
-
   const userContent = `Context:\n${JSON.stringify(context, null, 2)}`;
-  
-  const result = await invokeStructured(configuredModel, PLANNER_PROMPT, userContent);
+
+  const result = await invokeAgentStructured({
+    systemPrompt: PLANNER_PROMPT,
+    userContent,
+    responseSchema: PlannerOutputSchema,
+  });
 
   state.weekly_plan = result.weekly_plan || [];
   state.trace.push({

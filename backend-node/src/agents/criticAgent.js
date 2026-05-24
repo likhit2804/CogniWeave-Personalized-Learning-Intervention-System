@@ -1,4 +1,4 @@
-import { agentLlm, invokeStructured } from "../services/llmClient.js";
+import { invokeAgentStructured } from "../services/llmClient.js";
 import { CRITIC_PROMPT } from "./prompts.js";
 import { CriticOutputSchema } from "./agentSchemas.js";
 
@@ -23,18 +23,13 @@ export async function criticize(state) {
     available_hours_per_week: profile.available_hours_per_week || 6,
   };
 
-  const configuredModel = {
-    ...agentLlm,
-    generationConfig: {
-      ...agentLlm.generationConfig,
-      responseSchema: CriticOutputSchema,
-    },
-    generateContent: agentLlm.generateContent.bind(agentLlm),
-  };
-
   const userContent = `Context:\n${JSON.stringify(context, null, 2)}`;
-  
-  const result = await invokeStructured(configuredModel, CRITIC_PROMPT, userContent);
+
+  const result = await invokeAgentStructured({
+    systemPrompt: CRITIC_PROMPT,
+    userContent,
+    responseSchema: CriticOutputSchema,
+  });
 
   if (result.approved) {
     state.critic_feedback = null;
