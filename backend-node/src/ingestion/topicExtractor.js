@@ -1,4 +1,4 @@
-import { getLlm, invokeStructured } from "../services/llmClient.js";
+import { invokeStructured, invokeStructuredWithFallback } from "../services/llmClient.js";
 import {
   CONCEPT_EXTRACTION_PROMPT,
   MISCONCEPTION_GENERATION_PROMPT,
@@ -8,8 +8,18 @@ import {
 } from "./ingestionPrompts.js";
 
 export async function extractTopicPack(chapterContent, chapterTitle, topicId, llm = null) {
-  if (!llm) {
-    llm = getLlm(0.3); // a bit more creative for generation
+  const temperature = 0.3;
+  const customLlm = llm || null;
+
+  async function runStructuredPrompt(systemPrompt, userContent) {
+    if (customLlm) {
+      return invokeStructured(customLlm, systemPrompt, userContent);
+    }
+    return invokeStructuredWithFallback({
+      systemPrompt,
+      userContent,
+      temperature,
+    });
   }
 
   const result = {
@@ -31,7 +41,7 @@ export async function extractTopicPack(chapterContent, chapterTitle, topicId, ll
     .replace("{chapter_content}", truncatedContent)
     .replace("{topic_id}", topicId);
 
-  const conceptsData = await invokeStructured(llm, prompt, "Extract concepts.");
+  const conceptsData = await runStructuredPrompt(prompt, "Extract concepts.");
 
   result.manifest = {
     topic_id: topicId,
@@ -57,7 +67,7 @@ export async function extractTopicPack(chapterContent, chapterTitle, topicId, ll
     .replace("{chapter_content}", truncatedContent.substring(0, 40000))
     .replace("{topic_id}", topicId);
 
-  const misconceptionsData = await invokeStructured(llm, prompt, "Generate misconceptions.");
+  const misconceptionsData = await runStructuredPrompt(prompt, "Generate misconceptions.");
   result.misconceptions = misconceptionsData;
 
   const misconceptionsJson = JSON.stringify(misconceptionsData.items || [], null, 2);
@@ -74,7 +84,7 @@ export async function extractTopicPack(chapterContent, chapterTitle, topicId, ll
     .replace("{chapter_content}", truncatedContent.substring(0, 40000))
     .replace("{topic_id}", topicId);
 
-  const interventionsData = await invokeStructured(llm, prompt, "Generate interventions.");
+  const interventionsData = await runStructuredPrompt(prompt, "Generate interventions.");
   result.interventions = interventionsData;
 
   console.log("Pass 4/5: Generating practice problems...");
@@ -86,7 +96,7 @@ export async function extractTopicPack(chapterContent, chapterTitle, topicId, ll
     .replace("{error_tags_json}", JSON.stringify([...new Set(allErrorTags)], null, 2))
     .replace("{topic_id}", topicId);
 
-  const problemsData = await invokeStructured(llm, prompt, "Generate problems.");
+  const problemsData = await runStructuredPrompt(prompt, "Generate problems.");
   result.problems = problemsData;
 
   console.log("Pass 5/5: Generating evaluation rules...");
@@ -96,7 +106,7 @@ export async function extractTopicPack(chapterContent, chapterTitle, topicId, ll
     .replace("{interventions_json}", JSON.stringify(interventionsData.rules || [], null, 2))
     .replace("{topic_id}", topicId);
 
-  const evaluationData = await invokeStructured(llm, prompt, "Generate evaluation rules.");
+  const evaluationData = await runStructuredPrompt(prompt, "Generate evaluation rules.");
   result.evaluationRules = evaluationData;
 
   console.log(`Extraction complete for topic '${topicId}'.`);

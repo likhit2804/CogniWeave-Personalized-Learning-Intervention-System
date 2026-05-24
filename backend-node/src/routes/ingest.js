@@ -6,6 +6,7 @@ import settings from "../config.js";
 import { parseText, parsePdf } from "../ingestion/textbookParser.js";
 import { extractTopicPack } from "../ingestion/topicExtractor.js";
 import { buildAndWrite } from "../ingestion/packBuilder.js";
+import { normalizeLlmError } from "../services/llmClient.js";
 
 const router = Router();
 const upload = multer({ dest: "uploads/" });
@@ -67,7 +68,8 @@ router.post("/ingest/text", async (req, res, next) => {
     }
   } catch (err) {
     console.error("Ingestion failed:", err);
-    res.status(500).json({ detail: err.message });
+    const normalized = normalizeLlmError(err, settings.llmModel);
+    res.status(normalized.status).json(normalized);
   }
 });
 
@@ -131,7 +133,8 @@ router.post("/ingest/pdf", upload.single("file"), async (req, res, next) => {
   } catch (err) {
     if (req.file) fs.unlinkSync(req.file.path);
     console.error("PDF Ingestion failed:", err);
-    res.status(500).json({ detail: err.message });
+    const normalized = normalizeLlmError(err, settings.llmModel);
+    res.status(normalized.status).json(normalized);
   }
 });
 

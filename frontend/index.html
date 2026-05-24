@@ -3,394 +3,2175 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CogniWeave Dashboard</title>
+    <title>CogniWeave Frontend</title>
     <style>
+        @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap");
+
         :root {
-            --bg-color: #121212;
-            --surface-color: #1e1e1e;
-            --border-color: #333333;
-            --text-primary: #e0e0e0;
-            --text-secondary: #aaaaaa;
-            --accent-color: #4CAF50;
-            --accent-hover: #45a049;
-            --error-color: #cf6679;
+            --bg: #f7efe2;
+            --bg-2: #f2e6d5;
+            --ink: #172219;
+            --muted: #5f665e;
+            --line: rgba(23, 34, 25, 0.12);
+            --panel: rgba(255, 255, 255, 0.76);
+            --panel-strong: rgba(255, 255, 255, 0.92);
+            --olive: #315a40;
+            --olive-deep: #1d3527;
+            --terracotta: #b85b37;
+            --gold: #d6a754;
+            --rose: #8e4040;
+            --success: #2f704a;
+            --shadow: 0 26px 60px rgba(25, 32, 27, 0.12);
+            --radius-xl: 30px;
+            --radius-lg: 22px;
+            --radius-md: 16px;
+            --radius-sm: 12px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-primary);
             margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            min-height: 100vh;
+            color: var(--ink);
+            font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+            background:
+                radial-gradient(circle at top left, rgba(214, 167, 84, 0.34), transparent 26%),
+                radial-gradient(circle at top right, rgba(184, 91, 55, 0.18), transparent 20%),
+                linear-gradient(180deg, var(--bg-2) 0%, var(--bg) 42%, #f5efe5 100%);
         }
 
-        h1, h2, h3 {
-            font-weight: 600;
-            margin-top: 0;
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background-image:
+                linear-gradient(rgba(23, 34, 25, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(23, 34, 25, 0.02) 1px, transparent 1px);
+            background-size: 24px 24px;
+            mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.2), transparent 72%);
         }
 
-        .container {
-            width: 100%;
-            max-width: 900px;
+        .shell {
+            width: min(1260px, calc(100vw - 32px));
+            margin: 24px auto 48px;
         }
 
-        .card {
-            background-color: var(--surface-color);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        .hero,
+        .panel,
+        .stage-card,
+        .rail-card {
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--line);
+            border-radius: var(--radius-xl);
+            background: var(--panel);
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(14px);
         }
 
-        .btn {
-            background-color: var(--accent-color);
-            color: #ffffff;
-            border: none;
-            padding: 10px 20px;
-            font-size: 16px;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            font-weight: 500;
-        }
-
-        .btn:hover {
-            background-color: var(--accent-hover);
-        }
-
-        .btn:disabled {
-            background-color: var(--border-color);
-            color: var(--text-secondary);
-            cursor: not-allowed;
-        }
-
-        .loader {
-            display: none;
-            margin-top: 10px;
-            color: var(--text-secondary);
-            font-style: italic;
-        }
-
-        .grid {
+        .hero {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            gap: 28px;
+            grid-template-columns: 1.2fr 0.8fr;
+            padding: 32px;
+            animation: rise 0.7s ease both;
+        }
+
+        .panel {
+            padding: 24px;
+            animation: rise 0.7s ease both;
+        }
+
+        .hero::after,
+        .panel::after,
+        .stage-card::after,
+        .rail-card::after {
+            content: "";
+            position: absolute;
+            inset: auto -12% -55% auto;
+            width: 280px;
+            height: 280px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(214, 167, 84, 0.16), transparent 64%);
+            pointer-events: none;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 12px;
+            border-radius: 999px;
+            background: rgba(49, 90, 64, 0.08);
+            color: var(--olive-deep);
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        h1,
+        h2,
+        h3 {
+            margin: 0;
+            font-family: "Space Grotesk", "Arial", sans-serif;
+            letter-spacing: -0.03em;
+        }
+
+        .hero h1 {
+            margin-top: 14px;
+            font-size: clamp(2.3rem, 5vw, 4.5rem);
+            line-height: 0.94;
+            max-width: 11ch;
+        }
+
+        .hero-copy {
+            margin-top: 16px;
+            color: var(--muted);
+            max-width: 60ch;
+            line-height: 1.68;
+        }
+
+        .hero-stats,
+        .top-cards,
+        .grid,
+        .btn-row,
+        .flow-switch,
+        .source-switch,
+        .topic-grid,
+        .result-grid,
+        .trace-grid,
+        .attempt-list,
+        .bullets,
+        .option-list {
+            display: grid;
+            gap: 14px;
+        }
+
+        .hero-stats {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            margin-top: 24px;
+        }
+
+        .top-cards {
+            align-content: start;
+        }
+
+        .stat-card,
+        .mini-card {
+            padding: 16px;
+            border-radius: var(--radius-lg);
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(23, 34, 25, 0.08);
+        }
+
+        .stat-card .label,
+        .mini-label,
+        .field label,
+        .subhead,
+        .step-kicker {
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+
+        .stat-card .value {
+            margin-top: 8px;
+            font-size: 1.8rem;
+            font-family: "Space Grotesk", "Arial", sans-serif;
+        }
+
+        .mini-card p {
+            margin: 8px 0 0;
+            color: var(--muted);
+            line-height: 1.55;
+        }
+
+        .flow-switch,
+        .source-switch {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .stack {
+            display: grid;
+            gap: 20px;
+            margin-top: 24px;
+        }
+
+        .section-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: end;
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+
+        .section-head p {
+            margin: 6px 0 0;
+            color: var(--muted);
+        }
+
+        .workflow {
+            display: grid;
+            grid-template-columns: 270px minmax(0, 1fr);
             gap: 20px;
         }
 
-        .plan-item {
-            background-color: var(--bg-color);
-            border: 1px solid var(--border-color);
-            padding: 15px;
-            margin-bottom: 10px;
-            border-radius: 4px;
+        .rail-card {
+            position: sticky;
+            top: 20px;
+            padding: 18px;
+            height: fit-content;
         }
 
-        .tag {
-            display: inline-block;
-            background-color: var(--border-color);
-            color: var(--text-primary);
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 8px;
+        .step-list {
+            display: grid;
+            gap: 10px;
+            margin-top: 18px;
         }
 
-        .data-label {
-            color: var(--text-secondary);
-            font-size: 14px;
+        .step-item {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            padding: 12px;
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(23, 34, 25, 0.08);
+            background: rgba(255, 255, 255, 0.66);
+            cursor: pointer;
+            transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+        }
+
+        .step-item:hover {
+            transform: translateY(-1px);
+            border-color: rgba(49, 90, 64, 0.24);
+        }
+
+        .step-item.active {
+            border-color: rgba(49, 90, 64, 0.28);
+            background: rgba(49, 90, 64, 0.08);
+        }
+
+        .step-item.done .step-index {
+            background: var(--success);
+            color: #f8fff9;
+        }
+
+        .step-item.pending .step-index {
+            background: rgba(23, 34, 25, 0.08);
+            color: var(--muted);
+        }
+
+        .step-index {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            font-size: 13px;
+            font-weight: 700;
+            flex: 0 0 auto;
+        }
+
+        .step-copy strong {
+            display: block;
             margin-bottom: 4px;
         }
 
-        .data-value {
-            margin-bottom: 16px;
+        .step-copy p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 0.93rem;
+            line-height: 1.45;
         }
 
-        #results {
-            display: none;
+        .flow-main {
+            display: grid;
+            gap: 18px;
         }
-        
-        .error {
-            color: var(--error-color);
+
+        .stage-card {
+            padding: 22px;
+            border-radius: var(--radius-xl);
+            background: rgba(255, 255, 255, 0.82);
+        }
+
+        .stage-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            gap: 14px;
+            margin-bottom: 18px;
+        }
+
+        .stage-head p {
+            margin: 8px 0 0;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        .grid.two {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .grid.three {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .field {
+            display: grid;
+            gap: 8px;
+        }
+
+        input,
+        select,
+        textarea,
+        button {
+            font: inherit;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 14px 15px;
+            border-radius: 14px;
+            border: 1px solid rgba(23, 34, 25, 0.15);
+            background: var(--panel-strong);
+            color: var(--ink);
+            transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+        }
+
+        textarea {
+            min-height: 160px;
+            resize: vertical;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            transform: translateY(-1px);
+            border-color: rgba(49, 90, 64, 0.5);
+            box-shadow: 0 0 0 4px rgba(49, 90, 64, 0.08);
+        }
+
+        .btn-row {
+            grid-auto-flow: column;
+            justify-content: start;
+            align-items: center;
+        }
+
+        button {
+            border: none;
+            border-radius: 999px;
+            padding: 13px 18px;
+            cursor: pointer;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease, background 0.18s ease;
+        }
+
+        button:hover {
+            transform: translateY(-1px);
+        }
+
+        button:disabled {
+            opacity: 0.56;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .primary {
+            background: var(--olive);
+            color: #f7f5ee;
+            box-shadow: 0 12px 24px rgba(49, 90, 64, 0.24);
+        }
+
+        .secondary {
+            background: rgba(23, 34, 25, 0.08);
+            color: var(--ink);
+        }
+
+        .accent {
+            background: var(--terracotta);
+            color: #fff7f2;
+            box-shadow: 0 12px 24px rgba(184, 91, 55, 0.22);
+        }
+
+        .ghost {
+            background: transparent;
+            color: var(--ink);
+            border: 1px solid rgba(23, 34, 25, 0.16);
+        }
+
+        .flow-btn,
+        .source-btn {
+            padding: 18px;
+            border-radius: var(--radius-lg);
+            border: 1px solid rgba(23, 34, 25, 0.1);
+            background: rgba(255, 255, 255, 0.72);
+            text-align: left;
+        }
+
+        .flow-btn.active,
+        .source-btn.active {
+            background: rgba(49, 90, 64, 0.1);
+            border-color: rgba(49, 90, 64, 0.28);
+            box-shadow: 0 14px 24px rgba(49, 90, 64, 0.12);
+        }
+
+        .flow-btn strong,
+        .source-btn strong {
+            display: block;
+            margin-bottom: 6px;
+            font-family: "Space Grotesk", "Arial", sans-serif;
+            font-size: 1.02rem;
+        }
+
+        .flow-btn span,
+        .source-btn span {
+            color: var(--muted);
+            line-height: 1.45;
+        }
+
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 999px;
+            background: rgba(23, 34, 25, 0.06);
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #98a098;
+            box-shadow: 0 0 0 6px rgba(152, 160, 152, 0.12);
+        }
+
+        .status-dot.ok {
+            background: var(--success);
+            box-shadow: 0 0 0 6px rgba(47, 112, 74, 0.12);
+        }
+
+        .status-dot.error {
+            background: var(--rose);
+            box-shadow: 0 0 0 6px rgba(142, 64, 64, 0.12);
+        }
+
+        .message-box,
+        .note-box,
+        .result-card,
+        .topic-card,
+        .trace-card,
+        .attempt-card,
+        .option-card,
+        .json-box {
+            border-radius: var(--radius-lg);
+            border: 1px solid rgba(23, 34, 25, 0.1);
+            background: rgba(255, 255, 255, 0.78);
+        }
+
+        .message-box,
+        .note-box,
+        .result-card,
+        .trace-card,
+        .attempt-card,
+        .option-card {
+            padding: 16px;
+        }
+
+        .message-box {
+            color: var(--muted);
+        }
+
+        .message-box.error-state {
+            color: var(--rose);
+            border-color: rgba(142, 64, 64, 0.24);
+            background: rgba(142, 64, 64, 0.06);
+        }
+
+        .message-box.success-state {
+            color: var(--success);
+            border-color: rgba(47, 112, 74, 0.24);
+            background: rgba(47, 112, 74, 0.06);
+        }
+
+        .note-box p,
+        .result-card p,
+        .topic-card p,
+        .trace-card p {
+            margin: 6px 0 0;
+            color: var(--muted);
+            line-height: 1.55;
+        }
+
+        .result-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .trace-grid {
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        }
+
+        .topic-grid {
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            margin-top: 16px;
+        }
+
+        .topic-card h3,
+        .result-card h3 {
+            margin-bottom: 8px;
+        }
+
+        .meta-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
             margin-top: 10px;
-            display: none;
+        }
+
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            padding: 7px 11px;
+            border-radius: 999px;
+            background: rgba(49, 90, 64, 0.08);
+            color: var(--olive-deep);
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+        }
+
+        .attempt-card header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .attempt-title {
+            font-family: "Space Grotesk", "Arial", sans-serif;
+            font-size: 1rem;
+        }
+
+        .option-list {
+            margin-top: 16px;
+        }
+
+        .option-card {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            cursor: pointer;
+            transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+        }
+
+        .option-card:hover {
+            transform: translateY(-1px);
+            border-color: rgba(49, 90, 64, 0.24);
+        }
+
+        .option-card.selected {
+            border-color: rgba(49, 90, 64, 0.32);
+            background: rgba(49, 90, 64, 0.08);
+        }
+
+        .option-card input {
+            width: auto;
+            margin-top: 4px;
+            padding: 0;
+            border: none;
+            box-shadow: none;
+        }
+
+        .bullets {
+            gap: 10px;
+        }
+
+        .bullet {
+            padding: 12px 14px;
+            border-radius: var(--radius-md);
+            background: rgba(23, 34, 25, 0.05);
+            color: var(--ink);
+        }
+
+        .mono {
+            font-family: Consolas, "Courier New", monospace;
+            word-break: break-word;
+        }
+
+        .json-box {
+            overflow: auto;
+            padding: 16px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 12.5px;
+            line-height: 1.55;
+            background: rgba(23, 34, 25, 0.92);
+            color: #edf4ee;
+            border-color: rgba(23, 34, 25, 0.3);
+        }
+
+        .muted {
+            color: var(--muted);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        details {
+            border-top: 1px solid rgba(23, 34, 25, 0.08);
+            padding-top: 14px;
+        }
+
+        summary {
+            cursor: pointer;
+            font-weight: 700;
+            color: var(--olive-deep);
+        }
+
+        .helper-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+
+        @keyframes rise {
+            from {
+                opacity: 0;
+                transform: translateY(14px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .hero,
+            .workflow,
+            .grid.two,
+            .grid.three,
+            .result-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .rail-card {
+                position: static;
+            }
+        }
+
+        @media (max-width: 760px) {
+            .shell {
+                width: min(100vw - 18px, 100%);
+                margin: 10px auto 28px;
+            }
+
+            .hero,
+            .panel,
+            .stage-card,
+            .rail-card {
+                padding: 18px;
+                border-radius: 22px;
+            }
+
+            .hero-stats,
+            .flow-switch,
+            .source-switch {
+                grid-template-columns: 1fr;
+            }
+
+            .btn-row {
+                grid-auto-flow: row;
+            }
+
+            button {
+                width: 100%;
+            }
         }
     </style>
 </head>
 <body>
+    <div class="shell">
+        <section class="hero">
+            <div>
+                <span class="eyebrow">CogniWeave Node Frontend</span>
+                <h1 id="heroTitle">A cleaner frontend flow for the student intervention journey.</h1>
+                <p class="hero-copy" id="heroCopy">
+                    Choose a user path first, then the interface narrows down to only the steps that matter. Student planning and topic-pack building stay separate so the user is not forced through one giant control panel.
+                </p>
 
-    <div class="container">
-        <div class="card">
-            <h1>CogniWeave Intervention System</h1>
-            <p style="color: var(--text-secondary);">Generate a personalized learning plan for a student based on recent failures.</p>
-            
-            <button id="generateBtn" class="btn">Generate Intervention Plan</button>
-            <div id="loader" class="loader">Processing data and reasoning... Please wait...</div>
-            <div id="errorMsg" class="error"></div>
-        </div>
-
-        <div id="results">
-            <div class="grid">
-                <div class="card">
-                    <h2>Diagnosis</h2>
-                    <div class="data-label">Weakest Concept</div>
-                    <div class="data-value" id="diagConcept"></div>
-
-                    <div class="data-label">Identified Misconception</div>
-                    <div class="data-value" id="diagMisconception"></div>
-                    
-                    <div class="data-label">Evidence</div>
-                    <div class="data-value" id="diagEvidence"></div>
-                </div>
-
-                <div class="card">
-                    <h2>Selected Intervention</h2>
-                    <div class="data-label">Strategy</div>
-                    <div class="data-value" id="intStrategy"></div>
-
-                    <div class="data-label">Rationale</div>
-                    <div class="data-value" id="intWhy"></div>
-                    
-                    <div class="data-label">Suggested Activities</div>
-                    <ul id="intActivities" style="margin-top: 0; padding-left: 20px;"></ul>
-                </div>
-            </div>
-
-            <div class="card">
-                <h2>Weekly Schedule</h2>
-                <div id="weeklyPlanContainer"></div>
-            </div>
-
-            <div class="card">
-                <h2>Evaluation Plan</h2>
-                <div class="grid">
-                    <div>
-                        <div class="data-label">Success Signals</div>
-                        <ul id="evalSignals" style="margin-top: 0; padding-left: 20px;"></ul>
+                <div class="hero-stats">
+                    <div class="stat-card">
+                        <div class="label">Backend</div>
+                        <div class="value" id="heroBackendState">Checking</div>
                     </div>
-                    <div>
-                        <div class="data-label">Recheck After</div>
-                        <div class="data-value" id="evalRecheck"></div>
-                        <div class="data-label">Replan Trigger</div>
-                        <div class="data-value" id="evalReplan"></div>
+                    <div class="stat-card">
+                        <div class="label">Topics</div>
+                        <div class="value" id="heroTopicCount">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="label">Current Flow</div>
+                        <div class="value" id="heroFlowState">Student</div>
                     </div>
                 </div>
             </div>
-            <div class="card" id="checkpointCard" style="display: none; border-color: var(--accent-color);">
-                <h2>📝 Knowledge Checkpoint</h2>
-                <div class="data-label">Test your understanding to demonstrate mastery.</div>
-                <div id="mcqContainer" style="margin-top: 15px;">
-                    <div id="mcqQuestion" style="font-size: 16px; margin-bottom: 15px; font-weight: 500;"></div>
-                    <div id="mcqOptions"></div>
-                    <button id="submitMcqBtn" class="btn" style="margin-top: 20px;">Submit Answer</button>
-                    <div id="mcqFeedback" style="margin-top: 15px; font-weight: bold; display: none;"></div>
+
+            <div class="top-cards">
+                <div class="mini-card">
+                    <div class="mini-label">Backend Connection</div>
+                    <div class="field" style="margin-top: 10px;">
+                        <label for="backendBaseUrl">Backend Base URL</label>
+                        <input id="backendBaseUrl" type="text" value="http://localhost:8000" spellcheck="false">
+                    </div>
+                    <div class="btn-row" style="margin-top: 12px;">
+                        <button class="primary" id="refreshConnectionBtn" type="button">Check Backend</button>
+                        <button class="secondary" id="resetDemoBtn" type="button">Load Demo</button>
+                    </div>
+                    <p>The page uses direct fetch calls, so it can be opened locally while the Node backend runs separately.</p>
+                </div>
+
+                <div class="mini-card">
+                    <div class="mini-label">Choose A Flow</div>
+                    <div class="flow-switch" style="margin-top: 12px;">
+                        <button class="flow-btn active" id="studentFlowBtn" type="button">
+                            <strong>Student Journey</strong>
+                            <span>Set up a learner, generate a plan, then run a checkpoint.</span>
+                        </button>
+                        <button class="flow-btn" id="builderFlowBtn" type="button">
+                            <strong>Topic Builder</strong>
+                            <span>Create or refresh a knowledge pack from text or PDF.</span>
+                        </button>
+                    </div>
                 </div>
             </div>
+        </section>
+
+        <div class="stack">
+            <section class="panel">
+                <div class="section-head">
+                    <div>
+                        <h2>Backend Snapshot</h2>
+                        <p>Health check, live topic discovery, and a quick way to verify the backend is reachable before continuing.</p>
+                    </div>
+                    <div class="pill">
+                        <span class="status-dot" id="statusDot"></span>
+                        <span id="statusText">Waiting for check</span>
+                    </div>
+                </div>
+
+                <div class="helper-row">
+                    <div class="note-box">
+                        <div class="mini-label">Health Route</div>
+                        <div class="mono" id="healthEndpoint">http://localhost:8000/health</div>
+                    </div>
+                    <button class="secondary" id="refreshTopicsBtn" type="button">Reload Topics</button>
+                </div>
+
+                <div id="topicsMessage" class="message-box" style="margin-top: 16px;">Topics will appear here after the first successful refresh.</div>
+                <div id="topicsGrid" class="topic-grid"></div>
+            </section>
+
+            <section class="panel" id="studentFlow">
+                <div class="section-head">
+                    <div>
+                        <h2>Student Journey</h2>
+                        <p>A guided flow for intervention planning. Set up the learner, log attempts, generate a plan, and only then reveal checkpoint tools.</p>
+                    </div>
+                </div>
+
+                <div class="workflow">
+                    <aside class="rail-card">
+                        <span class="eyebrow">Flow Steps</span>
+                        <div class="step-list" id="studentSteps">
+                            <div class="step-item active pending" data-step="setup" data-target="studentSetupSection">
+                                <div class="step-index">1</div>
+                                <div class="step-copy">
+                                    <strong>Setup learner</strong>
+                                    <p>Choose topic, goals, and workload.</p>
+                                </div>
+                            </div>
+                            <div class="step-item pending" data-step="attempts" data-target="studentAttemptsSection">
+                                <div class="step-index">2</div>
+                                <div class="step-copy">
+                                    <strong>Add attempts</strong>
+                                    <p>Capture recent failures or successes.</p>
+                                </div>
+                            </div>
+                            <div class="step-item pending" data-step="generate" data-target="studentGenerateSection">
+                                <div class="step-index">3</div>
+                                <div class="step-copy">
+                                    <strong>Generate plan</strong>
+                                    <p>Send a valid student snapshot.</p>
+                                </div>
+                            </div>
+                            <div class="step-item pending" data-step="review" data-target="studentResultsSection">
+                                <div class="step-index">4</div>
+                                <div class="step-copy">
+                                    <strong>Review output</strong>
+                                    <p>See diagnosis, intervention, and trace.</p>
+                                </div>
+                            </div>
+                            <div class="step-item pending" data-step="checkpoint" data-target="studentCheckpointSection">
+                                <div class="step-index">5</div>
+                                <div class="step-copy">
+                                    <strong>Run checkpoint</strong>
+                                    <p>Fetch an MCQ and decide whether to replan.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </aside>
+
+                    <div class="flow-main">
+                        <section class="stage-card" id="studentSetupSection">
+                            <div class="stage-head">
+                                <div>
+                                    <div class="step-kicker">Step 1</div>
+                                    <h3>Setup Learner</h3>
+                                    <p>Start with the basic learner context. Advanced optional fields stay tucked away until they are actually needed.</p>
+                                </div>
+                                <div class="pill">Student path</div>
+                            </div>
+
+                            <div class="grid two">
+                                <div class="field">
+                                    <label for="studentId">Student ID</label>
+                                    <input id="studentId" type="text" value="stu_001">
+                                </div>
+                                <div class="field">
+                                    <label for="subjectSelect">Subject / Topic</label>
+                                    <select id="subjectSelect"></select>
+                                </div>
+                            </div>
+
+                            <div class="grid two" style="margin-top: 14px;">
+                                <div class="field">
+                                    <label for="goalsInput">Goals</label>
+                                    <input id="goalsInput" type="text" value="Improve joins, Reduce repeat mistakes">
+                                </div>
+                                <div class="field">
+                                    <label for="hoursInput">Hours Per Week</label>
+                                    <input id="hoursInput" type="number" min="1" step="1" value="6">
+                                </div>
+                            </div>
+
+                            <details style="margin-top: 16px;">
+                                <summary>Advanced learner fields</summary>
+                                <div class="grid two" style="margin-top: 14px;">
+                                    <div class="field">
+                                        <label for="priorInterventionsInput">Prior Interventions</label>
+                                        <input id="priorInterventionsInput" type="text" placeholder="comma separated">
+                                    </div>
+                                    <div class="field">
+                                        <label for="confidenceInput">Confidence By Concept</label>
+                                        <input id="confidenceInput" type="text" placeholder="joins:0.2, group_by:0.7">
+                                    </div>
+                                </div>
+                                <div class="field" style="margin-top: 14px;">
+                                    <label for="deadlinesInput">Upcoming Deadlines</label>
+                                    <input id="deadlinesInput" type="text" placeholder="midterm:5, assignment_2:2">
+                                </div>
+                            </details>
+
+                            <div class="btn-row" style="margin-top: 18px;">
+                                <button class="primary" id="toAttemptsBtn" type="button">Continue To Attempts</button>
+                            </div>
+                        </section>
+
+                        <section class="stage-card" id="studentAttemptsSection">
+                            <div class="stage-head">
+                                <div>
+                                    <div class="step-kicker">Step 2</div>
+                                    <h3>Log Recent Attempts</h3>
+                                    <p>These attempts become the live <span class="mono">attempts[]</span> payload sent to the orchestration route.</p>
+                                </div>
+                                <button class="ghost" id="addAttemptBtn" type="button">Add Attempt</button>
+                            </div>
+
+                            <div id="attemptList" class="attempt-list"></div>
+
+                            <div class="btn-row" style="margin-top: 18px;">
+                                <button class="primary" id="toGenerateBtn" type="button">Continue To Plan</button>
+                            </div>
+                        </section>
+
+                        <section class="stage-card" id="studentGenerateSection">
+                            <div class="stage-head">
+                                <div>
+                                    <div class="step-kicker">Step 3</div>
+                                    <h3>Generate Intervention Plan</h3>
+                                    <p>Preview the request, then submit it to <span class="mono">POST /orchestrate</span>. The result panel only appears after a successful run.</p>
+                                </div>
+                            </div>
+
+                            <div class="btn-row">
+                                <button class="primary" id="runPlanBtn" type="button">Run Intervention Plan</button>
+                                <button class="secondary" id="clearResultsBtn" type="button">Clear Plan Output</button>
+                            </div>
+
+                            <details style="margin-top: 18px;">
+                                <summary>Request JSON Preview</summary>
+                                <pre class="json-box" id="snapshotPreview">{}</pre>
+                            </details>
+                        </section>
+
+                        <section class="stage-card hidden" id="studentResultsSection">
+                            <div class="stage-head">
+                                <div>
+                                    <div class="step-kicker">Step 4</div>
+                                    <h3>Review The Plan</h3>
+                                    <p>Once the backend responds, the user sees the high-level explanation first and the raw trace second.</p>
+                                </div>
+                                <button class="accent" id="loadCheckpointBtn" type="button" disabled>Load Checkpoint Problem</button>
+                            </div>
+
+                            <div id="resultMessage" class="message-box">Run an orchestration request to populate this area.</div>
+
+                            <div id="resultArea" class="hidden" style="margin-top: 16px;">
+                                <div class="result-grid">
+                                    <article class="result-card">
+                                        <h3>Diagnosis</h3>
+                                        <div class="bullets" id="diagnosisCard"></div>
+                                    </article>
+                                    <article class="result-card">
+                                        <h3>Selected Intervention</h3>
+                                        <div class="bullets" id="interventionCard"></div>
+                                    </article>
+                                    <article class="result-card">
+                                        <h3>Weekly Plan</h3>
+                                        <div class="bullets" id="weeklyPlanCard"></div>
+                                    </article>
+                                    <article class="result-card">
+                                        <h3>Evaluation Plan</h3>
+                                        <div class="bullets" id="evaluationCard"></div>
+                                    </article>
+                                </div>
+
+                                <div style="margin-top: 16px;">
+                                    <h3>Agent Trace</h3>
+                                    <div id="traceGrid" class="trace-grid" style="margin-top: 12px;"></div>
+                                </div>
+
+                                <details style="margin-top: 18px;">
+                                    <summary>Raw Response JSON</summary>
+                                    <pre class="json-box" id="responsePreview">{}</pre>
+                                </details>
+                            </div>
+                        </section>
+
+                        <section class="stage-card hidden" id="studentCheckpointSection">
+                            <div class="stage-head">
+                                <div>
+                                    <div class="step-kicker">Step 5</div>
+                                    <h3>Run A Knowledge Checkpoint</h3>
+                                    <p>Fetch a concept-linked MCQ only after a plan exists, then either confirm mastery or feed the failure back into the planner.</p>
+                                </div>
+                                <div class="pill">
+                                    <span class="status-dot" id="checkpointDot"></span>
+                                    <span id="checkpointStatus">No problem loaded</span>
+                                </div>
+                            </div>
+
+                            <div id="checkpointMessage" class="message-box">Load a plan first, then fetch a checkpoint problem for the recommended concept.</div>
+                            <div id="checkpointPanel" class="hidden" style="margin-top: 16px;">
+                                <div class="result-card">
+                                    <div class="mini-label">Problem ID</div>
+                                    <div class="mono" id="checkpointProblemId"></div>
+                                    <h3 style="margin-top: 10px;" id="checkpointTitle"></h3>
+                                    <p class="muted" id="checkpointQuestion"></p>
+
+                                    <div id="mcqOptions" class="option-list"></div>
+
+                                    <div class="btn-row" style="margin-top: 18px;">
+                                        <button class="accent" id="submitCheckpointBtn" type="button" disabled>Submit Checkpoint</button>
+                                        <button class="secondary" id="rerunWithFailureBtn" type="button" disabled>Use Failure And Replan</button>
+                                    </div>
+
+                                    <div id="checkpointFeedback" class="message-box" style="margin-top: 16px;">Answer feedback will appear here.</div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </section>
+
+            <section class="panel hidden" id="builderFlow">
+                <div class="section-head">
+                    <div>
+                        <h2>Topic Builder</h2>
+                        <p>A separate path for ingestion so builders are not mixed into the learner-facing intervention journey.</p>
+                    </div>
+                </div>
+
+                <div class="workflow">
+                    <aside class="rail-card">
+                        <span class="eyebrow">Builder Steps</span>
+                        <div class="step-list" id="builderSteps">
+                            <div class="step-item active pending" data-step="basics" data-target="builderBasicsSection">
+                                <div class="step-index">1</div>
+                                <div class="step-copy">
+                                    <strong>Set topic basics</strong>
+                                    <p>Choose topic id and title.</p>
+                                </div>
+                            </div>
+                            <div class="step-item pending" data-step="source" data-target="builderSourceSection">
+                                <div class="step-index">2</div>
+                                <div class="step-copy">
+                                    <strong>Choose source</strong>
+                                    <p>Switch between text and PDF ingestion.</p>
+                                </div>
+                            </div>
+                            <div class="step-item pending" data-step="generate" data-target="builderGenerateSection">
+                                <div class="step-index">3</div>
+                                <div class="step-copy">
+                                    <strong>Generate pack</strong>
+                                    <p>Send the selected ingestion request.</p>
+                                </div>
+                            </div>
+                            <div class="step-item pending" data-step="review" data-target="builderResultsSection">
+                                <div class="step-index">4</div>
+                                <div class="step-copy">
+                                    <strong>Review output</strong>
+                                    <p>Inspect success, validation, and returned JSON.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </aside>
+
+                    <div class="flow-main">
+                        <section class="stage-card" id="builderBasicsSection">
+                            <div class="stage-head">
+                                <div>
+                                    <div class="step-kicker">Step 1</div>
+                                    <h3>Topic Basics</h3>
+                                    <p>Start by naming the pack. This information is reused by either ingestion mode.</p>
+                                </div>
+                                <div class="pill">Builder path</div>
+                            </div>
+
+                            <div class="grid two">
+                                <div class="field">
+                                    <label for="sharedTopicId">Topic ID</label>
+                                    <input id="sharedTopicId" type="text" placeholder="operating_systems_memory">
+                                </div>
+                                <div class="field">
+                                    <label for="sharedTopicTitle">Title</label>
+                                    <input id="sharedTopicTitle" type="text" placeholder="Memory Management">
+                                </div>
+                            </div>
+
+                            <div class="btn-row" style="margin-top: 18px;">
+                                <button class="primary" id="toBuilderSourceBtn" type="button">Continue To Source</button>
+                            </div>
+                        </section>
+
+                        <section class="stage-card" id="builderSourceSection">
+                            <div class="stage-head">
+                                <div>
+                                    <div class="step-kicker">Step 2</div>
+                                    <h3>Choose Ingestion Source</h3>
+                                    <p>Show only the form that matches the source the user picked.</p>
+                                </div>
+                            </div>
+
+                            <div class="source-switch">
+                                <button class="source-btn active" id="textModeBtn" type="button">
+                                    <strong>Text Source</strong>
+                                    <span>Paste chapter or textbook text directly into the app.</span>
+                                </button>
+                                <button class="source-btn" id="pdfModeBtn" type="button">
+                                    <strong>PDF Source</strong>
+                                    <span>Upload a PDF and select the chapter index to extract.</span>
+                                </button>
+                            </div>
+                        </section>
+
+                        <section class="stage-card" id="builderGenerateSection">
+                            <div class="stage-head">
+                                <div>
+                                    <div class="step-kicker">Step 3</div>
+                                    <h3>Generate The Pack</h3>
+                                    <p>Only one generation form stays visible at a time, so the builder is not overwhelmed by both text and PDF controls.</p>
+                                </div>
+                            </div>
+
+                            <div id="textSourcePanel">
+                                <div class="grid two">
+                                    <div class="field">
+                                        <label for="ingestChapterIndex">Chapter Index</label>
+                                        <input id="ingestChapterIndex" type="number" min="0" step="1" value="0">
+                                    </div>
+                                    <div class="field">
+                                        <label for="ingestOverwrite">Overwrite Existing</label>
+                                        <select id="ingestOverwrite">
+                                            <option value="false" selected>false</option>
+                                            <option value="true">true</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="field" style="margin-top: 14px;">
+                                    <label for="ingestContent">Source Text</label>
+                                    <textarea id="ingestContent" placeholder="Paste textbook or chapter text here."></textarea>
+                                </div>
+                                <div class="btn-row" style="margin-top: 18px;">
+                                    <button class="primary" id="submitTextIngestBtn" type="button">Generate From Text</button>
+                                </div>
+                            </div>
+
+                            <div id="pdfSourcePanel" class="hidden">
+                                <div class="grid two">
+                                    <div class="field">
+                                        <label for="pdfChapterIndex">Chapter Index</label>
+                                        <input id="pdfChapterIndex" type="number" min="0" step="1" value="0">
+                                    </div>
+                                    <div class="field">
+                                        <label for="pdfOverwrite">Overwrite Existing</label>
+                                        <select id="pdfOverwrite">
+                                            <option value="false" selected>false</option>
+                                            <option value="true">true</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="field" style="margin-top: 14px;">
+                                    <label for="pdfFile">PDF File</label>
+                                    <input id="pdfFile" type="file" accept=".pdf,application/pdf">
+                                </div>
+                                <div class="btn-row" style="margin-top: 18px;">
+                                    <button class="primary" id="submitPdfIngestBtn" type="button">Generate From PDF</button>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section class="stage-card" id="builderResultsSection">
+                            <div class="stage-head">
+                                <div>
+                                    <div class="step-kicker">Step 4</div>
+                                    <h3>Review Builder Output</h3>
+                                    <p>The response summary stays up front, while the full JSON sits below for deeper debugging.</p>
+                                </div>
+                            </div>
+
+                            <div id="ingestMessage" class="message-box">Ingestion results will appear here after you generate a pack.</div>
+
+                            <details style="margin-top: 18px;">
+                                <summary>Ingestion Response JSON</summary>
+                                <pre class="json-box" id="ingestPreview">{}</pre>
+                            </details>
+                        </section>
+                    </div>
+                </div>
+            </section>
         </div>
     </div>
 
     <script>
-        const MOCK_PAYLOAD = {
-            "profile": {
-                "student_id": "stu_001",
-                "subject": "sql_query_reasoning",
-                "goals": ["Improve Joins"],
-                "available_hours_per_week": 6,
-                "confidence_by_concept": {},
-                "upcoming_deadlines": []
+        const DEFAULT_TOPICS = [
+            { topic_id: "sql_query_reasoning", title: "SQL Query Reasoning", difficulty: "starter", description: "Starter SQL reasoning pack." },
+            { topic_id: "python_oop", title: "Python OOP", difficulty: "starter", description: "Object-oriented programming pack." },
+            { topic_id: "biology_cell_biology", title: "Biology Cell Biology", difficulty: "starter", description: "Cell biology learning pack." }
+        ];
+
+        const DEMO_SNAPSHOT = {
+            profile: {
+                student_id: "stu_001",
+                subject: "sql_query_reasoning",
+                goals: ["Improve joins", "Reduce repeat mistakes"],
+                available_hours_per_week: 6,
+                confidence_by_concept: { joins: 0.2, group_by: 0.6 },
+                upcoming_deadlines: [{ label: "quiz_2", days_left: 5 }]
             },
-            "attempts": [
+            attempts: [
                 {
-                    "problem_id": "sql_002",
-                    "concept": "joins",
-                    "correct": false,
-                    "error_tags": ["wrong_join_key"],
-                    "hints_used": 0,
-                    "retries": 0
+                    problem_id: "sql_002",
+                    concept: "joins",
+                    correct: false,
+                    error_tags: ["wrong_join_key"],
+                    time_seconds: 420,
+                    hints_used: 1,
+                    retries: 1
                 }
             ],
-            "prior_interventions": []
+            prior_interventions: []
         };
 
-        document.getElementById('generateBtn').addEventListener('click', async () => {
-            const btn = document.getElementById('generateBtn');
-            const loader = document.getElementById('loader');
-            const results = document.getElementById('results');
-            const errorMsg = document.getElementById('errorMsg');
-
-            btn.disabled = true;
-            loader.style.display = 'block';
-            results.style.display = 'none';
-            errorMsg.style.display = 'none';
-
-            try {
-                const response = await fetch('http://localhost:8000/orchestrate', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(MOCK_PAYLOAD)
-                });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                const data = await response.json();
-                
-                // Populate Diagnosis
-                document.getElementById('diagConcept').textContent = data.diagnosis.weakest_concept;
-                document.getElementById('diagMisconception').textContent = data.diagnosis.misconception?.description || 'None';
-                document.getElementById('diagEvidence').textContent = data.diagnosis.evidence?.summary || 'N/A';
-
-                // Populate Intervention
-                document.getElementById('intStrategy').textContent = data.selected_intervention.strategy;
-                document.getElementById('intWhy').textContent = data.selected_intervention.why;
-                
-                const ulActivities = document.getElementById('intActivities');
-                ulActivities.innerHTML = '';
-                data.selected_intervention.activities.forEach(act => {
-                    const li = document.createElement('li');
-                    li.textContent = act;
-                    ulActivities.appendChild(li);
-                });
-
-                // Populate Weekly Plan
-                const planContainer = document.getElementById('weeklyPlanContainer');
-                planContainer.innerHTML = '';
-                data.weekly_plan.forEach(block => {
-                    const div = document.createElement('div');
-                    div.className = 'plan-item';
-                    div.innerHTML = `
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                            <strong>${block.day} - ${block.focus}</strong>
-                            <span class="tag">${block.activity_type}</span>
-                        </div>
-                        <div style="color: var(--text-secondary); font-size: 14px;">Duration: ${block.minutes} minutes</div>
-                    `;
-                    planContainer.appendChild(div);
-                });
-
-                // Populate Evaluation
-                const ulSignals = document.getElementById('evalSignals');
-                ulSignals.innerHTML = '';
-                data.evaluation_plan.success_signals.forEach(sig => {
-                    const li = document.createElement('li');
-                    li.textContent = sig;
-                    ulSignals.appendChild(li);
-                });
-                document.getElementById('evalRecheck').textContent = data.evaluation_plan.recheck_after;
-                document.getElementById('evalReplan').textContent = data.evaluation_plan.replan_trigger;
-
-                results.style.display = 'block';
-
-                // Fetch Checkpoint MCQ
-                fetchCheckpointProblem(MOCK_PAYLOAD.profile.subject, data.diagnosis.weakest_concept);
-
-            } catch (err) {
-                errorMsg.textContent = 'Failed to generate plan: ' + err.message;
-                errorMsg.style.display = 'block';
-            } finally {
-                btn.disabled = false;
-                loader.style.display = 'none';
+        const FLOW_COPY = {
+            student: {
+                title: "A cleaner frontend flow for the student intervention journey.",
+                copy: "Choose a learner, log attempts, generate a plan, and only then reveal the checkpoint step. This keeps intervention work readable for actual users."
+            },
+            builder: {
+                title: "A focused builder flow for creating and refreshing topic packs.",
+                copy: "Topic creation lives in its own path. Builders choose text or PDF, generate the pack, and inspect validation output without seeing student-planning controls."
             }
-        });
+        };
 
-        let currentProblemId = null;
+        const state = {
+            topics: [],
+            backendOnline: false,
+            activeFlow: "student",
+            ingestMode: "text",
+            result: null,
+            checkpointProblem: null,
+            lastEvaluation: null,
+            ingestResult: null
+        };
 
-        async function fetchCheckpointProblem(topicId, conceptId) {
-            try {
-                const response = await fetch(`http://localhost:8000/evaluation/problems/${topicId}/${conceptId}`);
-                if (!response.ok) return; // Silent fail if no problem exists
-                
-                const problem = await response.json();
-                currentProblemId = problem.id;
-                
-                document.getElementById('checkpointCard').style.display = 'block';
-                document.getElementById('mcqQuestion').textContent = problem.question_text;
-                document.getElementById('mcqFeedback').style.display = 'none';
-                
-                const optionsDiv = document.getElementById('mcqOptions');
-                optionsDiv.innerHTML = '';
-                
-                for (const [key, val] of Object.entries(problem.options)) {
-                    const label = document.createElement('label');
-                    label.style.display = 'block';
-                    label.style.marginBottom = '10px';
-                    label.style.cursor = 'pointer';
-                    
-                    const radio = document.createElement('input');
-                    radio.type = 'radio';
-                    radio.name = 'mcqOption';
-                    radio.value = key;
-                    radio.style.marginRight = '10px';
-                    
-                    label.appendChild(radio);
-                    label.appendChild(document.createTextNode(`${key}: ${val}`));
-                    optionsDiv.appendChild(label);
-                }
-            } catch (err) {
-                console.error("Failed to fetch checkpoint problem", err);
+        const el = {
+            backendBaseUrl: document.getElementById("backendBaseUrl"),
+            heroTitle: document.getElementById("heroTitle"),
+            heroCopy: document.getElementById("heroCopy"),
+            heroBackendState: document.getElementById("heroBackendState"),
+            heroTopicCount: document.getElementById("heroTopicCount"),
+            heroFlowState: document.getElementById("heroFlowState"),
+            statusDot: document.getElementById("statusDot"),
+            statusText: document.getElementById("statusText"),
+            healthEndpoint: document.getElementById("healthEndpoint"),
+            topicsMessage: document.getElementById("topicsMessage"),
+            topicsGrid: document.getElementById("topicsGrid"),
+            studentFlow: document.getElementById("studentFlow"),
+            builderFlow: document.getElementById("builderFlow"),
+            studentFlowBtn: document.getElementById("studentFlowBtn"),
+            builderFlowBtn: document.getElementById("builderFlowBtn"),
+            subjectSelect: document.getElementById("subjectSelect"),
+            studentId: document.getElementById("studentId"),
+            goalsInput: document.getElementById("goalsInput"),
+            hoursInput: document.getElementById("hoursInput"),
+            priorInterventionsInput: document.getElementById("priorInterventionsInput"),
+            confidenceInput: document.getElementById("confidenceInput"),
+            deadlinesInput: document.getElementById("deadlinesInput"),
+            attemptList: document.getElementById("attemptList"),
+            snapshotPreview: document.getElementById("snapshotPreview"),
+            resultMessage: document.getElementById("resultMessage"),
+            resultArea: document.getElementById("resultArea"),
+            diagnosisCard: document.getElementById("diagnosisCard"),
+            interventionCard: document.getElementById("interventionCard"),
+            weeklyPlanCard: document.getElementById("weeklyPlanCard"),
+            evaluationCard: document.getElementById("evaluationCard"),
+            traceGrid: document.getElementById("traceGrid"),
+            responsePreview: document.getElementById("responsePreview"),
+            loadCheckpointBtn: document.getElementById("loadCheckpointBtn"),
+            studentResultsSection: document.getElementById("studentResultsSection"),
+            studentCheckpointSection: document.getElementById("studentCheckpointSection"),
+            checkpointDot: document.getElementById("checkpointDot"),
+            checkpointStatus: document.getElementById("checkpointStatus"),
+            checkpointMessage: document.getElementById("checkpointMessage"),
+            checkpointPanel: document.getElementById("checkpointPanel"),
+            checkpointProblemId: document.getElementById("checkpointProblemId"),
+            checkpointTitle: document.getElementById("checkpointTitle"),
+            checkpointQuestion: document.getElementById("checkpointQuestion"),
+            mcqOptions: document.getElementById("mcqOptions"),
+            submitCheckpointBtn: document.getElementById("submitCheckpointBtn"),
+            rerunWithFailureBtn: document.getElementById("rerunWithFailureBtn"),
+            checkpointFeedback: document.getElementById("checkpointFeedback"),
+            sharedTopicId: document.getElementById("sharedTopicId"),
+            sharedTopicTitle: document.getElementById("sharedTopicTitle"),
+            textModeBtn: document.getElementById("textModeBtn"),
+            pdfModeBtn: document.getElementById("pdfModeBtn"),
+            textSourcePanel: document.getElementById("textSourcePanel"),
+            pdfSourcePanel: document.getElementById("pdfSourcePanel"),
+            ingestChapterIndex: document.getElementById("ingestChapterIndex"),
+            ingestOverwrite: document.getElementById("ingestOverwrite"),
+            ingestContent: document.getElementById("ingestContent"),
+            pdfChapterIndex: document.getElementById("pdfChapterIndex"),
+            pdfOverwrite: document.getElementById("pdfOverwrite"),
+            pdfFile: document.getElementById("pdfFile"),
+            submitTextIngestBtn: document.getElementById("submitTextIngestBtn"),
+            submitPdfIngestBtn: document.getElementById("submitPdfIngestBtn"),
+            ingestMessage: document.getElementById("ingestMessage"),
+            ingestPreview: document.getElementById("ingestPreview"),
+            studentSteps: document.getElementById("studentSteps"),
+            builderSteps: document.getElementById("builderSteps")
+        };
+
+        function escapeHtml(value) {
+            return String(value ?? "")
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#39;");
+        }
+
+        function getBaseUrl() {
+            return el.backendBaseUrl.value.trim().replace(/\/+$/, "");
+        }
+
+        function endpoint(path) {
+            return `${getBaseUrl()}${path}`;
+        }
+
+        function formatJson(value) {
+            return JSON.stringify(value, null, 2);
+        }
+
+        function setMessage(node, message, variant = "") {
+            node.textContent = message;
+            node.className = "message-box";
+            if (variant === "error") {
+                node.classList.add("error-state");
+            } else if (variant === "success") {
+                node.classList.add("success-state");
             }
         }
 
-        document.getElementById('submitMcqBtn').addEventListener('click', async () => {
-            const selected = document.querySelector('input[name="mcqOption"]:checked');
-            const feedbackDiv = document.getElementById('mcqFeedback');
-            
-            if (!selected) {
-                feedbackDiv.textContent = "Please select an answer first.";
-                feedbackDiv.style.color = "var(--error-color)";
-                feedbackDiv.style.display = 'block';
-                return;
+        async function readResponsePayload(response) {
+            const text = await response.text();
+            if (!text) {
+                return null;
             }
 
             try {
-                const submission = {
-                    student_id: MOCK_PAYLOAD.profile.student_id,
-                    problem_id: currentProblemId,
-                    selected_option: selected.value
+                return JSON.parse(text);
+            } catch {
+                return { detail: text };
+            }
+        }
+
+        function formatApiError(payload, fallbackMessage) {
+            if (!payload) {
+                return fallbackMessage;
+            }
+
+            const parts = [];
+            if (payload.detail) {
+                parts.push(payload.detail);
+            }
+            if (payload.model) {
+                parts.push(`Model: ${payload.model}.`);
+            }
+            if (Array.isArray(payload.attempted_models) && payload.attempted_models.length > 1) {
+                parts.push(`Tried: ${payload.attempted_models.join(", ")}.`);
+            }
+            if (Number.isFinite(payload.retry_after_seconds)) {
+                parts.push(`Retry after ${payload.retry_after_seconds}s.`);
+            }
+
+            return parts.join(" ").trim() || fallbackMessage;
+        }
+
+        function setButtonBusy(button, busy, busyLabel) {
+            if (!button) return;
+            if (!button.dataset.defaultLabel) {
+                button.dataset.defaultLabel = button.textContent;
+            }
+
+            button.disabled = busy;
+            button.textContent = busy ? busyLabel : button.dataset.defaultLabel;
+        }
+
+        function parseCsvList(value) {
+            return value
+                .split(",")
+                .map((item) => item.trim())
+                .filter(Boolean);
+        }
+
+        function parseNumber(value) {
+            if (value === "" || value === null || value === undefined) {
+                return null;
+            }
+            const num = Number(value);
+            return Number.isFinite(num) ? num : null;
+        }
+
+        function parseConfidenceMap(value) {
+            const map = {};
+            parseCsvList(value).forEach((entry) => {
+                const [key, rawScore] = entry.split(":").map((part) => part.trim());
+                if (!key) return;
+                const score = Number(rawScore);
+                if (Number.isFinite(score)) {
+                    map[key] = score;
+                }
+            });
+            return map;
+        }
+
+        function parseDeadlines(value) {
+            return parseCsvList(value)
+                .map((entry) => {
+                    const [label, rawDays] = entry.split(":").map((part) => part.trim());
+                    const daysLeft = Number(rawDays);
+                    if (!label || !Number.isFinite(daysLeft)) return null;
+                    return { label, days_left: daysLeft };
+                })
+                .filter(Boolean);
+        }
+
+        function scrollToSection(id) {
+            const node = document.getElementById(id);
+            if (node) {
+                node.scrollIntoView({ behavior: "smooth", block: "start" });
+            }
+        }
+
+        function syncSharedBuilderFields() {
+            const topicId = el.sharedTopicId.value.trim();
+            const title = el.sharedTopicTitle.value.trim();
+            el.sharedTopicId.dataset.topicId = topicId;
+            el.sharedTopicTitle.dataset.topicTitle = title;
+        }
+
+        function setFlow(flow) {
+            state.activeFlow = flow;
+            const content = FLOW_COPY[flow];
+            el.heroTitle.textContent = content.title;
+            el.heroCopy.textContent = content.copy;
+            el.heroFlowState.textContent = flow === "student" ? "Student" : "Builder";
+
+            el.studentFlow.classList.toggle("hidden", flow !== "student");
+            el.builderFlow.classList.toggle("hidden", flow !== "builder");
+            el.studentFlowBtn.classList.toggle("active", flow === "student");
+            el.builderFlowBtn.classList.toggle("active", flow === "builder");
+        }
+
+        function setIngestMode(mode) {
+            state.ingestMode = mode;
+            el.textModeBtn.classList.toggle("active", mode === "text");
+            el.pdfModeBtn.classList.toggle("active", mode === "pdf");
+            el.textSourcePanel.classList.toggle("hidden", mode !== "text");
+            el.pdfSourcePanel.classList.toggle("hidden", mode !== "pdf");
+            renderBuilderSteps();
+        }
+
+        function populateTopicSelect(topics) {
+            const currentValue = el.subjectSelect.value || DEMO_SNAPSHOT.profile.subject;
+            const options = topics.length ? topics : DEFAULT_TOPICS;
+            el.subjectSelect.innerHTML = options.map((topic) => {
+                const value = topic.topic_id || topic;
+                const label = topic.title ? `${topic.title} (${value})` : value;
+                return `<option value="${escapeHtml(value)}">${escapeHtml(label)}</option>`;
+            }).join("");
+
+            const match = options.find((topic) => (topic.topic_id || topic) === currentValue);
+            el.subjectSelect.value = match ? currentValue : (options[0]?.topic_id || options[0] || "sql_query_reasoning");
+            updateSnapshotPreview();
+        }
+
+        function renderTopics(topics) {
+            state.topics = topics;
+            el.topicsGrid.innerHTML = "";
+            el.heroTopicCount.textContent = String(topics.length);
+
+            if (!topics.length) {
+                setMessage(el.topicsMessage, "No topics returned by the backend.", "error");
+                populateTopicSelect(DEFAULT_TOPICS);
+                return;
+            }
+
+            setMessage(el.topicsMessage, `Loaded ${topics.length} topic pack${topics.length === 1 ? "" : "s"} from the backend.`, "success");
+
+            topics.forEach((topic) => {
+                const card = document.createElement("article");
+                card.className = "topic-card";
+                card.innerHTML = `
+                    <h3>${escapeHtml(topic.title || topic.topic_id)}</h3>
+                    <div class="mono">${escapeHtml(topic.topic_id)}</div>
+                    <p>${escapeHtml(topic.description || "No description available.")}</p>
+                    <div class="meta-row">
+                        <span class="chip">${escapeHtml(topic.difficulty || "unknown")}</span>
+                    </div>
+                `;
+                el.topicsGrid.appendChild(card);
+            });
+
+            populateTopicSelect(topics);
+        }
+
+        async function refreshConnectionAndTopics() {
+            el.healthEndpoint.textContent = endpoint("/health");
+            try {
+                const [healthRes, topicsRes] = await Promise.all([
+                    fetch(endpoint("/health")),
+                    fetch(endpoint("/ingest/topics"))
+                ]);
+
+                if (!healthRes.ok) {
+                    throw new Error(`Health check failed with ${healthRes.status}`);
+                }
+                if (!topicsRes.ok) {
+                    throw new Error(`Topic fetch failed with ${topicsRes.status}`);
+                }
+
+                const health = await healthRes.json();
+                const topics = await topicsRes.json();
+                state.backendOnline = health.status === "ok";
+
+                el.statusDot.className = "status-dot ok";
+                el.statusText.textContent = "Backend reachable";
+                el.heroBackendState.textContent = "Online";
+                renderTopics(Array.isArray(topics) ? topics : []);
+            } catch (error) {
+                state.backendOnline = false;
+                el.statusDot.className = "status-dot error";
+                el.statusText.textContent = "Backend unreachable";
+                el.heroBackendState.textContent = "Offline";
+                el.topicsGrid.innerHTML = "";
+                el.heroTopicCount.textContent = "0";
+                setMessage(el.topicsMessage, `Could not reach backend: ${error.message}`, "error");
+                populateTopicSelect(DEFAULT_TOPICS);
+            }
+
+            renderStudentSteps();
+            renderBuilderSteps();
+        }
+
+        function createAttemptCard(data = {}) {
+            const wrapper = document.createElement("article");
+            wrapper.className = "attempt-card";
+            wrapper.innerHTML = `
+                <header>
+                    <div class="attempt-title">Attempt</div>
+                    <button class="ghost remove-attempt-btn" type="button">Remove</button>
+                </header>
+                <div class="grid three">
+                    <div class="field">
+                        <label>Problem ID</label>
+                        <input data-field="problem_id" type="text" value="${escapeHtml(data.problem_id || "")}">
+                    </div>
+                    <div class="field">
+                        <label>Concept</label>
+                        <input data-field="concept" type="text" value="${escapeHtml(data.concept || "")}">
+                    </div>
+                    <div class="field">
+                        <label>Correct?</label>
+                        <select data-field="correct">
+                            <option value="false"${data.correct ? "" : " selected"}>false</option>
+                            <option value="true"${data.correct ? " selected" : ""}>true</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid three" style="margin-top: 14px;">
+                    <div class="field">
+                        <label>Error Tags</label>
+                        <input data-field="error_tags" type="text" value="${escapeHtml((data.error_tags || []).join(", "))}" placeholder="wrong_join_key, cartesian_like_output">
+                    </div>
+                    <div class="field">
+                        <label>Time Seconds</label>
+                        <input data-field="time_seconds" type="number" min="0" step="1" value="${escapeHtml(data.time_seconds ?? "")}">
+                    </div>
+                    <div class="field">
+                        <label>Hints Used</label>
+                        <input data-field="hints_used" type="number" min="0" step="1" value="${escapeHtml(data.hints_used ?? 0)}">
+                    </div>
+                </div>
+                <div class="grid two" style="margin-top: 14px;">
+                    <div class="field">
+                        <label>Retries</label>
+                        <input data-field="retries" type="number" min="0" step="1" value="${escapeHtml(data.retries ?? 0)}">
+                    </div>
+                    <div class="field">
+                        <label>Status</label>
+                        <input type="text" value="${escapeHtml(data.correct ? "Successful attempt" : "Recent failed attempt")}" disabled>
+                    </div>
+                </div>
+            `;
+
+            wrapper.querySelector(".remove-attempt-btn").addEventListener("click", () => {
+                if (el.attemptList.children.length > 1) {
+                    wrapper.remove();
+                    updateSnapshotPreview();
+                    renderStudentSteps();
+                }
+            });
+
+            wrapper.querySelectorAll("input, select").forEach((input) => {
+                input.addEventListener("input", () => {
+                    updateSnapshotPreview();
+                    renderStudentSteps();
+                });
+                input.addEventListener("change", () => {
+                    updateSnapshotPreview();
+                    renderStudentSteps();
+                });
+            });
+
+            return wrapper;
+        }
+
+        function addAttempt(data = {}) {
+            el.attemptList.appendChild(createAttemptCard(data));
+            updateSnapshotPreview();
+            renderStudentSteps();
+        }
+
+        function collectAttempts() {
+            return Array.from(el.attemptList.children).map((card) => {
+                const get = (name) => card.querySelector(`[data-field="${name}"]`).value;
+                const attempt = {
+                    problem_id: get("problem_id").trim(),
+                    concept: get("concept").trim(),
+                    correct: get("correct") === "true",
+                    error_tags: parseCsvList(get("error_tags")),
+                    hints_used: Number(get("hints_used")) || 0,
+                    retries: Number(get("retries")) || 0
                 };
 
-                const response = await fetch(`http://localhost:8000/evaluation/evaluate?topic_id=${MOCK_PAYLOAD.profile.subject}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(submission)
+                const timeSeconds = parseNumber(get("time_seconds"));
+                if (timeSeconds !== null) {
+                    attempt.time_seconds = timeSeconds;
+                }
+
+                return attempt;
+            }).filter((attempt) => attempt.problem_id && attempt.concept);
+        }
+
+        function buildSnapshot() {
+            return {
+                profile: {
+                    student_id: el.studentId.value.trim() || "stu_001",
+                    subject: el.subjectSelect.value || "sql_query_reasoning",
+                    goals: parseCsvList(el.goalsInput.value),
+                    available_hours_per_week: Number(el.hoursInput.value) || 6,
+                    confidence_by_concept: parseConfidenceMap(el.confidenceInput.value),
+                    upcoming_deadlines: parseDeadlines(el.deadlinesInput.value)
+                },
+                attempts: collectAttempts(),
+                prior_interventions: parseCsvList(el.priorInterventionsInput.value)
+            };
+        }
+
+        function updateSnapshotPreview() {
+            el.snapshotPreview.textContent = formatJson(buildSnapshot());
+        }
+
+        function renderBullets(node, items) {
+            node.innerHTML = "";
+            items.forEach((item) => {
+                const div = document.createElement("div");
+                div.className = "bullet";
+                div.textContent = item;
+                node.appendChild(div);
+            });
+        }
+
+        function renderResult(result) {
+            state.result = result;
+            el.studentResultsSection.classList.remove("hidden");
+            el.resultArea.classList.remove("hidden");
+            setMessage(el.resultMessage, "Plan generated successfully.", "success");
+            el.responsePreview.textContent = formatJson(result);
+            el.loadCheckpointBtn.disabled = false;
+
+            renderBullets(el.diagnosisCard, [
+                `Weakest concept: ${result.diagnosis.weakest_concept}`,
+                `Top error tag: ${result.diagnosis.top_error_tag || "none"}`,
+                `Confidence: ${result.diagnosis.confidence ?? 1}`,
+                `Misconception label: ${result.diagnosis.misconception_label || "none"}`,
+                `Reasoning: ${result.diagnosis.reasoning || "not provided"}`,
+                `Evidence summary: ${result.diagnosis.evidence_summary || "not provided"}`
+            ]);
+
+            renderBullets(el.interventionCard, [
+                `Concept: ${result.selected_intervention.concept}`,
+                `Strategy: ${result.selected_intervention.strategy}`,
+                `Error tag: ${result.selected_intervention.error_tag || "none"}`,
+                `Estimated sessions: ${result.selected_intervention.estimated_sessions}`,
+                `Why: ${result.selected_intervention.why || "not provided"}`,
+                `Activities: ${(result.selected_intervention.activities || []).join(", ") || "none"}`
+            ]);
+
+            renderBullets(
+                el.weeklyPlanCard,
+                (result.weekly_plan || []).map((item, index) =>
+                    `Day ${index + 1}: ${item.day} | ${item.focus} | ${item.minutes} min | ${item.activity_type}`
+                )
+            );
+
+            renderBullets(el.evaluationCard, [
+                `Concept: ${result.evaluation_plan.concept || "n/a"}`,
+                `Success signals: ${(result.evaluation_plan.success_signals || []).join(", ") || "none"}`,
+                `Recheck after: ${result.evaluation_plan.recheck_after || "n/a"}`,
+                `Replan trigger: ${result.evaluation_plan.replan_trigger || "n/a"}`,
+                `Mastery threshold: ${result.evaluation_plan.mastery_threshold || "n/a"}`,
+                `Critic iterations: ${result.critic_iterations ?? 0}`
+            ]);
+
+            el.traceGrid.innerHTML = "";
+            (result.trace || []).forEach((item) => {
+                const card = document.createElement("article");
+                card.className = "trace-card";
+                card.innerHTML = `
+                    <h3>${escapeHtml(item.agent)}</h3>
+                    <p>${escapeHtml(item.message)}</p>
+                `;
+                el.traceGrid.appendChild(card);
+            });
+
+            renderStudentSteps();
+            scrollToSection("studentResultsSection");
+        }
+
+        async function runOrchestration() {
+            const snapshot = buildSnapshot();
+
+            if (!snapshot.attempts.length) {
+                el.studentResultsSection.classList.remove("hidden");
+                setMessage(el.resultMessage, "Add at least one valid attempt before running the plan.", "error");
+                renderStudentSteps();
+                scrollToSection("studentGenerateSection");
+                return;
+            }
+
+            el.studentResultsSection.classList.remove("hidden");
+            setMessage(el.resultMessage, "Sending orchestration request...");
+
+            try {
+                const response = await fetch(endpoint("/orchestrate"), {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(snapshot)
+                });
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.detail ? JSON.stringify(data.detail) : `Request failed with ${response.status}`);
+                }
+
+                renderResult(data);
+            } catch (error) {
+                el.resultArea.classList.add("hidden");
+                setMessage(el.resultMessage, `Orchestration failed: ${error.message}`, "error");
+                renderStudentSteps();
+            }
+        }
+
+        function inferCheckpointContext() {
+            const snapshot = buildSnapshot();
+            const topicId = snapshot.profile.subject;
+            const resultConcept = state.result?.diagnosis?.weakest_concept || state.result?.evaluation_plan?.concept;
+            const attemptConcept = snapshot.attempts[0]?.concept;
+            const conceptId = resultConcept || attemptConcept;
+            return { topicId, conceptId };
+        }
+
+        function setCheckpointStatus(label, variant = "") {
+            el.checkpointStatus.textContent = label;
+            el.checkpointDot.className = "status-dot";
+            if (variant === "ok") {
+                el.checkpointDot.classList.add("ok");
+            } else if (variant === "error") {
+                el.checkpointDot.classList.add("error");
+            }
+        }
+
+        async function loadCheckpointProblem() {
+            const { topicId, conceptId } = inferCheckpointContext();
+
+            if (!topicId || !conceptId) {
+                el.studentCheckpointSection.classList.remove("hidden");
+                setMessage(el.checkpointMessage, "Need a topic and concept before loading a checkpoint problem.", "error");
+                setCheckpointStatus("Missing context", "error");
+                renderStudentSteps();
+                return;
+            }
+
+            el.studentCheckpointSection.classList.remove("hidden");
+            setMessage(el.checkpointMessage, `Loading checkpoint for ${topicId} / ${conceptId}...`);
+
+            try {
+                const response = await fetch(endpoint(`/evaluation/problems/${encodeURIComponent(topicId)}/${encodeURIComponent(conceptId)}`));
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.detail || `Problem fetch failed with ${response.status}`);
+                }
+
+                state.checkpointProblem = data;
+                state.lastEvaluation = null;
+                el.checkpointPanel.classList.remove("hidden");
+                el.checkpointProblemId.textContent = data.id;
+                el.checkpointTitle.textContent = data.title || conceptId;
+                el.checkpointQuestion.textContent = data.question_text;
+                el.submitCheckpointBtn.disabled = true;
+                el.rerunWithFailureBtn.disabled = true;
+                setMessage(el.checkpointFeedback, "Select an option, then submit it for evaluation.");
+                setCheckpointStatus("Problem loaded", "ok");
+                setMessage(el.checkpointMessage, "Checkpoint problem loaded successfully.", "success");
+
+                el.mcqOptions.innerHTML = "";
+                Object.entries(data.options || {}).forEach(([key, value]) => {
+                    const label = document.createElement("label");
+                    label.className = "option-card";
+                    label.innerHTML = `
+                        <input type="radio" name="mcqOption" value="${escapeHtml(key)}">
+                        <div>
+                            <strong>${escapeHtml(key)}</strong>
+                            <div>${escapeHtml(value)}</div>
+                        </div>
+                    `;
+                    const input = label.querySelector("input");
+                    input.addEventListener("change", () => {
+                        document.querySelectorAll(".option-card").forEach((node) => node.classList.remove("selected"));
+                        label.classList.add("selected");
+                        el.submitCheckpointBtn.disabled = false;
+                    });
+                    el.mcqOptions.appendChild(label);
                 });
 
-                const result = await response.json();
-                
-                feedbackDiv.style.display = 'block';
-                feedbackDiv.textContent = result.feedback;
-                
-                if (result.mastery_achieved) {
-                    feedbackDiv.style.color = "var(--accent-color)";
-                    feedbackDiv.textContent += " 🎉";
-                } else {
-                    feedbackDiv.style.color = "var(--error-color)";
-                    feedbackDiv.textContent += " REPLAN TRIGGERED! Re-generating plan...";
-                    
-                    // Add the failure to our mock payload and replan
-                    MOCK_PAYLOAD.attempts.push({
-                        problem_id: currentProblemId,
-                        concept: MOCK_PAYLOAD.attempts[0].concept,
-                        correct: false,
-                        error_tags: ["checkpoint_failure"]
-                    });
-                    
-                    setTimeout(() => {
-                        document.getElementById('generateBtn').click();
-                    }, 2000);
-                }
-            } catch (err) {
-                console.error("Failed to submit evaluation", err);
+                renderStudentSteps();
+                scrollToSection("studentCheckpointSection");
+            } catch (error) {
+                state.checkpointProblem = null;
+                el.checkpointPanel.classList.add("hidden");
+                setCheckpointStatus("Load failed", "error");
+                setMessage(el.checkpointMessage, `Checkpoint fetch failed: ${error.message}`, "error");
+                renderStudentSteps();
             }
+        }
+
+        async function submitCheckpoint() {
+            const selected = document.querySelector('input[name="mcqOption"]:checked');
+            if (!state.checkpointProblem || !selected) {
+                setMessage(el.checkpointFeedback, "Pick one option before submitting.", "error");
+                return;
+            }
+
+            const payload = {
+                student_id: el.studentId.value.trim() || "stu_001",
+                problem_id: state.checkpointProblem.id,
+                selected_option: selected.value
+            };
+
+            const topicId = buildSnapshot().profile.subject;
+
+            try {
+                const response = await fetch(endpoint(`/evaluation/evaluate?topic_id=${encodeURIComponent(topicId)}`), {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.detail || `Evaluation failed with ${response.status}`);
+                }
+
+                state.lastEvaluation = data;
+                setMessage(el.checkpointFeedback, data.feedback, data.mastery_achieved ? "success" : "");
+                setCheckpointStatus(data.mastery_achieved ? "Mastery shown" : "Replan suggested", data.mastery_achieved ? "ok" : "error");
+                el.rerunWithFailureBtn.disabled = !data.replan_required;
+                renderStudentSteps();
+            } catch (error) {
+                setMessage(el.checkpointFeedback, `Checkpoint evaluation failed: ${error.message}`, "error");
+                setCheckpointStatus("Submit failed", "error");
+            }
+        }
+
+        async function appendFailureAttemptFromCheckpoint() {
+            if (!state.checkpointProblem || !state.lastEvaluation?.replan_required) {
+                setMessage(el.checkpointFeedback, "A failed checkpoint result is required before replanning.", "error");
+                return;
+            }
+
+            const attempt = {
+                problem_id: state.checkpointProblem.id,
+                concept: state.result?.evaluation_plan?.concept || state.result?.diagnosis?.weakest_concept || collectAttempts()[0]?.concept || "",
+                correct: false,
+                error_tags: state.checkpointProblem.expected_error_tags || [],
+                hints_used: 0,
+                retries: 0
+            };
+
+            addAttempt(attempt);
+            setMessage(el.checkpointFeedback, "Failed checkpoint added as a new attempt. Re-running the intervention plan now.", "success");
+            await runOrchestration();
+        }
+
+        function getBuilderFields() {
+            const topicId = el.sharedTopicId.value.trim();
+            const title = el.sharedTopicTitle.value.trim();
+            return { topicId, title };
+        }
+
+        async function submitTextIngestion() {
+            const { topicId, title } = getBuilderFields();
+            const chapterIndex = Number(el.ingestChapterIndex.value) || 0;
+            const overwrite = el.ingestOverwrite.value === "true";
+            const content = el.ingestContent.value;
+
+            if (!topicId || !content.trim()) {
+                setMessage(el.ingestMessage, "Topic ID and source text are required for text ingestion.", "error");
+                renderBuilderSteps();
+                return;
+            }
+
+            setMessage(el.ingestMessage, "Generating topic pack from text...");
+            setButtonBusy(el.submitTextIngestBtn, true, "Generating...");
+
+            try {
+                const response = await fetch(endpoint("/ingest/text"), {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        topic_id: topicId,
+                        title,
+                        content,
+                        chapter_index: chapterIndex,
+                        overwrite
+                    })
+                });
+                const data = await readResponsePayload(response);
+                state.ingestResult = data;
+                el.ingestPreview.textContent = formatJson(data || {});
+                if (!response.ok) {
+                    throw new Error(
+                        formatApiError(data, `Text ingestion failed with ${response.status}`)
+                    );
+                }
+
+                setMessage(el.ingestMessage, data.message || "Text ingestion completed.", data.success ? "success" : "");
+                scrollToSection("builderResultsSection");
+                await refreshConnectionAndTopics();
+            } catch (error) {
+                state.ingestResult = {
+                    success: false,
+                    detail: error.message
+                };
+                el.ingestPreview.textContent = formatJson(state.ingestResult);
+                setMessage(el.ingestMessage, `Text ingestion failed: ${error.message}`, "error");
+                scrollToSection("builderResultsSection");
+            } finally {
+                setButtonBusy(el.submitTextIngestBtn, false, "Generating...");
+                renderBuilderSteps();
+            }
+        }
+
+        async function submitPdfIngestion() {
+            const { topicId, title } = getBuilderFields();
+            const chapterIndex = el.pdfChapterIndex.value;
+            const overwrite = el.pdfOverwrite.value;
+            const file = el.pdfFile.files[0];
+
+            if (!topicId || !file) {
+                setMessage(el.ingestMessage, "Topic ID and a PDF file are required for PDF ingestion.", "error");
+                renderBuilderSteps();
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("topic_id", topicId);
+            formData.append("title", title);
+            formData.append("chapter_index", chapterIndex);
+            formData.append("overwrite", overwrite);
+            formData.append("file", file);
+
+            setMessage(el.ingestMessage, "Uploading PDF and generating topic pack...");
+            setButtonBusy(el.submitPdfIngestBtn, true, "Uploading...");
+
+            try {
+                const response = await fetch(endpoint("/ingest/pdf"), {
+                    method: "POST",
+                    body: formData
+                });
+                const data = await readResponsePayload(response);
+                state.ingestResult = data;
+                el.ingestPreview.textContent = formatJson(data || {});
+                if (!response.ok) {
+                    throw new Error(
+                        formatApiError(data, `PDF ingestion failed with ${response.status}`)
+                    );
+                }
+
+                setMessage(el.ingestMessage, data.message || "PDF ingestion completed.", data.success ? "success" : "");
+                scrollToSection("builderResultsSection");
+                await refreshConnectionAndTopics();
+            } catch (error) {
+                state.ingestResult = {
+                    success: false,
+                    detail: error.message
+                };
+                el.ingestPreview.textContent = formatJson(state.ingestResult);
+                setMessage(el.ingestMessage, `PDF ingestion failed: ${error.message}`, "error");
+                scrollToSection("builderResultsSection");
+            } finally {
+                setButtonBusy(el.submitPdfIngestBtn, false, "Uploading...");
+                renderBuilderSteps();
+            }
+        }
+
+        function clearResults() {
+            state.result = null;
+            state.checkpointProblem = null;
+            state.lastEvaluation = null;
+            el.studentResultsSection.classList.add("hidden");
+            el.studentCheckpointSection.classList.add("hidden");
+            el.resultArea.classList.add("hidden");
+            el.loadCheckpointBtn.disabled = true;
+            el.responsePreview.textContent = "{}";
+            setMessage(el.resultMessage, "Run an orchestration request to populate this area.");
+            setMessage(el.checkpointMessage, "Load a plan first, then fetch a checkpoint problem for the recommended concept.");
+            setMessage(el.checkpointFeedback, "Answer feedback will appear here.");
+            el.checkpointPanel.classList.add("hidden");
+            setCheckpointStatus("No problem loaded");
+            renderStudentSteps();
+        }
+
+        function loadDemoSnapshot() {
+            const { profile, attempts, prior_interventions } = DEMO_SNAPSHOT;
+            el.studentId.value = profile.student_id;
+            el.goalsInput.value = profile.goals.join(", ");
+            el.hoursInput.value = profile.available_hours_per_week;
+            el.priorInterventionsInput.value = prior_interventions.join(", ");
+            el.confidenceInput.value = Object.entries(profile.confidence_by_concept).map(([key, value]) => `${key}:${value}`).join(", ");
+            el.deadlinesInput.value = profile.upcoming_deadlines.map((item) => `${item.label}:${item.days_left}`).join(", ");
+            el.sharedTopicId.value = "";
+            el.sharedTopicTitle.value = "";
+
+            el.attemptList.innerHTML = "";
+            attempts.forEach(addAttempt);
+
+            populateTopicSelect(state.topics.length ? state.topics : DEFAULT_TOPICS);
+            el.subjectSelect.value = profile.subject;
+            syncSharedBuilderFields();
+            updateSnapshotPreview();
+            clearResults();
+            state.ingestResult = null;
+            el.ingestPreview.textContent = "{}";
+            setMessage(el.ingestMessage, "Ingestion results will appear here after you generate a pack.");
+            renderBuilderSteps();
+        }
+
+        function renderStudentSteps() {
+            const snapshot = buildSnapshot();
+            const statuses = {
+                setup: Boolean(snapshot.profile.student_id && snapshot.profile.subject),
+                attempts: snapshot.attempts.length > 0,
+                generate: snapshot.attempts.length > 0,
+                review: Boolean(state.result),
+                checkpoint: Boolean(state.checkpointProblem || state.lastEvaluation)
+            };
+
+            const active = state.checkpointProblem || state.lastEvaluation
+                ? "checkpoint"
+                : state.result
+                    ? "review"
+                    : snapshot.attempts.length > 0
+                        ? "generate"
+                        : snapshot.profile.student_id && snapshot.profile.subject
+                            ? "attempts"
+                            : "setup";
+
+            el.studentSteps.querySelectorAll(".step-item").forEach((item) => {
+                const step = item.dataset.step;
+                item.classList.remove("active", "done", "pending");
+                item.classList.add(step === active ? "active" : statuses[step] ? "done" : "pending");
+            });
+        }
+
+        function renderBuilderSteps() {
+            const { topicId } = getBuilderFields();
+            const sourceReady = state.ingestMode === "text"
+                ? Boolean(el.ingestContent.value.trim())
+                : Boolean(el.pdfFile.files[0]);
+            const statuses = {
+                basics: Boolean(topicId),
+                source: true,
+                generate: Boolean(topicId && sourceReady),
+                review: Boolean(state.ingestResult)
+            };
+
+            const active = state.ingestResult
+                ? "review"
+                : topicId && sourceReady
+                    ? "generate"
+                    : topicId
+                        ? "source"
+                        : "basics";
+
+            el.builderSteps.querySelectorAll(".step-item").forEach((item) => {
+                const step = item.dataset.step;
+                item.classList.remove("active", "done", "pending");
+                item.classList.add(step === active ? "active" : statuses[step] ? "done" : "pending");
+            });
+        }
+
+        function bindStepNavigation(container) {
+            container.querySelectorAll(".step-item").forEach((item) => {
+                item.addEventListener("click", () => scrollToSection(item.dataset.target));
+            });
+        }
+
+        document.getElementById("refreshConnectionBtn").addEventListener("click", refreshConnectionAndTopics);
+        document.getElementById("refreshTopicsBtn").addEventListener("click", refreshConnectionAndTopics);
+        document.getElementById("resetDemoBtn").addEventListener("click", loadDemoSnapshot);
+        document.getElementById("addAttemptBtn").addEventListener("click", () => addAttempt({
+            problem_id: "",
+            concept: "",
+            correct: false,
+            error_tags: []
+        }));
+        document.getElementById("runPlanBtn").addEventListener("click", runOrchestration);
+        document.getElementById("loadCheckpointBtn").addEventListener("click", loadCheckpointProblem);
+        document.getElementById("submitCheckpointBtn").addEventListener("click", submitCheckpoint);
+        document.getElementById("rerunWithFailureBtn").addEventListener("click", appendFailureAttemptFromCheckpoint);
+        document.getElementById("clearResultsBtn").addEventListener("click", clearResults);
+        document.getElementById("submitTextIngestBtn").addEventListener("click", submitTextIngestion);
+        document.getElementById("submitPdfIngestBtn").addEventListener("click", submitPdfIngestion);
+        document.getElementById("toAttemptsBtn").addEventListener("click", () => scrollToSection("studentAttemptsSection"));
+        document.getElementById("toGenerateBtn").addEventListener("click", () => scrollToSection("studentGenerateSection"));
+        document.getElementById("toBuilderSourceBtn").addEventListener("click", () => scrollToSection("builderSourceSection"));
+        el.studentFlowBtn.addEventListener("click", () => setFlow("student"));
+        el.builderFlowBtn.addEventListener("click", () => setFlow("builder"));
+        el.textModeBtn.addEventListener("click", () => setIngestMode("text"));
+        el.pdfModeBtn.addEventListener("click", () => setIngestMode("pdf"));
+
+        [
+            el.backendBaseUrl,
+            el.studentId,
+            el.goalsInput,
+            el.hoursInput,
+            el.priorInterventionsInput,
+            el.confidenceInput,
+            el.deadlinesInput,
+            el.subjectSelect,
+            el.sharedTopicId,
+            el.sharedTopicTitle,
+            el.ingestContent,
+            el.ingestChapterIndex,
+            el.ingestOverwrite,
+            el.pdfChapterIndex,
+            el.pdfOverwrite
+        ].forEach((input) => {
+            input.addEventListener("input", () => {
+                updateSnapshotPreview();
+                syncSharedBuilderFields();
+                renderStudentSteps();
+                renderBuilderSteps();
+            });
+            input.addEventListener("change", () => {
+                updateSnapshotPreview();
+                syncSharedBuilderFields();
+                renderStudentSteps();
+                renderBuilderSteps();
+            });
         });
+
+        el.pdfFile.addEventListener("change", renderBuilderSteps);
+
+        bindStepNavigation(el.studentSteps);
+        bindStepNavigation(el.builderSteps);
+
+        setFlow("student");
+        setIngestMode("text");
+        populateTopicSelect(DEFAULT_TOPICS);
+        loadDemoSnapshot();
+        refreshConnectionAndTopics();
     </script>
 </body>
 </html>
