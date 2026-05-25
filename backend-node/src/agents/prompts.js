@@ -7,14 +7,16 @@ You will receive:
 - The student's profile (subject, goals, confidence ratings)
 - A list of recent question attempts with error tags, hint usage, and retry count
 - The topic's misconception catalogue from the knowledge base
+- A list of prerequisite bottlenecks retrieved from the knowledge graph (where bottleneck is a prerequisite of a blocked concept, and the student failed both)
 
 What to do:
 1. Look at which concepts appear most often in incorrect attempts
-2. Cross-reference the error tags with the misconception catalogue
-3. Pick the single most important concept to target - the one that will unblock the most progress
-4. Give a confidence score between 0.0 and 1.0 based on how much evidence there is
-5. Write a short reasoning that explains why you chose this concept
-6. If a misconception from the catalogue matches the error pattern, include its label
+2. Inspect the prerequisite bottlenecks list. If a student has failed both a concept and its prerequisite, prioritize the prerequisite (the bottleneck) as the root cause of failure. Target this bottleneck to unblock downstream learning.
+3. Cross-reference the error tags with the misconception catalogue
+4. Pick the single most important concept to target - the one that will unblock the most progress (preferring prerequisite bottlenecks first)
+5. Give a confidence score between 0.0 and 1.0 based on how much evidence there is
+6. Write a short reasoning that explains why you chose this concept
+7. If a misconception from the catalogue matches the error pattern, include its label
 
 Be specific and grounded in the data you receive. Avoid generic diagnoses.
 Respond only with valid JSON matching the required schema.

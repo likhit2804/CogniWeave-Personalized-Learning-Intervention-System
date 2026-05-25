@@ -3,7 +3,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { initDb } from "../services/database.js";
 import { buildAndWrite } from "../ingestion/packBuilder.js";
-import { upsertKnowledgeGraphPack } from "../services/neo4jService.js";
+import { upsertKnowledgeGraphPack, getNeo4jDriver } from "../services/neo4jService.js";
 import { assessmentService } from "../services/assessmentService.js";
 import { OrchestratorService } from "../services/orchestratorService.js";
 import { KnowledgeBase } from "../services/knowledgeBase.js";
@@ -148,13 +148,52 @@ async function run() {
   }
   console.log(`Topic pack written to: ${writeResult.directory}`);
 
-  // 4. Sync to Neo4j
-  console.log("\n[Step 4] Syncing to Neo4j (best-effort)...");
+  // 4. Sync to Neo4j and Assert Graph Relationships
+  console.log("\n[Step 4] Syncing to Neo4j...");
+  let assertionError = null;
   try {
     const graphResult = await upsertKnowledgeGraphPack(mockPack);
     console.log("Neo4j Sync response:", graphResult);
+
+    const driver = getNeo4jDriver();
+    if (driver) {
+      const session = driver.session({ database: settings.neo4jDatabase });
+      try {
+        // Assert concept prerequisite edge exists
+        const prereqCheck = await session.run(
+          `
+          MATCH (p:Concept {concept_id: 'order_by_basic'})-[:PREREQUISITE_OF]->(c:Concept {concept_id: 'order_by_multiple'})
+          RETURN count(p) AS count
+          `
+        );
+        const countPrereq = prereqCheck.records[0].get("count").toNumber();
+        console.log(`Verified Neo4j: [order_by_basic] -[:PREREQUISITE_OF]-> [order_by_multiple] exists: ${countPrereq > 0}`);
+        if (countPrereq === 0) throw new Error("Graph assertion failed: PREREQUISITE_OF relationship not found!");
+
+        // Assert question misconception exposes edge exists
+        const exposesCheck = await session.run(
+          `
+          MATCH (q:Question {question_id: 'sort_002'})-[:EXPOSES]->(m:Misconception {misconception_id: 'sorting_tie_breaker_confusion'})
+          RETURN count(q) AS count
+          `
+        );
+        const countExposes = exposesCheck.records[0].get("count").toNumber();
+        console.log(`Verified Neo4j: [sort_002] -[:EXPOSES]-> [sorting_tie_breaker_confusion] exists: ${countExposes > 0}`);
+        if (countExposes === 0) throw new Error("Graph assertion failed: EXPOSES relationship not found!");
+      } finally {
+        await session.close();
+      }
+    }
   } catch (err) {
-    console.warn("Neo4j Sync failed or skipped:", err.message || err);
+    if (err.message && err.message.includes("assertion failed")) {
+      assertionError = err;
+    } else {
+      console.warn("Neo4j verification failed or skipped (non-assertion error):", err.message || err);
+    }
+  }
+
+  if (assertionError) {
+    throw assertionError;
   }
 
   // 5. Run Assessment Process
@@ -171,16 +210,13 @@ async function run() {
   console.log(`Session started. ID: ${sessionId}`);
   console.log("Concept Coverage Plan:", JSON.stringify(startResult.concept_coverage_plan));
   
-  // Submit answers dynamically to handle random shuffling of concepts/questions
+  // Submit INCORRECT answers for both to trigger the prerequisite bottleneck detection
   const q1 = startResult.question;
   console.log(`\nAnswering Question 1 (${q1.id} - ${q1.title}):`);
   console.log(`Question: ${q1.question_text}`);
-  
-  // sort_001 correct is "A". sort_002 correct is "B" (so submitting "A" is incorrect and triggers tie_breaker_error).
   const isQ1Sort1 = q1.id === "sort_001";
-  const option1 = "A"; // "A" is correct for sort_001, but incorrect for sort_002.
-  console.log(`Submitting '${option1}' (${isQ1Sort1 ? "CORRECT" : "INCORRECT"})...`);
-  
+  const option1 = isQ1Sort1 ? "C" : "A"; // "C" is wrong for sort_001, "A" is wrong for sort_002
+  console.log(`Submitting INCORRECT option: '${option1}'...`);
   const ans1 = assessmentService.submitAnswer({
     sessionId,
     problemId: q1.id,
@@ -195,11 +231,9 @@ async function run() {
   }
   console.log(`\nAnswering Question 2 (${q2.id} - ${q2.title}):`);
   console.log(`Question: ${q2.question_text}`);
-  
   const isQ2Sort1 = q2.id === "sort_001";
-  const option2 = "A"; // "A" is correct for sort_001, but incorrect for sort_002.
-  console.log(`Submitting '${option2}' (${isQ2Sort1 ? "CORRECT" : "INCORRECT"})...`);
-  
+  const option2 = isQ2Sort1 ? "C" : "A"; // "C" is wrong for sort_001, "A" is wrong for sort_002
+  console.log(`Submitting INCORRECT option: '${option2}'...`);
   const ans2 = assessmentService.submitAnswer({
     sessionId,
     problemId: q2.id,
@@ -222,6 +256,16 @@ async function run() {
   console.log("Selected Intervention Activities:", planResult.selected_intervention?.activities);
   console.log("Generated Weekly Plan Count:", planResult.weekly_plan?.length);
   console.log("Critic Iterations:", planResult.critic_iterations);
+  console.log("Prerequisite Bottlenecks:", JSON.stringify(planResult.retrieval_context?.prerequisite_bottlenecks));
+
+  // Assert prerequisite bottleneck is returned in context
+  const hasBottleneck = (planResult.retrieval_context?.prerequisite_bottlenecks || []).some(
+    b => b.bottleneck === "order_by_basic" && b.blocked === "order_by_multiple"
+  );
+  if (!hasBottleneck) {
+    throw new Error("Graph assertion failed: Expected prerequisite bottleneck [order_by_basic -> order_by_multiple] in retrieval context!");
+  }
+
   
   if (!planResult.weekly_plan || planResult.weekly_plan.length === 0) {
     throw new Error("Orchestration failed: Weekly plan is empty!");

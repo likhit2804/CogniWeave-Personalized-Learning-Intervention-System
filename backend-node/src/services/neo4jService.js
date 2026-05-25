@@ -71,18 +71,39 @@ export async function upsertKnowledgeGraphPack(pack) {
       writes += 1;
     }
 
+    // Link concept prerequisites
+    for (const concept of concepts) {
+      const conceptId = concept.concept_id || concept.id || concept.name || concept.label;
+      if (Array.isArray(concept.prerequisites)) {
+        for (const prereqId of concept.prerequisites) {
+          if (!prereqId) continue;
+          await session.run(
+            `
+            MATCH (c:Concept {concept_id: $concept_id})
+            MERGE (p:Concept {concept_id: $prereq_id})
+            MERGE (p)-[:PREREQUISITE_OF]->(c)
+            `,
+            { concept_id: conceptId, prereq_id: prereqId }
+          );
+          writes += 1;
+        }
+      }
+    }
+
     for (const misconception of misconceptions) {
       await session.run(
         `
         MERGE (m:Misconception {misconception_id: $misconception_id})
         SET m.label = $label,
-            m.description = $description
+            m.description = $description,
+            m.error_tags = $error_tags
         `,
         {
           misconception_id:
             misconception.misconception_id || misconception.id || misconception.label,
           label: misconception.label || misconception.misconception_id || "unknown",
           description: misconception.description || null,
+          error_tags: misconception.error_tags || [],
         }
       );
       writes += 1;
@@ -121,8 +142,11 @@ export async function upsertKnowledgeGraphPack(pack) {
       );
       writes += 1;
 
-      const conceptId = problem.concept || problem.concept_id;
-      if (conceptId) {
+      const conceptIds = Array.isArray(problem.concept_ids)
+        ? problem.concept_ids
+        : [problem.concept || problem.concept_id].filter(Boolean);
+
+      for (const conceptId of conceptIds) {
         await session.run(
           `
           MATCH (q:Question {question_id: $question_id})
@@ -130,6 +154,24 @@ export async function upsertKnowledgeGraphPack(pack) {
           MERGE (q)-[:TESTS]->(c)
           `,
           { question_id: questionId, concept_id: conceptId }
+        );
+        writes += 1;
+      }
+
+      // Link questions to misconceptions via error tags
+      const errorTags = Array.isArray(problem.expected_error_tags)
+        ? problem.expected_error_tags
+        : [problem.expected_error_tag].filter(Boolean);
+
+      for (const errorTag of errorTags) {
+        await session.run(
+          `
+          MATCH (q:Question {question_id: $question_id})
+          MATCH (m:Misconception)
+          WHERE $error_tag IN m.error_tags
+          MERGE (q)-[:EXPOSES]->(m)
+          `,
+          { question_id: questionId, error_tag: errorTag }
         );
         writes += 1;
       }
@@ -188,3 +230,29 @@ export async function fetchQuestionContextForConcepts(conceptIds = [], limit = 1
     await session.close();
   }
 }
+
+export async function fetchPrerequisiteBottlenecks(conceptIds = []) {
+  const graphDriver = getNeo4jDriver();
+  if (!graphDriver || !Array.isArray(conceptIds) || conceptIds.length === 0) return [];
+
+  const session = graphDriver.session({ database: settings.neo4jDatabase });
+  try {
+    const result = await session.run(
+      `
+      MATCH (prereq:Concept)-[:PREREQUISITE_OF*1..3]->(weak:Concept)
+      WHERE weak.concept_id IN $concept_ids
+        AND prereq.concept_id IN $concept_ids
+      RETURN DISTINCT prereq.concept_id AS bottleneck, weak.concept_id AS blocked
+      `,
+      { concept_ids: conceptIds }
+    );
+
+    return result.records.map((record) => ({
+      bottleneck: record.get("bottleneck"),
+      blocked: record.get("blocked"),
+    }));
+  } finally {
+    await session.close();
+  }
+}
+

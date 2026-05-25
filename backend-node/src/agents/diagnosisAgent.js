@@ -7,12 +7,13 @@ import { DiagnosisOutputSchema } from "./agentSchemas.js";
  * Modifies and returns the state object.
  */
 export async function diagnose(state) {
-  const { attempts, knowledge_base: kb, profile } = state;
+  const { attempts, knowledge_base: kb, profile, retrieval_context = {} } = state;
 
   const context = {
     profile,
     attempts,
     misconceptions_catalogue: kb.misconceptions?.items || [],
+    prerequisite_bottlenecks: retrieval_context.prerequisite_bottlenecks || [],
   };
 
   const userContent = `Context:\n${JSON.stringify(context, null, 2)}`;
