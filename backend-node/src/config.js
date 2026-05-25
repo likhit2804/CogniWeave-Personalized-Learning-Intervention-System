@@ -32,6 +32,16 @@ const settings = {
     .filter(Boolean),
   llm503Retries: parseInt(process.env.LLM_503_RETRIES || "1", 10),
   llmRetryBaseMs: parseInt(process.env.LLM_RETRY_BASE_MS || "1500", 10),
+  llmMaxConcurrency: parseInt(process.env.LLM_MAX_CONCURRENCY || "4", 10),
+  llmCacheTtlSeconds: parseInt(process.env.LLM_CACHE_TTL_SECONDS || "900", 10),
+
+  // Graph + User Stores (incremental migration from SQLite)
+  neo4jUri: process.env.NEO4J_URI || null,
+  neo4jUser: process.env.NEO4J_USER || null,
+  neo4jPassword: process.env.NEO4J_PASSWORD || null,
+  neo4jDatabase: process.env.NEO4J_DATABASE || "neo4j",
+  mongoUri: process.env.MONGO_URI || null,
+  mongoDbName: process.env.MONGO_DB_NAME || "cogniweave",
 };
 
 export default settings;

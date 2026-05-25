@@ -10,6 +10,7 @@ import {
   recordIntervention,
   updateMastery,
 } from "./database.js";
+import { upsertLearnerState, recordAttemptEvent } from "./mongoService.js";
 
 function _mapToResponse(finalState) {
   const diagnosis = finalState.diagnosis;
@@ -91,12 +92,12 @@ export class OrchestratorService {
     const response = _mapToResponse(state);
 
     // 4. Persist to database (best-effort)
-    this._persist(snapshot, response);
+    await this._persist(snapshot, response);
 
     return response;
   }
 
-  _persist(snapshot, response) {
+  async _persist(snapshot, response) {
     try {
       const { profile, attempts = [] } = snapshot;
       
@@ -125,6 +126,16 @@ export class OrchestratorService {
       for (const [concept, confidence] of Object.entries(mastery)) {
         updateMastery(profile.student_id, concept, confidence);
       }
+      const weakConcepts = Object.entries(mastery)
+        .sort((a, b) => a[1] - b[1])
+        .slice(0, 5)
+        .map(([concept]) => concept);
+      await upsertLearnerState({
+        studentId: profile.student_id,
+        profile,
+        confidenceByConcept: mastery,
+        weakConcepts,
+      });
 
       // Save the intervention
       if (response.selected_intervention) {
@@ -132,6 +143,17 @@ export class OrchestratorService {
           studentId: profile.student_id,
           concept: response.selected_intervention.concept,
           strategy: response.selected_intervention.strategy,
+        });
+      }
+
+      for (const attempt of attempts) {
+        await recordAttemptEvent({
+          student_id: profile.student_id,
+          problem_id: attempt.problem_id,
+          concept: attempt.concept,
+          correct: Boolean(attempt.correct),
+          error_tags: attempt.error_tags || [],
+          time_seconds: attempt.time_seconds ?? null,
         });
       }
     } catch (error) {

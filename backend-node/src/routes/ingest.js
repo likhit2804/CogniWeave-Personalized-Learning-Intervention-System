@@ -7,6 +7,7 @@ import { parseText, parsePdf } from "../ingestion/textbookParser.js";
 import { extractTopicPack } from "../ingestion/topicExtractor.js";
 import { buildAndWrite } from "../ingestion/packBuilder.js";
 import { normalizeLlmError } from "../services/llmClient.js";
+import { upsertKnowledgeGraphPack } from "../services/neo4jService.js";
 
 const router = Router();
 const upload = multer({ dest: "uploads/" });
@@ -36,6 +37,7 @@ router.post("/ingest/text", async (req, res, next) => {
     const result = buildAndWrite(pack, null, overwrite);
 
     if (result.success) {
+      const graphWrite = await upsertKnowledgeGraphPack(pack);
       res.json({
         success: true,
         topic_id,
@@ -57,6 +59,7 @@ router.post("/ingest/text", async (req, res, next) => {
           problems: pack.problems,
           evaluation_rules: pack.evaluationRules,
         },
+        graph_sync: graphWrite,
       });
     } else {
       res.json({
@@ -104,6 +107,7 @@ router.post("/ingest/pdf", upload.single("file"), async (req, res, next) => {
     fs.unlinkSync(file.path);
 
     if (result.success) {
+      const graphWrite = await upsertKnowledgeGraphPack(pack);
       res.json({
         success: true,
         topic_id,
@@ -121,6 +125,7 @@ router.post("/ingest/pdf", upload.single("file"), async (req, res, next) => {
           manifest: pack.manifest,
           concept_graph: pack.conceptGraph,
         },
+        graph_sync: graphWrite,
       });
     } else {
       res.json({
