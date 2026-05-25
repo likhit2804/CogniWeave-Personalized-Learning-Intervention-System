@@ -6,7 +6,9 @@
   "type": "module",
   "scripts": {
     "start": "node src/server.js",
-    "dev": "nodemon src/server.js"
+    "dev": "nodemon src/server.js",
+    "eval:graph-integrity": "node src/evaluation/graphIntegrityCheck.js",
+    "eval:retrieval-benchmark": "node src/evaluation/retrievalBenchmark.js"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.0",

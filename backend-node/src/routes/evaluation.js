@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { KnowledgeBase } from "../services/knowledgeBase.js";
+import { buildQuestionGenerationContext } from "../services/retrievalService.js";
 
 const router = Router();
 
@@ -15,9 +16,10 @@ function publicProblem(problem) {
   };
 }
 
-router.get("/evaluation/problems/:topicId/:conceptId", (req, res, next) => {
+router.get("/evaluation/problems/:topicId/:conceptId", async (req, res, next) => {
   try {
     const { topicId, conceptId } = req.params;
+    const studentId = req.query.student_id || null;
     let kb;
     try {
       kb = new KnowledgeBase(topicId);
@@ -34,7 +36,21 @@ router.get("/evaluation/problems/:topicId/:conceptId", (req, res, next) => {
       return res.status(404).json({ detail: `No problems found for concept ${conceptId}` });
     }
 
-    const selectedProblem = matchingProblems[Math.floor(Math.random() * matchingProblems.length)];
+    let selectedProblem = matchingProblems[Math.floor(Math.random() * matchingProblems.length)];
+
+    if (studentId) {
+      const retrieval = await buildQuestionGenerationContext(studentId, [conceptId]);
+      const preferredQuestionIds = new Set(
+        (retrieval.graph_context || []).map((row) => row.question_id).filter(Boolean)
+      );
+      if (preferredQuestionIds.size > 0) {
+        const preferred = matchingProblems.filter((p) => preferredQuestionIds.has(p.id));
+        if (preferred.length > 0) {
+          selectedProblem = preferred[Math.floor(Math.random() * preferred.length)];
+        }
+      }
+    }
+
     res.json(publicProblem(selectedProblem));
   } catch (err) {
     next(err);

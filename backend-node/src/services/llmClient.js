@@ -6,9 +6,14 @@
  */
 
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { createHash } from "node:crypto";
 import settings from "../config.js";
 
 const genAI = new GoogleGenerativeAI(settings.geminiApiKey || "mock-key-for-tests");
+const llmCache = new Map();
+const pendingByKey = new Map();
+let activeLlmRequests = 0;
+const llmQueue = [];
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -47,6 +52,51 @@ function isUnsupportedModelError(error) {
 
 function shouldTryFallbackModel(error) {
   return isTransientGeminiError(error) || isUnsupportedModelError(error);
+}
+
+function stableStringify(value) {
+  if (value === null || typeof value !== "object") return JSON.stringify(value);
+  if (Array.isArray(value)) {
+    return `[${value.map((item) => stableStringify(item)).join(",")}]`;
+  }
+  const keys = Object.keys(value).sort();
+  return `{${keys.map((key) => `${JSON.stringify(key)}:${stableStringify(value[key])}`).join(",")}}`;
+}
+
+function getCacheKey(payload) {
+  const raw = stableStringify(payload);
+  return createHash("sha256").update(raw).digest("hex");
+}
+
+function getCached(cacheKey) {
+  const hit = llmCache.get(cacheKey);
+  if (!hit) return null;
+  if (Date.now() > hit.expiresAt) {
+    llmCache.delete(cacheKey);
+    return null;
+  }
+  return hit.value;
+}
+
+function setCached(cacheKey, value) {
+  const ttlMs = Math.max(1, settings.llmCacheTtlSeconds || 0) * 1000;
+  llmCache.set(cacheKey, { value, expiresAt: Date.now() + ttlMs });
+}
+
+async function withLlmConcurrency(task) {
+  const max = Math.max(1, settings.llmMaxConcurrency || 1);
+  if (activeLlmRequests >= max) {
+    await new Promise((resolve) => llmQueue.push(resolve));
+  }
+
+  activeLlmRequests += 1;
+  try {
+    return await task();
+  } finally {
+    activeLlmRequests -= 1;
+    const next = llmQueue.shift();
+    if (next) next();
+  }
 }
 
 /**
@@ -156,6 +206,24 @@ export async function invokeStructuredWithFallback({
   responseSchema = null,
 }) {
   const modelsToTry = uniqueModels(primaryModel, fallbackModels);
+  const cacheKey = getCacheKey({
+    systemPrompt,
+    userContent,
+    temperature,
+    modelsToTry,
+    responseSchema,
+  });
+  const cacheHit = getCached(cacheKey);
+  if (cacheHit) {
+    return cacheHit;
+  }
+
+  const pending = pendingByKey.get(cacheKey);
+  if (pending) {
+    return pending;
+  }
+
+  const runPromise = withLlmConcurrency(async () => {
   const attemptedModels = [];
   let lastError = null;
 
@@ -164,7 +232,9 @@ export async function invokeStructuredWithFallback({
       try {
         attemptedModels.push(modelName);
         const model = getLlm(temperature, modelName, responseSchema);
-        return await invokeStructured(model, systemPrompt, userContent);
+        const result = await invokeStructured(model, systemPrompt, userContent);
+        setCached(cacheKey, result);
+        return result;
       } catch (error) {
         lastError = error;
 
@@ -198,6 +268,14 @@ export async function invokeStructuredWithFallback({
     },
     primaryModel
   );
+  });
+
+  pendingByKey.set(cacheKey, runPromise);
+  try {
+    return await runPromise;
+  } finally {
+    pendingByKey.delete(cacheKey);
+  }
 }
 
 export async function invokeAgentStructured({

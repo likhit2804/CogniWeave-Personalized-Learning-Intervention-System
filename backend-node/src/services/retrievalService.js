@@ -6,7 +6,13 @@ export async function buildQuestionGenerationContext(studentId, fallbackConcepts
   const conceptIds =
     weakConcepts.length > 0 ? weakConcepts : (Array.isArray(fallbackConcepts) ? fallbackConcepts : []);
 
-  const graphContext = await fetchQuestionContextForConcepts(conceptIds, 20);
+  let graphContext = [];
+  try {
+    graphContext = await fetchQuestionContextForConcepts(conceptIds, 20);
+  } catch (_error) {
+    // Degrade gracefully when Neo4j is temporarily unavailable.
+    graphContext = [];
+  }
 
   return {
     target_concepts: conceptIds,

@@ -6,12 +6,13 @@ import { PlannerOutputSchema } from "./agentSchemas.js";
  * Builds a weekly study plan using an LLM.
  */
 export async function plan(state) {
-  const { profile, selected_intervention, critic_feedback } = state;
+  const { profile, selected_intervention, critic_feedback, retrieval_context = {} } = state;
 
   const context = {
     available_hours_per_week: profile.available_hours_per_week || 6,
     upcoming_deadlines: profile.upcoming_deadlines || [],
     selected_intervention,
+    target_concepts: retrieval_context.target_concepts || [],
     critic_feedback,
   };
 

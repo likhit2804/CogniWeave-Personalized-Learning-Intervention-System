@@ -6,7 +6,7 @@ import { InterventionOutputSchema } from "./agentSchemas.js";
  * Selects the best intervention strategy using an LLM.
  */
 export async function intervene(state) {
-  const { diagnosis, knowledge_base: kb, prior_interventions = [] } = state;
+  const { diagnosis, knowledge_base: kb, prior_interventions = [], retrieval_context = {} } = state;
 
   const concept = diagnosis.weakest_concept;
   const error_tag = diagnosis.top_error_tag;
@@ -22,6 +22,7 @@ export async function intervene(state) {
     top_error_tag: error_tag,
     misconception,
     available_rules,
+    graph_context: retrieval_context.graph_context || [],
     prior_interventions,
   };
 

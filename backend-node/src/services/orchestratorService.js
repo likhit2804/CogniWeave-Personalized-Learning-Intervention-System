@@ -11,6 +11,7 @@ import {
   updateMastery,
 } from "./database.js";
 import { upsertLearnerState, recordAttemptEvent } from "./mongoService.js";
+import { buildQuestionGenerationContext } from "./retrievalService.js";
 
 function _mapToResponse(finalState) {
   const diagnosis = finalState.diagnosis;
@@ -50,6 +51,11 @@ export class OrchestratorService {
     }
 
     const kb = new KnowledgeBase(snapshot.profile.subject);
+    const fallbackConcepts = [...new Set((snapshot.attempts || []).map((a) => a.concept).filter(Boolean))];
+    const retrievalContext = await buildQuestionGenerationContext(
+      snapshot.profile.student_id,
+      fallbackConcepts
+    );
 
     // 1. Create Initial State
     let state = {
@@ -68,6 +74,7 @@ export class OrchestratorService {
       selected_intervention: {},
       weekly_plan: [],
       evaluation_plan: {},
+      retrieval_context: retrievalContext,
       trace: [],
       critic_feedback: null,
       iteration_count: 0,
@@ -90,6 +97,7 @@ export class OrchestratorService {
 
     // 3. Map to validated response model
     const response = _mapToResponse(state);
+    response.retrieval_context = retrievalContext;
 
     // 4. Persist to database (best-effort)
     await this._persist(snapshot, response);
