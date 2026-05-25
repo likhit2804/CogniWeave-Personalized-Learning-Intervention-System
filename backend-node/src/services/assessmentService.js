@@ -178,6 +178,8 @@ class AssessmentService {
     problemId,
     selectedOption,
     timeSeconds = null,
+    reportedIssues = null,
+    description = null,
   }) {
     const session = this.getSession(sessionId);
     if (session.status !== "active") {
@@ -204,10 +206,11 @@ class AssessmentService {
       problem_id: currentProblem.id,
       concept: primaryConcept,
       correct: isCorrect,
-      error_tags: isCorrect ? [] : currentProblem.expected_error_tags || [],
+      error_tags: isCorrect ? [] : (reportedIssues && reportedIssues.length > 0 ? reportedIssues : currentProblem.expected_error_tags || []),
       time_seconds: timeSeconds,
       hints_used: 0,
       retries: 0,
+      description: description || null,
     };
     session.attempts.push(attempt);
 

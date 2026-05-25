@@ -1,0 +1,113 @@
+{
+  "topic_id": "dsa_comprehensive",
+  "rules": [
+    {
+      "id": "fix_hashing_lookup",
+      "concept_id": "arrays_and_hashing",
+      "misconception_id": "hashing_scope_misconception",
+      "strategy": "Value-to-key namespace dry run",
+      "activities": [
+        "Create a manual dictionary map where keys are the array values and values are indices, and state why lookup is O(1).",
+        "Explain when to check for key existence (dict.has() or in keyword) before updating values."
+      ],
+      "expected_signals": ["fewer lookup key exceptions", "O(N) memory complexity understanding"],
+      "priority": 1
+    },
+    {
+      "id": "fix_pointer_bounds",
+      "concept_id": "two_pointers",
+      "misconception_id": "pointer_increment_direction_confusion",
+      "strategy": "Pointer dry run dry-trace",
+      "activities": [
+        "Perform a trace table showing left and right pointer values at each index iteration step.",
+        "Solve a simple 2-pointer problem where the array values are sorted and write down the direction rule clearly."
+      ],
+      "expected_signals": ["fewer pointer loop timeouts", "correct pointer increment statements"],
+      "priority": 1
+    },
+    {
+      "id": "fix_window_off_by_one",
+      "concept_id": "sliding_window",
+      "misconception_id": "window_index_off_by_one",
+      "strategy": "Window bounds index tracing",
+      "activities": [
+        "Derive why the number of elements between index L and R is R - L + 1 by tracing L=2, R=4.",
+        "Write out the condition that shifts the left boundary of a window vs the loop that advances the right boundary."
+      ],
+      "expected_signals": ["no index out of bounds exceptions", "correct window length calculation"],
+      "priority": 1
+    },
+    {
+      "id": "fix_null_pointer_list",
+      "concept_id": "linked_lists",
+      "misconception_id": "null_pointer_dereference_list",
+      "strategy": "Dummy node insertion visual trace",
+      "activities": [
+        "Draw a linked list and show why using a dummy head node eliminates null pointer checks at the head.",
+        "Write assertions that verify node.next is not null before checking node.next.next."
+      ],
+      "expected_signals": ["zero null reference errors", "clean dummy node usage"],
+      "priority": 1
+    },
+    {
+      "id": "fix_cycle_checks",
+      "concept_id": "fast_slow_pointers",
+      "misconception_id": "cycle_detection_pointer_confusion",
+      "strategy": "Step-by-step cycle alignment walkthrough",
+      "activities": [
+        "Explain why a fast pointer moving at step size 2 and slow pointer at size 1 will always meet if a cycle exists (floyd's cycle detection proof).",
+        "Write the boundary condition check: while (fast != null && fast.next != null)."
+      ],
+      "expected_signals": ["fewer cycle loops bypass errors", "correct fast-step null assertions"],
+      "priority": 1
+    },
+    {
+      "id": "fix_infinite_recursion",
+      "concept_id": "recursion_basics",
+      "misconception_id": "missing_base_case_termination",
+      "strategy": "Stack depth and base case checks",
+      "activities": [
+        "Trace the execution stack for recursive calls (e.g. fib(3)) and write down the stack depth at each level.",
+        "Define the exact input boundary inputs where the recursion must terminate immediately."
+      ],
+      "expected_signals": ["zero stack overflow errors", "correct base case definitions"],
+      "priority": 1
+    },
+    {
+      "id": "fix_graph_dfs_visited",
+      "concept_id": "graph_dfs",
+      "misconception_id": "unvisited_graph_cycle_infinite",
+      "strategy": "Visited set tracking dry run",
+      "activities": [
+        "Trace a 3-node cyclic graph using DFS and show how a Set object prevents re-processing visited nodes.",
+        "Write code where a node is added to a 'visited' Set before starting recursion, and checked at the top of the function."
+      ],
+      "expected_signals": ["zero circular loop timeouts in graphs", "correct visited set operations"],
+      "priority": 1
+    },
+    {
+      "id": "fix_backtrack_dirty",
+      "concept_id": "backtracking",
+      "misconception_id": "backtrack_state_dirty",
+      "strategy": "Recursive state push-pop alignment",
+      "activities": [
+        "Write the template: path.push(val); dfs(); path.pop(); and explain why the pop step is critical.",
+        "Trace the path list state variable at each backtrack branch step for Permutations N=3."
+      ],
+      "expected_signals": ["correct combinations outputs", "accurate state restore operations"],
+      "priority": 1
+    },
+    {
+      "id": "fix_topo_deadlock",
+      "concept_id": "topological_sort",
+      "misconception_id": "cyclic_dependency_sort_failure",
+      "strategy": "Kahn's algorithm indegree tracing",
+      "activities": [
+        "Calculate the in-degree count table for a directed cyclic graph and trace why zero-in-degree nodes cannot be exhausted.",
+        "Implement a check that verifies if the sorted order length equals the total nodes count, otherwise returning a cycle warning."
+      ],
+      "expected_signals": ["correct cycle detection in sort", "proper course dependencies ordering"],
+      "priority": 1
+    }
+  ]
+}

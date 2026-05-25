@@ -1,0 +1,11 @@
+{
+  "topic_id": "dsa_comprehensive",
+  "title": "Comprehensive Data Structures & Algorithms",
+  "version": "0.1.0",
+  "difficulty": "intermediate",
+  "target_users": [
+    "interview_candidates",
+    "computer_science_students"
+  ],
+  "description": "A comprehensive curriculum of 12 patterns covering Arrays, Two Pointers, Windowing, Lists, Trees, Graphs, Backtracking, and Topological sorting, guided by LeetCode problems."
+}

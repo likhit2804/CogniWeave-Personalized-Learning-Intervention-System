@@ -1,0 +1,725 @@
+{
+  "topic_id": "dsa_comprehensive",
+  "items": [
+    {
+      "id": "lc_arr_001",
+      "title": "Two Sum",
+      "concept_ids": ["arrays_and_hashing"],
+      "difficulty": "easy",
+      "question_text": "Solve LeetCode 1: Two Sum (https://leetcode.com/problems/two-sum/). Select your outcome:\n\nA: Solved optimally in O(N) time and O(N) space.\nB: Solved using O(N^2) brute force.\nC: Ran out of bounds or threw Null/Undefined errors.\nD: Stuck on finding matching indices.",
+      "options": {
+        "A": "Solved optimally O(N)",
+        "B": "Solved via O(N^2) brute force",
+        "C": "Got runtime/bounds exceptions",
+        "D": "Unable to solve"
+      },
+      "correct_option": "A",
+      "expected_error_tags": ["incorrect_map_lookup"]
+    },
+    {
+      "id": "lc_arr_002",
+      "title": "Contains Duplicate",
+      "concept_ids": ["arrays_and_hashing"],
+      "difficulty": "easy",
+      "question_text": "Solve LeetCode 217: Contains Duplicate (https://leetcode.com/problems/contains-duplicate/). Select your outcome:\n\nA: Solved in O(N) time and O(N) space using a hash set.\nB: Solved in O(N log N) using sorting.\nC: Got Time Limit Exceeded (TLE) using nested loops.\nD: Stuck on checking duplicates.",
+      "options": {
+        "A": "Solved optimally using Set",
+        "B": "Solved using sorting",
+        "C": "Got Time Limit Exceeded",
+        "D": "Unable to solve"
+      },
+      "correct_option": "A",
+      "expected_error_tags": ["value_hashing_collision"]
+    },
+    {
+      "id": "lc_arr_003",
+      "title": "Group Anagrams",
+      "concept_ids": ["arrays_and_hashing"],
+      "difficulty": "medium",
+      "question_text": "Solve LeetCode 49: Group Anagrams (https://leetcode.com/problems/group-anagrams/). Select your outcome:\n\nA: Solved in O(N * K) time by hashing character frequency arrays.\nB: Solved in O(N * K log K) by sorting each string key.\nC: Got Time Limit Exceeded (TLE) or key collision errors.\nD: Stuck on tracking anagram groups.",
+      "options": {
+        "A": "Solved in O(N * K)",
+        "B": "Solved via sorting keys",
+        "C": "Got Time Limit Exceeded",
+        "D": "Unable to solve"
+      },
+      "correct_option": "A",
+      "expected_error_tags": ["value_hashing_collision", "incorrect_map_lookup"]
+    },
+    {
+      "id": "lc_arr_004",
+      "title": "Top K Frequent Elements",
+      "concept_ids": ["arrays_and_hashing"],
+      "difficulty": "medium",
+      "question_text": "Solve LeetCode 347: Top K Frequent Elements (https://leetcode.com/problems/top-k-frequent-elements/). Select your outcome:\n\nA: Solved in O(N) time using bucket sort.\nB: Solved in O(N log K) using a heap/priority queue.\nC: Got Time Limit Exceeded (TLE) by sorting frequency pairs.\nD: Stuck on counting frequencies.",
+      "options": {
+        "A": "Solved in O(N) bucket sort",
+        "B": "Solved in O(N log K) heap",
+        "C": "Got Time Limit Exceeded",
+        "D": "Unable to solve"
+      },
+      "correct_option": "A",
+      "expected_error_tags": ["incorrect_map_lookup"]
+    },
+    {
+      "id": "lc_two_001",
+      "title": "Valid Palindrome",
+      "concept_ids": ["two_pointers"],
+      "difficulty": "easy",
+      "question_text": "Solve LeetCode 125: Valid Palindrome (https://leetcode.com/problems/valid-palindrome/). Select your outcome:\n\nA: Solved in O(N) time and O(1) space with left/right pointers meeting in the middle.\nB: Solved by reversing the string with O(N) auxiliary memory.\nC: Got pointer index out of bounds exceptions.\nD: Stuck on ignoring non-alphanumeric characters.",
+      "options": {
+        "A": "Solved using O(1) space pointers",
+        "B": "Solved using string reversal",
+        "C": "Got pointer out of bounds",
+        "D": "Unable to solve"
+      },
+      "correct_option": "A",
+      "expected_error_tags": ["wrong_pointer_increment"]
+    },
+    {
+      "id": "lc_two_002",
+      "title": "Two Sum II",
+      "concept_ids": ["two_pointers"],
+      "difficulty": "easy",
+      "question_text": "Solve LeetCode 167: Two Sum II - Input Array Is Sorted (https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/). Select your outcome:\n\nA: Solved in O(N) time and O(1) space adjusting left/right indices based on sum comparison.\nB: Solved in O(N) time and O(N) space using a hash map.\nC: Loop ran infinitely or indices went out of bounds.\nD: Stuck on moving pointers.",
+      "options": {
+        "A": "Solved using O(1) space pointers",
+        "B": "Solved using O(N) hash map",
+        "C": "Got infinite loop / bounds error",
+        "D": "Unable to solve"
+      },
+      "correct_option": "A",
+      "expected_error_tags": ["wrong_pointer_increment", "infinite_pointer_loop"]
+    },
+    {
+      "id": "lc_two_003",
+      "title": "3Sum",
+      "concept_ids": ["two_pointers"],
+      "difficulty": "medium",
+      "question_text": "Solve LeetCode 15: 3Sum (https://leetcode.com/problems/3sum/). Select your outcome:\n\nA: Solved in O(N^2) by sorting and running left/right pointers per element, avoiding duplicate triplets.\nB: Solved but required hash sets to prune duplicate answers after output.\nC: Got Time Limit Exceeded (TLE) due to nested loops.\nD: Stuck on duplicate avoidance logic.",
+      "options": {
+        "A": "Solved in O(N^2) with duplicate skipping",
+        "B": "Solved using hash set pruning",
+        "C": "Got Time Limit Exceeded",
+        "D": "Unable to solve"
+      },
+      "correct_option": "A",
+      "expected_error_tags": ["wrong_pointer_increment", "infinite_pointer_loop"]
+    },
+    {
+      "id": "lc_two_004",
+      "title": "Trapping Rain Water",
+      "concept_ids": ["two_pointers"],
+      "difficulty": "hard",
+      "question_text": "Solve LeetCode 42: Trapping Rain Water (https://leetcode.com/problems/trapping-rain-water/). Select your outcome:\n\nA: Solved in O(N) time and O(1) space using left/right boundary max height pointers.\nB: Solved in O(N) time and O(N) space using prefix/suffix max arrays.\nC: Got wrong calculations or index errors.\nD: Stuck on math logic.",
+      "options": {
+        "A": "Solved using O(1) space pointers",
+        "B": "Solved using prefix/suffix arrays",
+        "C": "Got incorrect water volume calculation",
+        "D": "Unable to solve"
+      },
+      "correct_option": "A",
+      "expected_error_tags": ["wrong_pointer_increment"]
+    },
+    {
+      "id": "lc_wind_001",
+      "title": "Best Time to Buy and Sell Stock",
+      "concept_ids": ["sliding_window"],
+      "difficulty": "easy",
+      "question_text": "Solve LeetCode 121: Best Time to Buy and Sell Stock (https://leetcode.com/problems/best-time-to-buy-and-sell-stock/). Select your outcome:\n\nA: Solved in O(N) time and O(1) space using a single pass sliding left boundary min price.\nB: Solved using O(N^2) brute force.\nC: Got incorrect profit outcomes or range index errors.\nD: Stuck on when to update boundaries.",
+      "options": {
+        "A": "Solved O(N) sliding bounds",
+        "B": "Solved O(N^2) brute force",
+        "C": "Got incorrect calculations",
+        "D": "Unable to solve"
+      },
+      "correct_option": "A",
+      "expected_error_tags": ["out_of_bounds_window"]
+    },
+    {
+      "id": "lc_wind_002",
+      "title": "Longest Substring Without Repeating Characters",
+      "concept_ids": ["sliding_window"],
+      "difficulty": "medium",
+      "question_text": "Solve LeetCode 3: Longest Substring Without Repeating Characters (https://leetcode.com/problems/longest-substring-without-repeating-characters/). Select your outcome:\n\nA: Solved in O(N) time using sliding window right pointer expansions and left pointer shrinks via character index map.\nB: Solved in O(N) using a visited set with repetitive left increments.\nC: Got incorrect length calculations or off-by-one window sizes.\nD: Stuck on tracking character occurrences.",
+      "options": {
+        "A": "Solved O(N) index map",
+        "B": "Solved O(N) visited set",
+        "C": "Got off-by-one length / bounds errors",
+        "D": "Unable to solve"
+      },
+      "correct_option": "A",
+      "expected_error_tags": ["out_of_bounds_window", "incorrect_window_shrink"]
+    },
+    {
+      "id": "lc_wind_003",
+      "title": "Minimum Size Subarray Sum",
+      "concept_ids": ["sliding_window"],
+      "difficulty": "medium",
+      "question_text": "Solve LeetCode 209: Minimum Size Subarray Sum (https://leetcode.com/problems/minimum-size-subarray-sum/). Select your outcome:\n\nA: Solved in O(N) time by expanding right bounds, and contracting left bounds in a inner while loop when sum >= target.\nB: Solved in O(N log N) using binary search and prefix sums.\nC: Got Time Limit Exceeded (TLE) using nested loops.\nD: Stuck on dynamically shrinking window size.",
+      "options": {
+        "A": "Solved O(N) expand/contract bounds",
+        "B": "Solved O(N log N) binary search",
+        "C": "Got Time Limit Exceeded",
+        "D": "Unable to solve"
+      },
+      "correct_option": "A",
+      "expected_error_tags": ["out_of_bounds_window", "incorrect_window_shrink"]
+    },
+    {
+      "id": "lc_wind_004",
+      "title": "Minimum Window Substring",
+      "concept_ids": ["sliding_window"],
+      "difficulty": "hard",
+      "question_text": "Solve LeetCode 76: Minimum Window Substring (https://leetcode.com/problems/minimum-window-substring/). Select your outcome:\n\nA: Solved in O(S + T) time using frequency counts window map and matched-char tracking variable.\nB: Solved but got time limits or character match omissions.\nC: Got index out of bounds exceptions on substring output slices.\nD: Stuck on frequency map checks.",
+      "options": {
+        "A": "Solved O(S+T) map tracking",
+        "B": "Solved with subpar performance",
+        "C": "Got index out of range exceptions",
+        "D": "Unable to solve"
+      },
+      "correct_option": "A",
+      "expected_error_tags": ["out_of_bounds_window", "incorrect_window_shrink"]
+    },
+    {
+      "id": "lc_list_001",
+      "title": "Reverse Linked List",
+      "concept_ids": ["linked_lists"],
+      "difficulty": "easy",
+      "question_text": "Solve LeetCode 206: Reverse Linked List (https://leetcode.com/problems/reverse-linked-list/). Select your outcome:\n\nA: Solved in O(N) time and O(1) space iteratively swapping next pointers.\nB: Solved recursively using recursion stack O(N) space.\nC: Got NullPointer exceptions on reference traversal.\nD: Stuck on temp pointer swaps.",
+      "options": {
+        "A": "Solved O(1) space iteratively",
+        "B": "Solved recursively",
+        "C": "Got NullPointer exception",
+        "D": "Unable to solve"
+      },
+      "correct_option": "A",
+      "expected_error_tags": ["null_pointer_exception"]
+    },
+    {
+      "id": "lc_list_002",
+      "title": "Merge Two Sorted Lists",
+      "concept_ids": ["linked_lists"],
+      "difficulty": "easy",
+      "question_text": "Solve LeetCode 21: Merge Two Sorted Lists (https://leetcode.com/problems/merge-two-sorted-lists/). Select your outcome:\n\nA: Solved in O(N + M) time iteratively using a dummy head node to attach comparisons.\nB: Solved recursively in O(N + M) space.\nC: Got NullPointer exception on boundary comparisons.\nD: Stuck on merging node pointers.",
+      "options": {
+        "A": "Solved O(N+M) dummy node",
+        "B": "Solved recursively",
+        "C": "Got NullPointer exception",
+        "D": "Unable to solve"
+      },
+      "correct_option": "A",
+      "expected_error_tags": ["null_pointer_exception"]
+    },
+    {
+      "id": "lc_list_003",
+      "title": "Remove Nth Node From End of List",
+      "concept_ids": ["linked_lists"],
+      "difficulty": "medium",
+      "question_text": "Solve LeetCode 19: Remove Nth Node From End of List (https://leetcode.com/problems/remove-nth-node-from-end-of-list/). Select your outcome:\n\nA: Solved in O(N) time using two pointers spaced N elements apart, along with a dummy node.\nB: Solved in two passes by first counting node length.\nC: Got NullPointer exception when removing the first node.\nD: Stuck on boundary nodes swaps.",
+      "options": {
+        "A": "Solved O(N) two-pointer dummy node",
+        "B": "Solved in two passes",
+        "C": "Got NullPointer exception",
+        "D": "Unable to solve"
+      },
+      "correct_option": "A",
+      "expected_error_tags": ["null_pointer_exception"]
+    },
+    {
+      "id": "lc_list_004",
+      "title": "Reorder List",
+      "concept_ids": ["linked_lists"],
+      "difficulty": "medium",
+      "question_text": "Solve LeetCode 143: Reorder List (https://leetcode.com/problems/reorder-list/). Select your outcome:\n\nA: Solved in O(N) time and O(1) space by finding the middle element, reversing the second half, and merging alternately.\nB: Solved in O(N) time and O(N) space using an array copy of node references.\nC: Got NullPointer exception or cycle link leaks.\nD: Stuck on list intersection.",
+      "options": {
+        "A": "Solved O(1) space middle reverse merge",
+        "B": "Solved O(N) space node array",
+        "C": "Got NullPointer / Cycle leaks",
+        "D": "Unable to solve"
+      },
+      "correct_option": "A",
+      "expected_error_tags": ["null_pointer_exception", "list_cycle_creation"]
+    },
+    {
+      "id": "lc_fast_001",
+      "title": "Linked List Cycle",
+      "concept_ids": ["fast_slow_pointers"],
+      "difficulty": "easy",
+      "question_text": "Solve LeetCode 141: Linked List Cycle (https://leetcode.com/problems/linked-list-cycle/). Select your outcome:\n\nA: Solved in O(N) time and O(1) space using fast/slow pointers (Floyd's cycle detection).\nB: Solved in O(N) time and O(N) space using a visited Set.\nC: Got infinite loop or NullPointer exception on fast.next.next.\nD: Stuck on moving fast pointer.",
+      "options": {
+        "A": "Solved O(1) space pointers cycle",
+        "B": "Solved using visited Set",
+        "C": "Got infinite loop / NullPointer",
+        "D": "Unable to solve"
+      },
+      "correct_option": "A",
+      "expected_error_tags": ["fast_slow_step_mismatch", "null_pointer_exception"]
+    },
+    {
+      "id": "lc_fast_002",
+      "title": "Linked List Cycle II",
+      "concept_ids": ["fast_slow_pointers"],
+      "difficulty": "medium",
+      "question_text": "Solve LeetCode 142: Linked List Cycle II (https://leetcode.com/problems/linked-list-cycle-ii/). Select your outcome:\n\nA: Solved in O(N) time and O(1) space resetting one pointer to the head after meeting to find cycle start node.\nB: Solved in O(N) time and O(N) space using a visited Set.\nC: Reset pointer meeting loop ran infinitely.\nD: Stuck on meeting math.",
+      "options": {
+        "A": "Solved O(1) space start node meeting",
+        "B": "Solved using visited Set",
+        "C": "Got infinite cycle starting loop",
+        "D": "Unable to solve"
+      },
+      "correct_option": "A",
+      "expected_error_tags": ["fast_slow_step_mismatch", "missing_cycle_meet"]
+    },
+    {
+      "id": "lc_fast_003",
+      "title": "Find the Duplicate Number",
+      "concept_ids": ["fast_slow_pointers"],
+      "difficulty": "medium",
+      "question_text": "Solve LeetCode 287: Find the Duplicate Number (https://leetcode.com/problems/find-the-duplicate-number/). Select your outcome:\n\nA: Solved in O(N) time and O(1) space by treating values as next indices and running Floyd's cycle detection.\nB: Solved by sorting the array in O(N log N) time (violates O(1) space constraint).\nC: Got infinite cycle index checks.\nD: Stuck on mapping value to index.",
+      "options": {
+        "A": "Solved O(1) space pointers duplicate",
+        "B": "Solved via sorting",
+        "C": "Got infinite loop",
+        "D": "Unable to solve"
+      },
+      "correct_option": "A",
+      "expected_error_tags": ["fast_slow_step_mismatch"]
+    },
+    {
+      "id": "lc_fast_004",
+      "title": "Palindrome Linked List",
+      "concept_ids": ["fast_slow_pointers"],
+      "difficulty": "medium",
+      "question_text": "Solve LeetCode 234: Palindrome Linked List (https://leetcode.com/problems/palindrome-linked-list/). Select your outcome:\n\nA: Solved in O(N) time and O(1) space using fast/slow to find middle, reversing second half, and comparing indices.\nB: Solved in O(N) time and O(N) space copying values to an array.\nC: Got NullPointer exceptions during half reverse.\nD: Stuck on comparing node halves.",
+      "options": {
+        "A": "Solved O(1) space middle reverse check",
+        "B": "Solved O(N) space array copy",
+        "C": "Got NullPointer exception",
+        "D": "Unable to solve"
+      },
+      "correct_option": "A",
+      "expected_error_tags": ["null_pointer_exception", "missing_cycle_meet"]
+    },
+    {
+      "id": "lc_rec_001",
+      "title": "Fibonacci Number",
+      "concept_ids": ["recursion_basics"],
+      "difficulty": "easy",
+      "question_text": "Solve LeetCode 509: Fibonacci Number (https://leetcode.com/problems/fibonacci-number/). Select your outcome:\n\nA: Solved recursively with proper base cases n <= 1.\nB: Solved iteratively in O(N) time.\nC: Got stack overflow due to missing base case check.\nD: Stuck on recursive relation.",
+      "options": {
+        "A": "Solved recursively",
+        "B": "Solved iteratively",
+        "C": "Got stack overflow",
+        "D": "Unable to solve"
+      },
+      "correct_option": "A",
+      "expected_error_tags": ["infinite_recursion", "stack_overflow"]
+    },
+    {
+      "id": "lc_rec_002",
+      "title": "Remove Linked List Elements (Recursive)",
+      "concept_ids": ["recursion_basics"],
+      "difficulty": "easy",
+      "question_text": "Solve LeetCode 203: Remove Linked List Elements (https://leetcode.com/problems/remove-linked-list-elements/). Select your outcome:\n\nA: Solved recursively returning head.next or head depending on comparison.\nB: Solved iteratively using dummy node.\nC: Got stack overflow on long lists.\nD: Stuck on recursive link updates.",
+      "options": {
+        "A": "Solved recursively",
+        "B": "Solved iteratively",
+        "C": "Got stack overflow / crash",
+        "D": "Unable to solve"
+      },
+      "correct_option": "A",
+      "expected_error_tags": ["infinite_recursion"]
+    },
+    {
+      "id": "lc_rec_003",
+      "title": "Pow(x, n)",
+      "concept_ids": ["recursion_basics"],
+      "difficulty": "medium",
+      "question_text": "Solve LeetCode 50: Pow(x, n) (https://leetcode.com/problems/powx-n/). Select your outcome:\n\nA: Solved in O(log N) recursively splitting power n / 2 and managing base case n = 0.\nB: Solved iteratively in O(N) time (Got Time Limit Exceeded).\nC: Got stack overflow for negative power inputs.\nD: Stuck on even/odd power handling.",
+      "options": {
+        "A": "Solved O(log N) recursively",
+        "B": "Got Time Limit Exceeded",
+        "C": "Got stack overflow",
+        "D": "Unable to solve"
+      },
+      "correct_option": "A",
+      "expected_error_tags": ["infinite_recursion", "stack_overflow"]
+    },
+    {
+      "id": "lc_rec_004",
+      "title": "Reverse String (Recursive)",
+      "concept_ids": ["recursion_basics"],
+      "difficulty": "medium",
+      "question_text": "Solve LeetCode 344: Reverse String (https://leetcode.com/problems/reverse-string/). Select your outcome:\n\nA: Solved recursively swapping left/right characters until bounds cross.\nB: Solved iteratively in O(N).\nC: Got stack overflow on recursion bounds.\nD: Stuck on swap indices.",
+      "options": {
+        "A": "Solved recursively",
+        "B": "Solved iteratively",
+        "C": "Got stack overflow",
+        "D": "Unable to solve"
+      },
+      "correct_option": "A",
+      "expected_error_tags": ["infinite_recursion"]
+    },
+    {
+      "id": "lc_tree_001",
+      "title": "Invert Binary Tree",
+      "concept_ids": ["binary_trees"],
+      "difficulty": "easy",
+      "question_text": "Solve LeetCode 226: Invert Binary Tree (https://leetcode.com/problems/invert-binary-tree/). Select your outcome:\n\nA: Solved by recursively swapping left and right child references.\nB: Solved iteratively using a queue (BFS).\nC: Got NullPointer exceptions on node child references.\nD: Stuck on swapping logic.",
+      "options": {
+        "A": "Solved recursively",
+        "B": "Solved iteratively BFS",
+        "C": "Got NullPointer exceptions",
+        "D": "Unable to solve"
+      },
+      "correct_option": "A",
+      "expected_error_tags": ["null_pointer_exception"]
+    },
+    {
+      "id": "lc_tree_002",
+      "title": "Maximum Depth of Binary Tree",
+      "concept_ids": ["binary_trees"],
+      "difficulty": "easy",
+      "question_text": "Solve LeetCode 104: Maximum Depth of Binary Tree (https://leetcode.com/problems/maximum-depth-of-binary-tree/). Select your outcome:\n\nA: Solved recursively returning 1 + Math.max(leftDepth, rightDepth).\nB: Solved iteratively using a queue.\nC: Got NullPointer exception on empty tree input.\nD: Stuck on leaf node returns.",
+      "options": {
+        "A": "Solved recursively O(N)",
+        "B": "Solved iteratively",
+        "C": "Got NullPointer exception",
+        "D": "Unable to solve"
+      },
+      "correct_option": "A",
+      "expected_error_tags": ["null_pointer_exception"]
+    },
+    {
+      "id": "lc_tree_003",
+      "title": "Diameter of Binary Tree",
+      "concept_ids": ["binary_trees"],
+      "difficulty": "easy",
+      "question_text": "Solve LeetCode 543: Diameter of Binary Tree (https://leetcode.com/problems/diameter-of-binary-tree/). Select your outcome:\n\nA: Solved recursively updating a global max diameter variable during height DFS calculation.\nB: Solved in O(N^2) by calling height recursively for each node.\nC: Got incorrect calculation values.\nD: Stuck on path count logic.",
+      "options": {
+        "A": "Solved O(N) using global max update",
+        "B": "Solved in sub-optimal O(N^2)",
+        "C": "Got wrong diameter counts",
+        "D": "Unable to solve"
+      },
+      "correct_option": "A",
+      "expected_error_tags": ["null_pointer_exception"]
+    },
+    {
+      "id": "lc_tree_004",
+      "title": "Balanced Binary Tree",
+      "concept_ids": ["binary_trees"],
+      "difficulty": "easy",
+      "question_text": "Solve LeetCode 110: Balanced Binary Tree (https://leetcode.com/problems/balanced-binary-tree/). Select your outcome:\n\nA: Solved in O(N) by returning -1 for height if any subtree is unbalanced during recursive DFS.\nB: Solved in O(N^2) checking height balance per node.\nC: Got incorrect balance flags.\nD: Stuck on tracking state.",
+      "options": {
+        "A": "Solved O(N) height pruning",
+        "B": "Solved sub-optimal O(N^2)",
+        "C": "Got wrong balance flags",
+        "D": "Unable to solve"
+      },
+      "correct_option": "A",
+      "expected_error_tags": ["null_pointer_exception"]
+    },
+    {
+      "id": "lc_dfs_001",
+      "title": "Same Tree",
+      "concept_ids": ["tree_dfs"],
+      "difficulty": "easy",
+      "question_text": "Solve LeetCode 100: Same Tree (https://leetcode.com/problems/same-tree/). Select your outcome:\n\nA: Solved recursively checking root values, and child matching preorder.\nB: Got NullPointer exceptions on child leaf nodes.\nC: Got wrong matching flags.\nD: Stuck on null value checks.",
+      "options": {
+        "A": "Solved preorder recursively",
+        "B": "Got NullPointer exceptions",
+        "C": "Got wrong boolean flag",
+        "D": "Unable to solve"
+      },
+      "correct_option": "A",
+      "expected_error_tags": ["null_pointer_exception", "traversal_order_mismatch"]
+    },
+    {
+      "id": "lc_dfs_002",
+      "title": "Symmetric Tree",
+      "concept_ids": ["tree_dfs"],
+      "difficulty": "easy",
+      "question_text": "Solve LeetCode 101: Symmetric Tree (https://leetcode.com/problems/symmetric-tree/). Select your outcome:\n\nA: Solved recursively comparing left-child's-left with right-child's-right.\nB: Got NullPointer exception on uneven trees.\nC: Got wrong symmetric flags.\nD: Stuck on cross child matching.",
+      "options": {
+        "A": "Solved recursively mirrored DFS",
+        "B": "Got NullPointer exceptions",
+        "C": "Got wrong symmetry outcomes",
+        "D": "Unable to solve"
+      },
+      "correct_option": "A",
+      "expected_error_tags": ["null_pointer_exception", "traversal_order_mismatch"]
+    },
+    {
+      "id": "lc_dfs_003",
+      "title": "Lowest Common Ancestor",
+      "concept_ids": ["tree_dfs"],
+      "difficulty": "medium",
+      "question_text": "Solve LeetCode 236: Lowest Common Ancestor of a Binary Tree (https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/). Select your outcome:\n\nA: Solved recursively returning node if matched p/q, or returning left/right check intersection.\nB: Got NullPointer exception on empty branches.\nC: Output returned incorrect ancestor node.\nD: Stuck on tracking parent pointers.",
+      "options": {
+        "A": "Solved recursively intersecting paths",
+        "B": "Got NullPointer exceptions",
+        "C": "Got wrong ancestor node",
+        "D": "Unable to solve"
+      },
+      "correct_option": "A",
+      "expected_error_tags": ["null_pointer_exception", "parent_child_state_leak"]
+    },
+    {
+      "id": "lc_dfs_004",
+      "title": "Binary Tree Max Path Sum",
+      "concept_ids": ["tree_dfs"],
+      "difficulty": "hard",
+      "question_text": "Solve LeetCode 124: Binary Tree Maximum Path Sum (https://leetcode.com/problems/binary-tree-maximum-path-sum/). Select your outcome:\n\nA: Solved recursively computing max branch gain, updating global sum containing left + right + node.val.\nB: Got wrong sums containing negative node values.\nC: Got NullPointer exception on leaves.\nD: Stuck on gain logic.",
+      "options": {
+        "A": "Solved recursively branch path sum",
+        "B": "Got incorrect sum on negative nodes",
+        "C": "Got NullPointer exception",
+        "D": "Unable to solve"
+      },
+      "correct_option": "A",
+      "expected_error_tags": ["null_pointer_exception", "parent_child_state_leak"]
+    },
+    {
+      "id": "lc_graph_001",
+      "title": "Number of Islands",
+      "concept_ids": ["graphs"],
+      "difficulty": "medium",
+      "question_text": "Solve LeetCode 200: Number of Islands (https://leetcode.com/problems/number-of-islands/). Select your outcome:\n\nA: Solved using nested grid loops, launching DFS on '1' and changing visited cells to '0'.\nB: Solved using BFS with visited sets.\nC: Got StackOverflow error due to infinite recursion.\nD: Stuck on tracking island boundaries.",
+      "options": {
+        "A": "Solved using DFS visited cell modification",
+        "B": "Solved using BFS queue",
+        "C": "Got stack overflow / infinite loop",
+        "D": "Unable to solve"
+      },
+      "correct_option": "A",
+      "expected_error_tags": ["infinite_recursion"]
+    },
+    {
+      "id": "lc_graph_002",
+      "title": "Max Area of Island",
+      "concept_ids": ["graphs"],
+      "difficulty": "medium",
+      "question_text": "Solve LeetCode 695: Max Area of Island (https://leetcode.com/problems/max-area-of-island/). Select your outcome:\n\nA: Solved returning 1 + sum of DFS on 4 directions, updating max variable.\nB: Got stack overflow on grid boundary inputs.\nC: Island area sums were calculated incorrectly.\nD: Stuck on 4-directional grid offsets.",
+      "options": {
+        "A": "Solved using recursive area counting",
+        "B": "Got stack overflow / bounds crash",
+        "C": "Got wrong island area values",
+        "D": "Unable to solve"
+      },
+      "correct_option": "A",
+      "expected_error_tags": ["infinite_recursion"]
+    },
+    {
+      "id": "lc_graph_003",
+      "title": "Rotting Oranges",
+      "concept_ids": ["graphs"],
+      "difficulty": "medium",
+      "question_text": "Solve LeetCode 994: Rotting Oranges (https://leetcode.com/problems/rotting-oranges/). Select your outcome:\n\nA: Solved using multi-source BFS queue counting levels/minutes.\nB: Got wrong time counts due to using DFS (DFS is incorrect for shortest path level-order).\nC: Got index out of bounds exceptions on grid offsets.\nD: Stuck on tracking fresh oranges count.",
+      "options": {
+        "A": "Solved O(M*N) multi-source BFS",
+        "B": "Attempted DFS (got incorrect shortest path)",
+        "C": "Got index out of bounds errors",
+        "D": "Unable to solve"
+      },
+      "correct_option": "A",
+      "expected_error_tags": ["infinite_recursion"]
+    },
+    {
+      "id": "lc_graph_004",
+      "title": "Pacific Atlantic Water Flow",
+      "concept_ids": ["graphs"],
+      "difficulty": "medium",
+      "question_text": "Solve LeetCode 417: Pacific Atlantic Water Flow (https://leetcode.com/problems/pacific-atlantic-water-flow/). Select your outcome:\n\nA: Solved by running DFS outwards from ocean boundary cells and finding intersection sets.\nB: Got Time Limit Exceeded (TLE) running DFS from every individual grid cell.\nC: Got infinite stack recursion cycles.\nD: Stuck on height flow comparison.",
+      "options": {
+        "A": "Solved outward boundaries DFS intersection",
+        "B": "Got Time Limit Exceeded from every cell",
+        "C": "Got infinite recursion",
+        "D": "Unable to solve"
+      },
+      "correct_option": "A",
+      "expected_error_tags": ["infinite_recursion"]
+    },
+    {
+      "id": "lc_gdfs_001",
+      "title": "Clone Graph",
+      "concept_ids": ["graph_dfs"],
+      "difficulty": "medium",
+      "question_text": "Solve LeetCode 133: Clone Graph (https://leetcode.com/problems/clone-graph/). Select your outcome:\n\nA: Solved using DFS with an index map matching original nodes to cloned nodes to avoid infinite cycles.\nB: Got StackOverflow/infinite loop because of circular reference cycles.\nC: Got incomplete clone nodes mapping.\nD: Stuck on copying graph neighbors.",
+      "options": {
+        "A": "Solved using DFS with cloned nodes map",
+        "B": "Got stack overflow / infinite recursion",
+        "C": "Got wrong neighbors links",
+        "D": "Unable to solve"
+      },
+      "correct_option": "A",
+      "expected_error_tags": ["cycle_stuck_forever", "visited_tracker_omission"]
+    },
+    {
+      "id": "lc_gdfs_002",
+      "title": "Number of Connected Components",
+      "concept_ids": ["graph_dfs"],
+      "difficulty": "medium",
+      "question_text": "Solve LeetCode 323: Number of Connected Components in an Undirected Graph (https://leetcode.com/problems/number-of-connected-components-in-an-undirected-graph/). Select your outcome:\n\nA: Solved iterating through all nodes, running DFS to populate visited set, counting components.\nB: Got infinite cycle stuck because of undirected edges.\nC: Got wrong component count values.\nD: Stuck on building adjacency list.",
+      "options": {
+        "A": "Solved adjacency DFS component count",
+        "B": "Got infinite loop / cycle crash",
+        "C": "Got incorrect component counts",
+        "D": "Unable to solve"
+      },
+      "correct_option": "A",
+      "expected_error_tags": ["cycle_stuck_forever", "visited_tracker_omission"]
+    },
+    {
+      "id": "lc_gdfs_003",
+      "title": "Graph Valid Tree",
+      "concept_ids": ["graph_dfs"],
+      "difficulty": "medium",
+      "question_text": "Solve LeetCode 261: Graph Valid Tree (https://leetcode.com/problems/graph-valid-tree/). Select your outcome:\n\nA: Solved verifying count is components = 1 and edges = nodes - 1, running DFS to check cycles.\nB: Got incorrect tree status on disconnected graphs.\nC: Loop ran infinitely due to back-edge cycles.\nD: Stuck on cycle logic.",
+      "options": {
+        "A": "Solved components and cycle check DFS",
+        "B": "Got wrong result on disconnected components",
+        "C": "Got infinite loop cycle check",
+        "D": "Unable to solve"
+      },
+      "correct_option": "A",
+      "expected_error_tags": ["cycle_stuck_forever", "visited_tracker_omission"]
+    },
+    {
+      "id": "lc_gdfs_004",
+      "title": "Alien Dictionary",
+      "concept_ids": ["graph_dfs"],
+      "difficulty": "hard",
+      "question_text": "Solve LeetCode 269: Alien Dictionary (https://leetcode.com/problems/alien-dictionary/). Select your outcome:\n\nA: Solved building character dependency graph and using post-order DFS to detect cycles and return sorted string.\nB: Got invalid orderings on cycle dependency test inputs.\nC: Stack overflow occurred on cycle dependency check.\nD: Stuck on parsing input words.",
+      "options": {
+        "A": "Solved post-order cycle check DFS",
+        "B": "Got invalid topological ordering",
+        "C": "Got stack overflow",
+        "D": "Unable to solve"
+      },
+      "correct_option": "A",
+      "expected_error_tags": ["cycle_stuck_forever", "visited_tracker_omission"]
+    },
+    {
+      "id": "lc_back_001",
+      "title": "Subsets",
+      "concept_ids": ["backtracking"],
+      "difficulty": "medium",
+      "question_text": "Solve LeetCode 78: Subsets (https://leetcode.com/problems/subsets/). Select your outcome:\n\nA: Solved recursively adding subsets to list, pushing element, recursing, and popping (backtracking).\nB: Solved iteratively using bitwise masks.\nC: Output contained incorrect duplicate element sets.\nD: Stuck on backtracking choices.",
+      "options": {
+        "A": "Solved using recursive push-pop backtracking",
+        "B": "Solved iteratively using bitmasks",
+        "C": "Got duplicate/incorrect subsets output",
+        "D": "Unable to solve"
+      },
+      "correct_option": "A",
+      "expected_error_tags": ["missing_backtrack_step", "dirty_search_state"]
+    },
+    {
+      "id": "lc_back_002",
+      "title": "Permutations",
+      "concept_ids": ["backtracking"],
+      "difficulty": "medium",
+      "question_text": "Solve LeetCode 46: Permutations (https://leetcode.com/problems/permutations/). Select your outcome:\n\nA: Solved by swapping array elements recursively or tracking used elements in a boolean array, undoing changes.\nB: Output contained duplicate elements or incomplete permutations.\nC: State variables were dirty and leaked across branches.\nD: Stuck on backtracking loops.",
+      "options": {
+        "A": "Solved recursion state swap backtracking",
+        "B": "Got wrong/duplicate permutation outputs",
+        "C": "Got dirty search state leaks",
+        "D": "Unable to solve"
+      },
+      "correct_option": "A",
+      "expected_error_tags": ["missing_backtrack_step", "dirty_search_state"]
+    },
+    {
+      "id": "lc_back_003",
+      "title": "Combination Sum",
+      "concept_ids": ["backtracking"],
+      "difficulty": "medium",
+      "question_text": "Solve LeetCode 39: Combination Sum (https://leetcode.com/problems/combination-sum/). Select your outcome:\n\nA: Solved backtracking on indices and target remaining sum, using pop to restore state.\nB: Got Time Limit Exceeded (TLE) because index boundary checks were missing.\nC: Output list contained incorrect sum calculations.\nD: Stuck on index reuse limits.",
+      "options": {
+        "A": "Solved target sum index backtracking",
+        "B": "Got Time Limit Exceeded",
+        "C": "Got wrong combinations sums",
+        "D": "Unable to solve"
+      },
+      "correct_option": "A",
+      "expected_error_tags": ["missing_backtrack_step", "dirty_search_state"]
+    },
+    {
+      "id": "lc_back_004",
+      "title": "N-Queens",
+      "concept_ids": ["backtracking"],
+      "difficulty": "hard",
+      "question_text": "Solve LeetCode 51: N-Queens (https://leetcode.com/problems/n-queens/). Select your outcome:\n\nA: Solved placing queens row-by-row, tracking diagonals/cols in Set collections and backtracking on pop.\nB: Got invalid board placements where queens attacked each other.\nC: Got dirty board states leaking across backtrack steps.\nD: Stuck on diagonal math checks.",
+      "options": {
+        "A": "Solved row-by-row diagonal Set backtracking",
+        "B": "Got invalid board attack placements",
+        "C": "Got dirty board state leaks",
+        "D": "Unable to solve"
+      },
+      "correct_option": "A",
+      "expected_error_tags": ["missing_backtrack_step", "dirty_search_state"]
+    },
+    {
+      "id": "lc_topo_001",
+      "title": "Course Schedule",
+      "concept_ids": ["topological_sort"],
+      "difficulty": "medium",
+      "question_text": "Solve LeetCode 207: Course Schedule (https://leetcode.com/problems/course-schedule/). Select your outcome:\n\nA: Solved building dependency graph, running cycle checks via DFS (visited, visiting states), returning true/false.\nB: Got incorrect boolean outputs on cycle graphs.\nC: Got stack overflow cycle checking.\nD: Stuck on building adjacency list.",
+      "options": {
+        "A": "Solved DFS 3-state cycle detection",
+        "B": "Got incorrect graph cycle checks",
+        "C": "Got stack overflow / infinite loop",
+        "D": "Unable to solve"
+      },
+      "correct_option": "A",
+      "expected_error_tags": ["dependency_cycle_unhandled", "incomplete_ordering_sort"]
+    },
+    {
+      "id": "lc_topo_002",
+      "title": "Course Schedule II",
+      "concept_ids": ["topological_sort"],
+      "difficulty": "medium",
+      "question_text": "Solve LeetCode 210: Course Schedule II (https://leetcode.com/problems/course-schedule-ii/). Select your outcome:\n\nA: Solved using Kahn's algorithm (BFS queue with in-degree array) or DFS post-order to output node order.\nB: Output ordering was invalid or cyclic.\nC: Cycle loops returned incorrect schedules.\nD: Stuck on handling in-degrees.",
+      "options": {
+        "A": "Solved Kahn's BFS in-degree sort",
+        "B": "Got invalid topological ordering schedule",
+        "C": "Got incorrect cycle-check outcomes",
+        "D": "Unable to solve"
+      },
+      "correct_option": "A",
+      "expected_error_tags": ["dependency_cycle_unhandled", "incomplete_ordering_sort"]
+    },
+    {
+      "id": "lc_topo_003",
+      "title": "Minimum Height Trees",
+      "concept_ids": ["topological_sort"],
+      "difficulty": "medium",
+      "question_text": "Solve LeetCode 310: Minimum Height Trees (https://leetcode.com/problems/minimum-height-trees/). Select your outcome:\n\nA: Solved iteratively trimming leaf nodes (degree = 1) in a topological BFS queue until <= 2 nodes remain.\nB: Got Time Limit Exceeded (TLE) running height calculations from every node.\nC: Got wrong root nodes output.\nD: Stuck on leaves trimming conditions.",
+      "options": {
+        "A": "Solved leaves-trimming BFS topological sort",
+        "B": "Got Time Limit Exceeded from every node",
+        "C": "Got incorrect root nodes",
+        "D": "Unable to solve"
+      },
+      "correct_option": "A",
+      "expected_error_tags": ["dependency_cycle_unhandled"]
+    },
+    {
+      "id": "lc_topo_004",
+      "title": "Sort Items by Groups",
+      "concept_ids": ["topological_sort"],
+      "difficulty": "hard",
+      "question_text": "Solve LeetCode 1203: Sort Items by Groups Respecting Dependencies (https://leetcode.com/problems/sort-items-by-groups-respecting-dependencies/). Select your outcome:\n\nA: Solved executing double topological sorting (once for groups, once for items) and mapping orderings.\nB: Got invalid orderings on cyclic dependencies.\nC: Sorting got stuck in infinite loops.\nD: Stuck on separating group structures.",
+      "options": {
+        "A": "Solved double topological sorting",
+        "B": "Got invalid dependencies orderings",
+        "C": "Got infinite loop / cycle crash",
+        "D": "Unable to solve"
+      },
+      "correct_option": "A",
+      "expected_error_tags": ["dependency_cycle_unhandled", "incomplete_ordering_sort"]
+    }
+  ]
+}

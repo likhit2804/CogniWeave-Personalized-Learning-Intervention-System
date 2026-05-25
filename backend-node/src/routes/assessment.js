@@ -50,6 +50,8 @@ router.post("/assessment/answer", (req, res, next) => {
       problemId: parsed.problem_id,
       selectedOption: parsed.selected_option,
       timeSeconds: parsed.time_seconds ?? null,
+      reportedIssues: parsed.reported_issues ?? null,
+      description: parsed.description ?? null,
     });
     console.log(
       `[assessment/answer][${reqId}] ok complete=${result.assessment_complete} answered=${result.progress?.answered}`

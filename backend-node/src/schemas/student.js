@@ -13,6 +13,7 @@ export const QuestionAttemptSchema = z.object({
   time_seconds: z.number().int().nullable().optional(),
   hints_used: z.number().int().default(0),
   retries: z.number().int().default(0),
+  description: z.string().nullable().optional(),
 });
 
 export const MCQProblemSchema = z.object({
@@ -44,6 +45,8 @@ export const AssessmentAnswerRequestSchema = z.object({
   problem_id: z.string(),
   selected_option: z.string(),
   time_seconds: z.number().int().nullable().optional(),
+  reported_issues: z.array(z.string()).optional(),
+  description: z.string().optional(),
 });
 
 export const AssessmentPlanRequestSchema = z.object({

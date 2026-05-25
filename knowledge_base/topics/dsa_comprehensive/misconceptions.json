@@ -1,0 +1,85 @@
+{
+  "topic_id": "dsa_comprehensive",
+  "items": [
+    {
+      "id": "hashing_scope_misconception",
+      "concept_id": "arrays_and_hashing",
+      "label": "Frequency Counter Lookup Key Error",
+      "error_tags": ["incorrect_map_lookup", "value_hashing_collision"],
+      "symptoms": ["wrong count value retrieved", "key not found exceptions"],
+      "notes": "Student checks index instead of value inside hash maps, or uses variable references incorrectly as keys."
+    },
+    {
+      "id": "pointer_increment_direction_confusion",
+      "concept_id": "two_pointers",
+      "label": "Wrong Pointer Increment/Decrement",
+      "error_tags": ["wrong_pointer_increment", "infinite_pointer_loop"],
+      "symptoms": ["loop runs forever", "skipping target element combinations"],
+      "notes": "Student increments right index instead of decrementing, or modifies bounds incorrectly based on condition."
+    },
+    {
+      "id": "window_index_off_by_one",
+      "concept_id": "sliding_window",
+      "label": "Sliding Window Off-by-One Bounds Error",
+      "error_tags": ["out_of_bounds_window", "incorrect_window_shrink"],
+      "symptoms": ["index out of range exceptions", "invalid subarray sizes"],
+      "notes": "Happens when calculating subarray size as right - left instead of right - left + 1, or failing to shrink window dynamically."
+    },
+    {
+      "id": "null_pointer_dereference_list",
+      "concept_id": "linked_lists",
+      "label": "Null Pointer Dereference",
+      "error_tags": ["null_pointer_exception", "list_cycle_creation"],
+      "symptoms": ["segmentation fault or runtime null error", "infinite loop traversal"],
+      "notes": "Student calls curr.next.next without verifying that curr.next is not null."
+    },
+    {
+      "id": "cycle_detection_pointer_confusion",
+      "concept_id": "fast_slow_pointers",
+      "label": "Cycle Check Pointer Step Error",
+      "error_tags": ["fast_slow_step_mismatch", "missing_cycle_meet"],
+      "symptoms": ["fast pointer bypasses slow pointer without meeting", "null pointer exception on fast step"],
+      "notes": "Student forgets to move fast pointer by two steps or doesn't check fast.next for null before stepping."
+    },
+    {
+      "id": "missing_base_case_termination",
+      "concept_id": "recursion_basics",
+      "label": "Missing Recursion Base Case",
+      "error_tags": ["infinite_recursion", "stack_overflow"],
+      "symptoms": ["stack overflow exception", "maximum call stack size exceeded"],
+      "notes": "The recursion function continues executing indefinitely because the base case condition is missing or never reached."
+    },
+    {
+      "id": "tree_depth_dfs_mismatch",
+      "concept_id": "tree_dfs",
+      "label": "Incorrect Traversal Ordering Node Process",
+      "error_tags": ["traversal_order_mismatch", "parent_child_state_leak"],
+      "symptoms": ["values returned in incorrect order", "wrong path calculation"],
+      "notes": "Student confuses preorder processing (parent first) with postorder processing (children first)."
+    },
+    {
+      "id": "unvisited_graph_cycle_infinite",
+      "concept_id": "graph_dfs",
+      "label": "Missing Visited Set in Graph Traversal",
+      "error_tags": ["cycle_stuck_forever", "visited_tracker_omission"],
+      "symptoms": ["infinite loop stuck on circular graph paths", "out of memory error"],
+      "notes": "Unlike trees, graphs have cycles. Forgetting to mark nodes as visited leads to recursive cycle loops."
+    },
+    {
+      "id": "backtrack_state_dirty",
+      "concept_id": "backtracking",
+      "label": "Forgetting to Undo Decision State Modification",
+      "error_tags": ["missing_backtrack_step", "dirty_search_state"],
+      "symptoms": ["output contains elements from invalid search branches", "duplicate values returned"],
+      "notes": "Student appends a candidate to the path list but forgets to pop/remove it after the recursive call returns."
+    },
+    {
+      "id": "cyclic_dependency_sort_failure",
+      "concept_id": "topological_sort",
+      "label": "Cyclic Dependency Deadlock Failure",
+      "error_tags": ["dependency_cycle_unhandled", "incomplete_ordering_sort"],
+      "symptoms": ["ordering returned contains cycles", "graph cycle crashes sorting execution"],
+      "notes": "Topological sort is only possible in DAGs. If the graph contains cycles, the system must detect it and return an empty list."
+    }
+  ]
+}

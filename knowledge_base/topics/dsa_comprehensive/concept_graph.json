@@ -1,0 +1,89 @@
+{
+  "topic_id": "dsa_comprehensive",
+  "concepts": [
+    {
+      "id": "arrays_and_hashing",
+      "label": "Arrays & Hashing",
+      "description": "Basic hash map frequency counting, lookup tables, and array transformations.",
+      "prerequisites": [],
+      "related_concepts": []
+    },
+    {
+      "id": "two_pointers",
+      "label": "Two Pointers",
+      "description": "Using two index variables to scan linear structures from opposite ends or single directions.",
+      "prerequisites": ["arrays_and_hashing"],
+      "related_concepts": []
+    },
+    {
+      "id": "sliding_window",
+      "label": "Sliding Window",
+      "description": "Maintaining a dynamic subarray boundary to track maximum or minimum subarrays satisfying a constraint.",
+      "prerequisites": ["two_pointers"],
+      "related_concepts": []
+    },
+    {
+      "id": "linked_lists",
+      "label": "Linked Lists",
+      "description": "Node pointers traversals, insertions, deletions, and structural reorderings.",
+      "prerequisites": [],
+      "related_concepts": []
+    },
+    {
+      "id": "fast_slow_pointers",
+      "label": "Fast & Slow Pointers",
+      "description": "Using two pointers moving at different speeds to detect cycles or find list middle elements.",
+      "prerequisites": ["linked_lists", "two_pointers"],
+      "related_concepts": []
+    },
+    {
+      "id": "recursion_basics",
+      "label": "Recursion Basics",
+      "description": "Understanding stack execution flow, recursive base cases, and parameter tracking.",
+      "prerequisites": [],
+      "related_concepts": []
+    },
+    {
+      "id": "binary_trees",
+      "label": "Binary Trees",
+      "description": "Hierarchical node structure operations, leaf counts, and path logic.",
+      "prerequisites": [],
+      "related_concepts": []
+    },
+    {
+      "id": "tree_dfs",
+      "label": "Tree DFS",
+      "description": "Pre-order, in-order, and post-order depth-first search traversals of hierarchical structures.",
+      "prerequisites": ["binary_trees", "recursion_basics"],
+      "related_concepts": []
+    },
+    {
+      "id": "graphs",
+      "label": "Graphs",
+      "description": "Representing vertices and edges using adjacency lists or adjacency matrices.",
+      "prerequisites": [],
+      "related_concepts": []
+    },
+    {
+      "id": "graph_dfs",
+      "label": "Graph DFS",
+      "description": "Depth-first traversal of node graphs, managing circular cycles via visited sets.",
+      "prerequisites": ["graphs", "recursion_basics"],
+      "related_concepts": []
+    },
+    {
+      "id": "backtracking",
+      "label": "Backtracking",
+      "description": "Exploring all combination choices using recursive state append and state undo transitions.",
+      "prerequisites": ["recursion_basics"],
+      "related_concepts": []
+    },
+    {
+      "id": "topological_sort",
+      "label": "Topological Sort",
+      "description": "Linear ordering of vertices such that for every directed edge u -> v, u comes before v.",
+      "prerequisites": ["graph_dfs"],
+      "related_concepts": []
+    }
+  ]
+}

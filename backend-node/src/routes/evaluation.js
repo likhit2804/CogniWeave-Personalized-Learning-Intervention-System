@@ -1,6 +1,13 @@
 import { Router } from "express";
 import { KnowledgeBase } from "../services/knowledgeBase.js";
 import { buildQuestionGenerationContext } from "../services/retrievalService.js";
+import {
+  recordAttempt,
+  getAttempts,
+  updateMastery,
+  getMastery,
+} from "../services/database.js";
+import { upsertLearnerState, recordAttemptEvent } from "../services/mongoService.js";
 
 const router = Router();
 
@@ -13,6 +20,7 @@ function publicProblem(problem) {
     question_text: problem.question_text,
     options: problem.options || {},
     expected_error_tags: problem.expected_error_tags || [],
+    correct_option: problem.correct_option,
   };
 }
 
@@ -57,14 +65,14 @@ router.get("/evaluation/problems/:topicId/:conceptId", async (req, res, next) =>
   }
 });
 
-router.post("/evaluation/evaluate", (req, res, next) => {
+router.post("/evaluation/evaluate", async (req, res, next) => {
   try {
     const topicId = req.query.topic_id;
     if (!topicId) {
       return res.status(400).json({ detail: "topic_id query param is required" });
     }
 
-    const { problem_id, selected_option } = req.body;
+    const { problem_id, selected_option, student_id } = req.body;
     let kb;
     try {
       kb = new KnowledgeBase(topicId);
@@ -78,6 +86,55 @@ router.post("/evaluation/evaluate", (req, res, next) => {
     }
 
     const isCorrect = selected_option === problem.correct_option;
+
+    if (student_id) {
+      const primaryConcept = (problem.concept_ids || [])[0] || "unknown_concept";
+      try {
+        recordAttempt({
+          studentId: student_id,
+          problemId: problem.id,
+          concept: primaryConcept,
+          correct: isCorrect,
+          errorTags: isCorrect ? [] : (req.body.reported_issues || problem.expected_error_tags || []),
+          timeSeconds: req.body.time_seconds ?? null,
+          hintsUsed: 0,
+          retries: 0,
+        });
+
+        const attempts = getAttempts(student_id) || [];
+        const conceptAttempts = attempts.filter((a) => a.concept === primaryConcept);
+        const correctCount = conceptAttempts.filter((a) => a.correct).length;
+        const totalCount = conceptAttempts.length;
+
+        const ratio = totalCount ? correctCount / totalCount : (isCorrect ? 1.0 : 0.0);
+        const confidenceScore = Number((0.3 + ratio * 0.4).toFixed(2));
+
+        updateMastery(student_id, primaryConcept, confidenceScore);
+
+        const currentMastery = getMastery(student_id) || {};
+        const weakConcepts = Object.entries(currentMastery)
+          .sort((a, b) => a[1] - b[1])
+          .slice(0, 5)
+          .map(([concept]) => concept);
+
+        await upsertLearnerState({
+          studentId: student_id,
+          confidenceByConcept: currentMastery,
+          weakConcepts,
+        });
+
+        await recordAttemptEvent({
+          student_id,
+          problem_id: problem.id,
+          concept: primaryConcept,
+          correct: isCorrect,
+          error_tags: isCorrect ? [] : (req.body.reported_issues || problem.expected_error_tags || []),
+          time_seconds: req.body.time_seconds ?? null,
+        });
+      } catch (err) {
+        console.warn("Failed to persist evaluation attempt:", err.message || err);
+      }
+    }
 
     if (isCorrect) {
       res.json({

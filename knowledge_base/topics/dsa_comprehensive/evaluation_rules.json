@@ -1,0 +1,145 @@
+{
+  "topic_id": "dsa_comprehensive",
+  "rules": [
+    {
+      "concept_id": "arrays_and_hashing",
+      "success_signals": [
+        "correct map lookup logic",
+        "optimal O(N) execution time",
+        "zero duplicate errors"
+      ],
+      "partial_success_conditions": [
+        "solved in O(N log N) but needed sorting hints"
+      ],
+      "replan_trigger": [
+        "repeated value_hashing_collision errors"
+      ]
+    },
+    {
+      "concept_id": "two_pointers",
+      "success_signals": [
+        "correct pointer boundary checks",
+        "proper decrement/increment operations",
+        "solving without out of bounds errors"
+      ],
+      "partial_success_conditions": [
+        "solved but with nested loops brute force first"
+      ],
+      "replan_trigger": [
+        "infinite_pointer_loop repeats in later attempts"
+      ]
+    },
+    {
+      "concept_id": "sliding_window",
+      "success_signals": [
+        "correct dynamic boundary shift condition",
+        "accurate window size calculation (R - L + 1)",
+        "optimal execution time complexity"
+      ],
+      "partial_success_conditions": [
+        "solving with sub-optimal memory usage"
+      ],
+      "replan_trigger": [
+        "repeated out_of_bounds_window exceptions"
+      ]
+    },
+    {
+      "concept_id": "linked_lists",
+      "success_signals": [
+        "correct node link modification statements",
+        "zero null pointer dereferences",
+        "proper use of dummy head node patterns"
+      ],
+      "partial_success_conditions": [
+        "correct solution but high time to implement"
+      ],
+      "replan_trigger": [
+        "repeated null_pointer_exception crash events"
+      ]
+    },
+    {
+      "concept_id": "fast_slow_pointers",
+      "success_signals": [
+        "correct fast pointer speed bounds",
+        "zero pointer step mismatches",
+        "meeting logic resolves cycle accurately"
+      ],
+      "partial_success_conditions": [
+        "solved but needed hint on reset starting pointer"
+      ],
+      "replan_trigger": [
+        "missing_cycle_meet results on cycle inputs"
+      ]
+    },
+    {
+      "concept_id": "recursion_basics",
+      "success_signals": [
+        "correct base case condition",
+        "zero maximum stack depth crashes",
+        "accurate recursive relation return value"
+      ],
+      "partial_success_conditions": [
+        "correct outcome but stack depth is high"
+      ],
+      "replan_trigger": [
+        "repeated infinite_recursion stack overflow"
+      ]
+    },
+    {
+      "concept_id": "tree_dfs",
+      "success_signals": [
+        "correct traversal processing order",
+        "proper child subtree recursions",
+        "zero parent state leaks"
+      ],
+      "partial_success_conditions": [
+        "solved but required hints on base case null nodes"
+      ],
+      "replan_trigger": [
+        "traversal_order_mismatch results"
+      ]
+    },
+    {
+      "concept_id": "graph_dfs",
+      "success_signals": [
+        "correct use of visited Set tracking",
+        "zero recursive cycle loops",
+        "correct adjacency graph path traversal"
+      ],
+      "partial_success_conditions": [
+        "correct traversal but high memory usage"
+      ],
+      "replan_trigger": [
+        "cycle_stuck_forever loops on circular graphs"
+      ]
+    },
+    {
+      "concept_id": "backtracking",
+      "success_signals": [
+        "correct state append and undo popping sequence",
+        "zero dirty state leak combinations",
+        "accurate results array"
+      ],
+      "partial_success_conditions": [
+        "solved but required prune checks hint"
+      ],
+      "replan_trigger": [
+        "missing_backtrack_step duplicates leak"
+      ]
+    },
+    {
+      "concept_id": "topological_sort",
+      "success_signals": [
+        "correct course ordering output",
+        "accurate graph cycle check verification",
+        "proper in-degree count update logic"
+      ],
+      "partial_success_conditions": [
+        "solved with sub-optimal queue performance"
+      ],
+      "replan_trigger": [
+        "dependency_cycle_unhandled loops"
+      ]
+    }
+  ]
+}
